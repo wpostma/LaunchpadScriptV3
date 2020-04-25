@@ -8,14 +8,16 @@
 
 gridPage = new Page();
 
-gridPage.mixerAlignedGrid = false;
+gridPage.mixerAlignedGrid = true;
 gridPage.canScrollTracksUp = false;
 gridPage.canScrollTracksDown = false;
 gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
 
+
 ARMED=false;
+
 
 // Updates the scroll buttons
 gridPage.updateOutputState = function()
@@ -36,6 +38,8 @@ gridPage.updateOutputState = function()
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls[0]:cls[1]):Colour.OFF));
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls[0]:cls[1]):Colour.OFF));
    setTopLED(7, (TEMPMODE == TempMode.OFF ? (ARMED?cls[0]:cls[1]): Colour.YELLOW_FULL));
+   // Defines which tracks are controlled by this instance of the script
+   trackBank.scrollToChannel(9); 
 };
 
 gridPage.onSession = function(isPressed)
@@ -290,7 +294,7 @@ gridPage.onUp = function(isPressed)
       if (IS_SHIFT_PRESSED)
       {
       if (this.mixerAlignedGrid) trackBank.scrollScenesPageUp();
-      else trackBank.scrollTracksaPageUp();
+      else trackBank.scrollTracksPageUp();
       }
       else
       {
