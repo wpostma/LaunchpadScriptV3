@@ -1,7 +1,3 @@
-Launchpad Script V3 
+Launchpad Script V3 for Live Looping
 ==============
 
-Bitwig Script to support Novation Launchpad
-See Youtube Video for tutorial
-
-https://www.youtube.com/watch?v=48qBVXyzot0
