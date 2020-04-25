@@ -41,27 +41,13 @@ for	(index = 127; index > -1; index--)
 }
 
 // Start the API
-loadAPI(1);
+loadAPI(10);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad Script v3", "1.0", "b73e476c-e61b-11e4-8a00-1681e6b88ec1");
+host.defineController("Novation", "Launchpad L2", "1.0", "a6ac4a10-7a9b-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
-host.addDeviceNameBasedDiscoveryPair(["Launchpad"], ["Launchpad"]);
-host.addDeviceNameBasedDiscoveryPair(["Launchpad S"], ["Launchpad S"]);
-host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini"], ["Launchpad Mini"]);
 
-//Detect Multiple Launchpads
-for(var i=1; i<20; i++)
-{
-   var name = i.toString() + "- Launchpad";
-   host.addDeviceNameBasedDiscoveryPair([name], [name]);
-   host.addDeviceNameBasedDiscoveryPair(["Launchpad MIDI " + i.toString()], ["Launchpad MIDI " + i.toString()]);
-   host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + i.toString()], ["Launchpad S " + i.toString()]);
-   host.addDeviceNameBasedDiscoveryPair(["Launchpad S MIDI " + i.toString()], ["Launchpad S MIDI " + i.toString()]);
-   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + i.toString()], ["Launchpad Mini " + i.toString()]);
-   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini MIDI " + i.toString()], ["Launchpad Mini MIDI " + i.toString()]);
 
-}
 
 // Special section for Linux users
 if(host.platformIsLinux())
@@ -212,7 +198,8 @@ function init()
    });
    
    // a Trackbank is the tracks, sends and scenes being controlled, these arguments are set to 8,2,8 in the launchpad_constants.js file changing them will change the size of the grid displayed on the Bitwig Clip Launcher
-   trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
+   trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES)
+ //  var t9 = trackBank.scrollToTrack (9);
 
    // This scrolls through the controllable tracks and clips and picks up the info from Bitwig to later display/control, it stores them in the arrays declared above
    for(var t=0; t<NUM_TRACKS; t++)
@@ -311,36 +298,10 @@ function init()
    updateNoteTranlationTable();
    updateVelocityTranslationTable();
    // Calls the function just below which displays the funky Bitwig logo, which ends the initialization stage 
-   animateLogo();
+
 }
 
-// Animates the Bitwig logo at the start. The pads that are drawn are defined further down this script in the drawBitwigLogo function
-function animateLogo()
-{
-   if (logoPhase > 7)
-   {
-      setDutyCycle(2, 10);
-      return;
-   }
-   else if (logoPhase > 6)
-   {
-      showBitwigLogo = false;
-      var i = 0.5 - 0.5 * Math.cos(logoPhase * Math.PI);
-      setDutyCycle(Math.floor(1 + 5 * i), 18);
-   }
-   else
-   {
-      var i = 0.5 - 0.5 * Math.cos(logoPhase * Math.PI);
-      setDutyCycle(Math.floor(1 + 15 * i), 18);
-   }
 
-   logoPhase += 0.2;
-
-   host.scheduleTask(animateLogo, null, 30);
-}
-
-var logoPhase = 0;
-var showBitwigLogo = true;
 
 // Function called on exit of the script
 function exit()
@@ -374,7 +335,7 @@ function setGridMappingMode()
    sendMidi(0xB0, 0, 1);
 }
 
-function setDutyCycle(numerator, denominator)
+/* function setDutyCycle(numerator, denominator)
 {
    if (numerator < 9)
    {
@@ -384,7 +345,7 @@ function setDutyCycle(numerator, denominator)
    {
       sendMidi(0xB0, 0x1F, 16 * (numerator - 9) + (denominator - 3));
    }
-}
+} */
 
 function updateNoteTranlationTable()
 {
@@ -543,34 +504,13 @@ function clear()
 
 function flush()
 {
-   if (showBitwigLogo)
-   {
-      drawBitwigLogo();
-   }
-   else
-   {
-      activePage.updateOutputState();
-   }
+    activePage.updateOutputState();
+
 
    flushLEDs();
 }
 
-// Defines the Pads to be shown to draw the Bitwig logo
-// calls the mixColour function within the launchpad_constants.js script
-function drawBitwigLogo()
-{
-   clear();
 
-   var c = mixColour(2, 1, false);
-
-   for(var x=2;x<=5; x++) setCellLED(x, 2, c);
-   for(var x=1;x<=6; x++) setCellLED(x, 3, c);
-
-   setCellLED(1, 4, c);
-   setCellLED(2, 4, c);
-   setCellLED(5, 4, c);
-   setCellLED(6, 4, c);
-}
 
 // Sends the Top LED lights to the pendingLEDs array. LED top have a value of 72 to 80
 function setTopLED(index, colour)
@@ -622,7 +562,7 @@ function flushLEDs()
    //println("Repaint: " + changedCount + " LEDs");
 
    // if there is a lot of LEDs, use an optimized mode (which looks to me like it sends all in one MIDI message
-   if (changedCount > 30)
+   if (changedCount > 100)
    {
       // send using channel 3 optimized mode
       for(var i = 0; i<80; i+=2)
