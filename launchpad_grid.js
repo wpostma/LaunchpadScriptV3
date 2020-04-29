@@ -31,15 +31,13 @@ gridPage.updateOutputState = function()
     
    this.updateScrollButtons();
    this.updateGrid();
-   var cls = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.YELLOW_FLASHING,Colour.YELLOW_FULL]); 
-    
+   var cls1 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.RED_FLASHING,Colour.YELLOW_FULL]); 
+   var cls2 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.YELLOW_FLASHING,Colour.YELLOW_FULL]);  
    // Set the top LEDs while in Clip Launcher
    setTopLED(4, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (gridPage.firstStep ? Colour.RED_FLASHING:Colour.GREEN_FULL));
-   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls[0]:cls[1]):Colour.OFF));
-   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls[0]:cls[1]):Colour.OFF));
-   setTopLED(7, (TEMPMODE == TempMode.OFF ? (ARMED?cls[0]:cls[1]): Colour.YELLOW_FULL));
-   // Defines which tracks are controlled by this instance of the script
-   trackBank.scrollToChannel(9); 
+   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.OFF));
+   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.OFF));
+   setTopLED(7, Colour.AMBER_FULL);
 };
 
 gridPage.onSession = function(isPressed)
@@ -71,15 +69,13 @@ gridPage.onSession = function(isPressed)
 
     }
 }
+//TVbene: Topbuttons 6, 7 now working without shift
 
 gridPage.onUser1 = function(isPressed)
 {
   if (isPressed)
     {
-        if(IS_SHIFT_PRESSED)
-        {
-        ARMED = 9;
-        }
+		ARMED = 9;
     }
 }
 
@@ -87,10 +83,7 @@ gridPage.onUser2 = function(isPressed)
 {
     if (isPressed)
     {
-        if(IS_SHIFT_PRESSED)
-        {
-            ARMED = 10;
-        }
+		ARMED = 10;
     }
 }
 
@@ -349,7 +342,7 @@ gridPage.onGridButton = function(row, column, pressed)
       var t = trackBank.getTrack(track);
       var l = t.getClipLauncher();
         
-      l.select(scene);
+
       if(ARMED)
       {
         //application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
@@ -357,8 +350,8 @@ gridPage.onGridButton = function(row, column, pressed)
         {
             if(hasContent[track+8*scene]>0)
             {
-            application.cut();
-            host.showPopupNotification("Cut");
+            l.deleteClip(scene);
+            host.showPopupNotification("deleted");
             }
             else
             {
@@ -368,16 +361,10 @@ gridPage.onGridButton = function(row, column, pressed)
         }
         if(ARMED === 10)
         {
-            if(hasContent[track+8*scene]>0)
-            {
-            application.copy();
-            host.showPopupNotification("Copy");
-            }
-            else
-            {
-            application.paste();
-            host.showPopupNotification("Paste");
-            }
+
+			l.select(scene);
+            host.showPopupNotification("selected");
+
         }
         if (ARMED < 9)
         {
@@ -393,19 +380,20 @@ gridPage.onGridButton = function(row, column, pressed)
             }    
         }
       }
-      /*else if (IS_RECORD_PRESSED)
-      {
-      l.record(scene);
-      }
-      else if (IS_EDIT_PRESSED)
-      {
-      l.showInEditor(scene);
-      }*/
-      else
-      {
-      l.launch(scene);
-      }
-   }
+
+    else
+    {	
+//TVbene not working yet
+		if (t.addIsPlayingObserver > 0)
+		{	
+			l.stop();
+		}
+		else
+		{
+			l.launch(scene);
+		}
+    }
+}
    else if (TEMPMODE === TempMode.TRACK)
    {
 	var track = this.mixerAlignedGrid ? column : row;
@@ -832,8 +820,8 @@ gridPage.updateTrackValue = function(track)
       for(var scene=0; scene<8; scene++)
       {
          var i = track + scene*8;
-
-         var col = arm[track] ? Colour.RED_LOW : Colour.OFF;
+//TVbene: Colour of armed tracks/clips
+         var col = arm[track] ? Colour.GREEN_LOW : Colour.OFF;
 		 
          var fullval = mute[track] ? 1 : 3;
 		 
