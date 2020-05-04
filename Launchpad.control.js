@@ -44,7 +44,7 @@ for	(index = 127; index > -1; index--)
 loadAPI(10);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad L2", "1.0", "a6ac4a10-7a9b-11ea-ab12-0800200c9a66");
+host.defineController("Novation", "Launchpad L1", "1.0", "b73e476c-e61b-11e4-8a00-1681e6b88ec1");
 host.defineMidiPorts(1, 1);
 
 
@@ -89,10 +89,7 @@ function setActivePage(page)
 {
    var isInit = activePage == null;
     
-   if (!mixerButtonToggle)
-   {
-   ARMED=(TEMPMODE != TempMode.OFF)?TEMPMODE+1:false;
-   }
+
     
 
    if (page != activePage)
@@ -226,7 +223,7 @@ function init()
       clipLauncher.addIsRecordingObserver(getGridObserverFunc(t, isRecording));
       clipLauncher.addIsQueuedObserver(getGridObserverFunc(t, isQueued));
       clipLauncher.addIsStopQueuedObserver(getGridObserverFunc(t, isStopQueued)); 
-       
+      clipLauncher.addIsSelectedObserver(getGridObserverFunc(t, isSelected));      //TVbene
       //var primaryDevice = track.getDeviceChain.hasDrumPads(isDrumMachine);
        //println(isDrumMachine);
 	  
@@ -334,8 +331,8 @@ function setGridMappingMode()
 {
    sendMidi(0xB0, 0, 1);
 }
-
-/* function setDutyCycle(numerator, denominator)
+/* 
+function setDutyCycle(numerator, denominator)
 {
    if (numerator < 9)
    {
@@ -393,53 +390,21 @@ function onMidi(status, data1, data2)
       switch(data1)
       {
          case TopButton.SESSION:
-            activePage.onSession(isPressed);
-            if (isPressed)
-            {
-               IS_GRID_PRESSED = true;
-               println("here")
-            }
-            if (isPressed && !IS_SHIFT_PRESSED)
-            {
-                setActivePage(gridPage);
-                gridPage.setTempMode(TempMode.SCENE);
-            }
-            else if (!isPressed)
-            {
-                gridPage.setTempMode(TempMode.OFF);
-                if (IS_GRID_PRESSED)
-                {
-                    IS_GRID_PRESSED=false;
-                    println("notehre")
-                }
-            } 
+			transport.stop ();
             break;
 
          case TopButton.USER1:
             activePage.onUser1(isPressed);
-            if (isPressed)
-            {
-                IS_KEYS_PRESSED=true;
-            }
-            if (isPressed && !IS_SHIFT_PRESSED)
-            {
-               setActivePage(keysPage);
-            }
-            else
-            {
                 if(IS_KEYS_PRESSED)
                 {
                     IS_KEYS_PRESSED=false;
                 }
-            }
+
             break;
 
          case TopButton.USER2:
             activePage.onUser2(isPressed);
-            if (isPressed && !IS_SHIFT_PRESSED)
-            {
-                setActivePage(seqPage);
-            }
+
             break;
 
          case TopButton.MIXER:
