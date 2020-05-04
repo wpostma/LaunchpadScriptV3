@@ -34,10 +34,11 @@ gridPage.updateOutputState = function()
    var cls1 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.RED_FLASHING,Colour.YELLOW_FULL]); 
    var cls2 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.YELLOW_FLASHING,Colour.YELLOW_FULL]);  
    // Set the top LEDs while in Clip Launcher
-   setTopLED(4, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (gridPage.firstStep ? Colour.RED_FLASHING:Colour.GREEN_FULL));
-   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.OFF));
-   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.OFF));
+   setTopLED(4, IS_SHIFT_PRESSED ? Colour.RED_FULL : Colour.RED_FULL);
+   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.OFF)); //TVbene: ARMED == 9 is for the delete clip mode
+   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.OFF)); //TVbene: ARMED == 10 is for the select clip mode
    setTopLED(7, Colour.AMBER_FULL);
+   //trackBank.scrollToChannel(9); TVbene: For additional instances of this script so that they control different tracks
 };
 
 gridPage.onSession = function(isPressed)
@@ -105,145 +106,12 @@ gridPage.onShift = function(isPressed)
     {
     armedToggle = false;
     ARMED = 0;
-    this.setTempMode(TempMode.OFF);
     mixerButtonToggle = false;
     return;
     }
 }
 
 
-// This detects when one of the vertical buttons is pressed and changes the TempMode
-gridPage.onSceneButton = function(row, isPressed)
-{
-   if (isPressed)
-   {  
-      if (IS_SHIFT_PRESSED)
-      {
-         ARMED = row+1;
-         return;        
-      }
-       
-      if(ARMED > 0)
-      {
-          return;
-      }
-       
-      switch(row)
-      {       
-         case MixerButton.VOLUME:
-            if (TEMPMODE != TempMode.VOLUME)
-            {
-            this.setTempMode(TempMode.VOLUME);
-            host.showPopupNotification("Volume");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.PAN:
-            if (TEMPMODE != TempMode.PAN)
-            {
-            this.setTempMode(TempMode.PAN);
-            host.showPopupNotification("Pan");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.SEND_A:
-            if (TEMPMODE != TempMode.SEND_A)
-            {
-            this.setTempMode(TempMode.SEND_A);
-            host.showPopupNotification("Send 0");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.SEND_B:
-            if (TEMPMODE != TempMode.SEND_B)
-            {
-            this.setTempMode(TempMode.SEND_B);
-            host.showPopupNotification("Send 1");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.STOP:
-            if (TEMPMODE != TempMode.USER1)
-            {
-            this.setTempMode(TempMode.USER1);
-            host.showPopupNotification("User 1");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.TRK_ON:
-            if (TEMPMODE != TempMode.USER2)
-            {
-            this.setTempMode(TempMode.USER2);
-            host.showPopupNotification("User 2");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.SOLO:
-            if (TEMPMODE != TempMode.USER3)
-            {
-            this.setTempMode(TempMode.USER3);
-            host.showPopupNotification("User 3");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-
-         case MixerButton.ARM:
-            if (TEMPMODE != TempMode.TRACK)
-            {
-            this.setTempMode(TempMode.TRACK);
-            host.showPopupNotification("Track");
-            mixerButtonToggle = true;
-            }
-            else
-            {
-            this.setTempMode(TempMode.OFF);
-            mixerButtonToggle = false;
-            }
-            break;
-      }
-   }
-};
 
 // These following 4 functions control the scrolling arrow buttons allowing move around
 gridPage.onLeft = function(isPressed)
@@ -323,377 +191,43 @@ gridPage.onStepPlay = function(step)
 
 gridPage.onGridButton = function(row, column, pressed)
 {
-   if (!pressed){ 
-        REFROW--;
-        if(!REFROW) ROWARM = false; 
-        return;
-   }else{
-        REFROW++;
-   }
 
-   if (IS_SHIFT_PRESSED && TEMPMODE === TempMode.OFF)
-   {
-      trackBank.launchScene(this.mixerAlignedGrid ? row : column);
-   }
-   else if (TEMPMODE === TempMode.OFF)
-   {
-      var track = this.mixerAlignedGrid ? column : row;
-      var scene = this.mixerAlignedGrid ? row : column;
-      var t = trackBank.getTrack(track);
-      var l = t.getClipLauncher();
+	var track = this.mixerAlignedGrid ? column : row;
+	var scene = this.mixerAlignedGrid ? row : column;
+	var t = trackBank.getTrack(track);
+	var l = t.getClipLauncherSlots();
         
 
-      if(ARMED)
-      {
-        //application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
-        if(ARMED === 9)
-        {
-            if(hasContent[track+8*scene]>0)
-            {
-            l.deleteClip(scene);
-            host.showPopupNotification("deleted");
-            }
-            else
-            {
-            application.paste();
-            host.showPopupNotification("Paste");
-            }
-        }
-        if(ARMED === 10)
-        {
-
-			l.select(scene);
-            host.showPopupNotification("selected");
-
-        }
-        if (ARMED < 9)
-        {
-            println(ARMED);
-            if(hasContent[track+8*scene]>0)
-            {
-            host.showPopupNotification("Already Clip In Slot");
-            }
-            else
-            {
-            l.createEmptyClip(scene,4*(Math.pow(2,(ARMED-1))));
-            host.showPopupNotification("Empty Clip Created");
-            }    
-        }
-      }
-
-    else
-    {	
-//TVbene not working yet
-		if (t.addIsPlayingObserver > 0)
-		{	
-			l.stop();
-		}
-		else
+	if(ARMED)
+	{
+	//application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
+	if(ARMED === 9)
 		{
-			l.launch(scene);
+			if(hasContent[track+8*scene]>0)
+			{
+			l.deleteClip(scene);
+			host.showPopupNotification("deleted");
+			}
 		}
-    }
-}
-   else if (TEMPMODE === TempMode.TRACK)
-   {
-	var track = this.mixerAlignedGrid ? column : row;
-      var scene = this.mixerAlignedGrid ? row-2 : column;
-	
-	if (this.mixerAlignedGrid == false) {
-      switch(scene)
-		  {
-		      case TrackModeColumn.STOP:
-				trackBank.getTrack(track).getClipLauncher().stop();
-				break;
+	if(ARMED === 10)
+		{
+			l.select(scene);
+			host.showPopupNotification("selected");
+		}
 
-			 case TrackModeColumn.SELECT:
-				trackBank.getTrack(track).select();
-				application.selectNone();
-				break;
+	}
 
-			 case TrackModeColumn.ARM:
-				trackBank.getTrack(track).getArm().toggle();
-				break;
-				
-			 case TrackModeColumn.SOLO:
-				trackBank.getTrack(track).getSolo().toggle();
-				break;
-				
-			 case TrackModeColumn.MUTE:
-				trackBank.getTrack(track).getMute().toggle();
-				break;
-
-			 case TrackModeColumn.RETURN_TO_ARRANGEMENT:
-				trackBank.getTrack(track).getClipLauncher().returnToArrangement();
-				break;
-		  }
-	 }
-	 else {
-		  switch(scene)
-		  {
-		  	 case (TrackModeColumn.RETURN_TO_ARRANGEMENT - 2):
-				trackBank.getTrack(track).getClipLauncher().returnToArrangement();
-				break;
-				
-			 case (TrackModeColumn.SELECT - 2):
-				trackBank.getTrack(track).select();
-				application.selectNone();
-				break;
-
-			 case (TrackModeColumn.ARM - 2):
-				trackBank.getTrack(track).getArm().toggle();
-				break;
-				
-			 case (TrackModeColumn.SOLO - 2):
-				trackBank.getTrack(track).getSolo().toggle();
-				break;
-				
-			 case (TrackModeColumn.MUTE - 2):
-				trackBank.getTrack(track).getMute().toggle();
-				break;
-			
-			 case (TrackModeColumn.STOP - 2):
-				trackBank.getTrack(track).getClipLauncher().stop();
-				break;
-
-		  }
-	 }	  
-	  
-
-   }
-   // setups the buttons functionality (not the colors) for all the Vol, Pan, Sends and user pages.
-   else
-   {
-      var vv = this.mixerAlignedGrid ? -Math.abs(row)+7 : column;
-      var cc = this.mixerAlignedGrid ? column : row;
-      if(ARMED)
-      {
-        if(ROWARM)
-        {
-           vv = ROWARM[0]*16 + vv*2;
-           cc = ROWARM[1];
-        }
-        else
-        {
-           ROWARM=[vv,cc];
-           return;
-        }
-      }else{
-        vv = vv*16;
-      } 
-      switch(TEMPMODE)
-      {
-         case TempMode.VOLUME:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                trackBank.getTrack(cc).getVolume().inc(5,128);
-                }
-                if(vv===64)
-                {
-                trackBank.getTrack(cc).getVolume().inc(1,128);
-                }
-                if(vv===48)
-                {
-                trackBank.getTrack(cc).getVolume().inc(-1,128);
-                }
-                if(vv===32)
-                {
-                trackBank.getTrack(cc).getVolume().inc(-5,128);
-                }
-            }
-            else
-            {
-            trackBank.getTrack(cc).getVolume().set(vv,128);
-            }
-            break;
-
-         case TempMode.PAN:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                trackBank.getTrack(cc).getPan().inc(5,128);
-                }
-                if(vv===64)
-                {
-                trackBank.getTrack(cc).getPan().inc(1,128);
-                }
-                if(vv===48)
-                {
-                trackBank.getTrack(cc).getPan().inc(-1,128);
-                }
-                if(vv===32)
-                {
-                trackBank.getTrack(cc).getPan().inc(-5,128);
-                }
-            }
-            else
-            {
-               if (vv===0)
-               {
-                  setPan = 0
-               }
-               if (vv===16)
-               {
-                  setPan = 19
-               }
-               if (vv===32)
-               {
-                  setPan = 43;
-               }
-               if (vv===48||vv===64)
-               {
-                  setPan = 63.5;
-               }
-               if (vv===80)
-               {
-                  setPan = 84;
-               }
-               if (vv===96)
-               {
-                  setPan = 108;
-               }
-               if (vv===112)
-               {
-                  setPan = 128;
-               }
-               trackBank.getTrack(cc).getPan().set(setPan,128);
-            }
-            break;
-
-         case TempMode.SEND_A:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                trackBank.getTrack(cc).getSend(0).inc(5,128);
-                }
-                if(vv===64)
-                {
-                trackBank.getTrack(cc).getSend(0).inc(1,128);
-                }
-                if(vv===48)
-                {
-                trackBank.getTrack(cc).getSend(0).inc(-1,128);
-                }
-                if(vv===32)
-                {
-                trackBank.getTrack(cc).getSend(0).inc(-5,128);
-                }
-            }
-            else
-            {
-            trackBank.getTrack(cc).getSend(sendNumber).set(vv,128);
-            }
-            break;
-
-         case TempMode.SEND_B:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                trackBank.getTrack(cc).getSend(1).inc(5,128);
-                }
-                if(vv===64)
-                {
-                trackBank.getTrack(cc).getSend(1).inc(1,128);
-                }
-                if(vv===48)
-                {
-                trackBank.getTrack(cc).getSend(1).inc(-1,128);
-                }
-                if(vv===32)
-                {
-                trackBank.getTrack(cc).getSend(1).inc(-5,128);
-                }
-            }
-            else
-            {
-            trackBank.getTrack(cc).getSend(1).set(vv,128);
-            }
-            break;
-
-         case TempMode.USER1:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row).inc(5,128);
-                }
-                if(vv===64)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row).inc(1,128);
-                }
-                if(vv===48)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row).inc(-1,128);
-                }
-                if(vv===32)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row).inc(-5,128);
-                }
-            }
-            else
-            {
-            userControls.getControl(this.mixerAlignedGrid ? column : row).set(vv,128);
-            }
-            break;
-
-         case TempMode.USER2:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 8).inc(5,128);
-                }
-                if(vv===64)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 8).inc(1,128);
-                }
-                if(vv===48)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 8).inc(-1,128);
-                }
-                if(vv===32)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 8).inc(-5,128);
-                }
-            }
-            else
-            {
-            userControls.getControl(this.mixerAlignedGrid ? column : row + 8).set(vv,128);
-            }
-            break;
-
-         case TempMode.USER3:
-            if(IS_SHIFT_PRESSED)
-            {
-                if(vv===80)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 16).inc(5,128);
-                }
-                if(vv===64)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 16).inc(1,128);
-                }
-                if(vv===48)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 16).inc(-1,128);
-                }
-                if(vv===32)
-                {
-                userControls.getControl(this.mixerAlignedGrid ? column : row + 16).inc(-5,128);
-                }
-            }
-            else
-            {
-            userControls.getControl(this.mixerAlignedGrid ? column : row + 16).set(vv,128);
-            }
-            break;
-      }
-   }
+	else
+		{	
+			if(isPlaying[track+8*scene] > 0)
+			{	
+				l.stop();
+			}
+			else
+			{
+				l.launch(scene);
+			}
+		}
 };
 
 // updates the grid and VUmeters
@@ -769,42 +303,8 @@ gridPage.updateVuMeter = function(track)
        {
            colour = vuLevelColor(masterVuMeter);
        }
-	   
-       // Sets the colours of all the right hand side buttons when they are pressed.
-           switch(TEMPMODE)
-           {
-              case TempMode.VOLUME:
-                 if (track === 0) colour = Colour.GREEN_FULL;
-                 break;
 
-              case TempMode.PAN:
-                 if (track === 1) colour = Colour.AMBER_FULL;
-                 break;
-
-              case TempMode.SEND_A:
-                 if (track === 2) colour = Colour.YELLOW_FULL;
-                 break;
-
-              case TempMode.SEND_B:
-                 if (track === 3) colour = Colour.YELLOW_FULL;
-                 break;
-
-              case TempMode.USER1:
-                 if (track === 4) colour = Colour.GREEN_FULL;
-                 break;
-
-              case TempMode.USER2:
-                 if (track === 5) colour = Colour.GREEN_FULL;
-                 break;
-
-              case TempMode.USER3:
-                 if (track === 6) colour = Colour.GREEN_FULL;
-                 break;
-
-              case TempMode.TRACK:
-                 if (track === 7) colour = Colour.ORANGE;
-                 break;
-           }
+          
    }
    setRightLED(track, colour);
 };
@@ -815,18 +315,22 @@ gridPage.updateTrackValue = function(track)
 {
    if (activePage != gridPage) return;
 	// this section draws the pads for the main clip launcher
-   if (TEMPMODE == TempMode.OFF || TEMPMODE == TempMode.SCENE)
-   {
-      for(var scene=0; scene<8; scene++)
-      {
-         var i = track + scene*8;
+
+	for(var scene=0; scene<8; scene++)
+	{
+		var i = track + scene*8;
 //TVbene: Colour of armed tracks/clips
-         var col = arm[track] ? Colour.GREEN_LOW : Colour.OFF;
+		var col = arm[track] ? Colour.GREEN_LOW : Colour.OFF;
 		 
-         var fullval = mute[track] ? 1 : 3;
-		 
-         if (hasContent[i] > 0)
-         {
+		var fullval = mute[track] ? 1 : 3;
+		
+		// TVbene: added Yellow flashing while in select clip mode 
+		if(ARMED === 10 && isSelected[i] > 0)
+		{
+			col = Colour.YELLOW_FLASHING;
+		} 
+        else if (hasContent[i] > 0)
+		{
             if (isQueued[i] > 0)
             {
                col = Colour.GREEN_FLASHING;
@@ -847,204 +351,9 @@ gridPage.updateTrackValue = function(track)
             {
                col = Colour.AMBER_FULL;
             }
-         }
+		}
 
-         setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? scene : track, col);
-      }
-   }
+         setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? scene : track, col)
 
-// this sets the buttons and lights for the solo/mute/arm track page. The variable TrackModeColumn is set in the main Launchpad script, so reordering them doesn't work.
-   else if (TEMPMODE == TempMode.TRACK)
-   {
-	 if (this.mixerAlignedGrid == false) {
-		  //for(var scene=5; scene<8; scene++)
-		  //{
-			// setCellLED(scene, track, Colour.OFF);
-		  //}
-
-		  if (trackExists[track])
-		  {
-			 setCellLED(TrackModeColumn.STOP, track, isQueuedForStop[track]  ? isMatrixStopped[track] ? Colour.OFF : Colour.RED_FLASHING : isMatrixStopped[track] ? Colour.OFF : Colour.YELLOW_FLASHING);
-			 setCellLED(TrackModeColumn.SELECT, track, isSelected[track] ?  Colour.GREEN_FLASHING : Colour.GREEN_LOW);
-			 setCellLED(TrackModeColumn.ARM, track, arm[track] ? Colour.RED_FULL : Colour.RED_LOW);
-			 setCellLED(TrackModeColumn.SOLO, track, solo[track] ? Colour.YELLOW_FULL : Colour.YELLOW_LOW);
-			 setCellLED(TrackModeColumn.MUTE, track, mute[track] ? Colour.ORANGE : Colour.AMBER_LOW);
-			 setCellLED(TrackModeColumn.RETURN_TO_ARRANGEMENT, track, Colour.YELLOW_LOW);
-		  }
-		  else
-		  {
-			 //for(var scene=0; scene<5; scene++)
-			 //{
-				setCellLED(scene, track, Colour.OFF);
-			 //}
-		  }
-	 }
-	 else 
-     {
-             for(var scene=0; scene<2; scene++)
-		  {
-			 setCellLED(track, scene, Colour.OFF);
-		  }
-
-		  if (trackExists[track])
-		  {
-			 setCellLED(track, TrackModeColumn.STOP, isQueuedForStop[track]  ? isMatrixStopped[track] ? Colour.OFF : Colour.RED_FLASHING : isMatrixStopped[track] ? Colour.OFF : Colour.YELLOW_FLASHING);
-			 setCellLED(track, TrackModeColumn.SELECT, isSelected[track] ?  Colour.GREEN_FLASHING : Colour.GREEN_LOW);
-			 setCellLED(track, TrackModeColumn.ARM, arm[track] ? Colour.RED_FULL : Colour.RED_LOW);
-			 setCellLED(track, TrackModeColumn.SOLO, solo[track] ? Colour.YELLOW_FULL : Colour.YELLOW_LOW);
-			 setCellLED(track, TrackModeColumn.MUTE, mute[track] ? Colour.ORANGE : Colour.AMBER_LOW);
-			 setCellLED(track, TrackModeColumn.RETURN_TO_ARRANGEMENT, Colour.YELLOW_LOW);
-		  }
-		  else
-		  {
-			 for(var scene=2; scene<7; scene++)
-			 {
-				setCellLED(track, scene, Colour.OFF);
-			 }
-		  }
-	 }
-   }
-   // Sets the colour of buttons on the Volume Mode, it is special because of the Vumeter so is split from the rest below
-   /*else if (TEMPMODE == TempMode.VOLUME)
-   {
-      if(mixerDetailMode)
-      {
-        for(var scene=0; scene<8; scene++)
-        {
-            setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, c)
-        }
-      }
-      else
-      {
-        for(var scene=0; scene<8; scene++)
-        {
-            var c = (volume[track] == scene)
-                ? Colour.GREEN_FULL
-                : ((vuMeter[track] > scene))
-                ? Colour.GREEN_LOW
-                : Colour.OFF;
-
-            setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, c);
-        }
-      //}
-   }*/
-    
-   // Colouring of all other pages such as Volume, Pan, Sends and User are drawn here
-   else
-   {
-      var value = 0;
-      var oncolor = Colour.GREEN_FULL;
-      var offcolor = Colour.OFF;
-
-      switch (TEMPMODE)
-      {
-         case TempMode.VOLUME:
-            value = volume[track];
-                        println(value)
-            oncolor = Colour.GREEN_FULL;
-            break;
-            
-         case TempMode.PAN:
-            value = pan[track];
-            oncolor = Colour.AMBER_FULL;
-            break;
-
-         case TempMode.SEND_A:
-            value = sendA[track];
-			oncolor = Colour.YELLOW_FULL;
-            break;
-
-         case TempMode.SEND_B:
-            value = sendB[track];
-			oncolor = Colour.YELLOW_FULL;
-            break;
-
-         case TempMode.USER1:
-            value = userValue[track];
-            break;
-
-         case TempMode.USER2:
-            value = userValue[track + 8];
-            break;
-              
-         case TempMode.USER3:
-            value = userValue[track + 16];
-            break;
-      }
-      
-      var drawVal = (value > 0) ? (value + 1) : 0;
-
-       
-      if(IS_SHIFT_PRESSED)
-      {        
-        for(var scene=2; scene<6; scene++)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, trackExists[track] ? Colour.RED_FULL : offcolor);
-        }
-        for(var scene=3; scene<5; scene++)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, trackExists[track] ? Colour.RED_LOW :  offcolor);
-        }
-      }
-      
-      else if (TEMPMODE == TempMode.PAN && !IS_SHIFT_PRESSED)
-      {
-         
-        if(!trackExists[track])
-        {
-         return
-        }
-        
-        drawVal = (drawVal > 0) ? (drawVal - 1) : 0;
-        
-        for(var scene=2; scene>-1; scene--)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, (scene > drawVal - 1) ? oncolor: offcolor);
-        }
-        for(var scene=3; scene<5; scene++)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, (drawVal === 4 ) ? oncolor: Colour.AMBER_LOW);
-        }
-        for(var scene=5; scene<8; scene++)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, (scene < drawVal + 1) ? oncolor: offcolor);
-        }
-      }
-      else
-      {
-        for(var scene=0; scene<8; scene++)
-        {
-        setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? -Math.abs(scene)+7 : track, (scene < drawVal) ? oncolor : offcolor);
-        }
-      }
-   }
-};
-
-
-
-gridPage.setTempMode = function(mode)
-{
-   if (mode == TEMPMODE) return;
-   
-   if (mode === TempMode.SCENE && mixerButtonToggle == true)
-   {
-       TEMPMODE = (TempMode.OFF);
-       mixerButtonToggle = false;
-       return;
-   }
-   
-   TEMPMODE = mode;
-
-   // This updates the indicators (The rainbow displays on dials for controlls (userControls number 3 is missing? from original script)
-   for(var p=0; p<8; p++)
-   {
-      var track = trackBank.getTrack(p);
-      track.getVolume().setIndication(mode == TempMode.VOLUME);
-      track.getPan().setIndication(mode == TempMode.PAN);
-      track.getSend(0).setIndication(mode == TempMode.SEND_A);
-      track.getSend(1).setIndication(mode == TempMode.SEND_B);
-      userControls.getControl(p).setIndication(mode == TempMode.USER1);
-      userControls.getControl(p + 8).setIndication(mode == TempMode.USER2);
-      userControls.getControl(p + 16).setIndication(mode == TempMode.USER3);
    }
 };
