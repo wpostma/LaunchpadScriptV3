@@ -384,7 +384,6 @@ gridPage.updateVuMeter = function(track)
 		}		
 
 	   setquantizeLED(q, colour);
-	   println(quant);
 	}
 
    
