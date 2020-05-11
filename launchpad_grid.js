@@ -38,7 +38,6 @@ gridPage.updateOutputState = function()
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.OFF)); //TVbene: ARMED == 9 is for the delete clip mode
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.OFF)); //TVbene: ARMED == 10 is for the select clip mode
    setTopLED(7, Colour.AMBER_FULL);
-   //trackBank.scrollToChannel(9); TVbene: For additional instances of this script so that they control different tracks
 };
 
 gridPage.onSession = function(isPressed)
@@ -70,6 +69,64 @@ gridPage.onSession = function(isPressed)
 
     }
 }
+//TVbene: side buttons select post record delay and launch quantization
+gridPage.onSceneButton = function(row, isPressed)
+{
+   if (isPressed)
+   {
+        switch(row)
+      {       
+         case MixerButton.VOLUME:
+			offset.set(4);
+			transport.play();
+			break;
+
+         case MixerButton.PAN:
+            offset.set(8);
+            break;
+
+         case MixerButton.SEND_A:
+            offset.set(16);
+            break;
+
+         case MixerButton.SEND_B:
+            offset.set(32);
+            break;
+
+         case MixerButton.TRK_ON:
+			quant.set("1");
+            break;
+
+         case MixerButton.SOLO:
+			quant.set("1/2");
+            break;
+
+         case MixerButton.ARM:
+			quant.set("1/4");
+            break;
+      }
+   }
+};
+
+
+
+
+
+
+
+gridPage.onUser1 = function(isPressed)
+{
+  if (isPressed)
+    {
+        if(IS_SHIFT_PRESSED)
+        {
+        ARMED = 9;
+        }
+    }
+}
+
+
+
 //TVbene: Topbuttons 6, 7 now working without shift
 
 gridPage.onUser1 = function(isPressed)
@@ -191,9 +248,20 @@ gridPage.onStepPlay = function(step)
 
 gridPage.onGridButton = function(row, column, pressed)
 {
+// TVbene adapted for 40 tracks
+	if (row < 4) 
+	{
+		var track = column;
+		var scene =  row;
+	}
+	else if (row >= 4) 
+	{
+		var track = column + (row - 3) * 8;
+		var scene = 0;
+	}
+	
 
-	var track = this.mixerAlignedGrid ? column : row;
-	var scene = this.mixerAlignedGrid ? row : column;
+
 	var t = trackBank.getTrack(track);
 	var l = t.getClipLauncherSlots();
         
@@ -203,7 +271,6 @@ gridPage.onGridButton = function(row, column, pressed)
 	//application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
 	if(ARMED === 9)
 		{
-			if(hasContent[track+8*scene]>0)
 			{
 			l.deleteClip(scene);
 			host.showPopupNotification("deleted");
@@ -274,54 +341,67 @@ function vuLevelColor(level)
 // even though this section is called updateVumeter, it also setups the colours of all side buttons when they are pressed
 gridPage.updateVuMeter = function(track)
 {
-   var val = vuMeter[track];
-   var colour = Colour.OFF;
-   
-   if(ARMED)
-   {
-       if (ARMED == 9)
-       {
-           colour = Colour.RED_FLASHING;
-       }
-       else if(ARMED == 10)
-       {
-           colour = Colour.YELLOW_FLASHING;
-       }
-       else if(track <= ARMED-1)
-       {
-            colour = Colour.ORANGE;
-       }
-   }
-   else
-   {
-       if (this.mixerAlignedGrid)
-       {
-           var i = 7 - track;
-           colour = masterVuMeter > i ? vuLevelColor(Math.max(1, i)) : Colour.OFF;
-       }
-       else
-       {
-           colour = vuLevelColor(masterVuMeter);
-       }
+	var val = null;
 
-          
-   }
-   setRightLED(track, colour);
+	var time = offset.getFormatted();
+    for(var i=0; i<4; i++)
+	{
+		var colour = Colour.GREEN_LOW;
+		val = i
+		if(i == 0 && time == "001:00:00:00")
+		{
+			colour = Colour.GREEN_FULL
+		}
+		else if(i == 1 && time == "002:00:00:00")
+		{
+			colour = Colour.GREEN_FULL
+		}
+		else if(i == 2 && time == "004:00:00:00")
+		{
+			colour = Colour.GREEN_FULL
+		}		
+		else if(i == 3 && time == "008:00:00:00")
+		{
+			colour = Colour.GREEN_FULL
+		}	
+	   setpostrecordLED(val, colour);
+	}
+	for(var j=5; j<8; j++)
+	{
+		var colour = Colour.RED_LOW;
+		q = j
+		if(j == 5 && quant == "1")
+		{
+			colour = Colour.RED_FULL
+		}
+		else if(j == 6 && quant == "1/2")
+		{
+			colour = Colour.RED_FULL
+		}
+		else if(j == 7 && quant == "1/4")
+		{
+			colour = Colour.RED_FULL
+		}		
+
+	   setquantizeLED(q, colour);
+	   println(quant);
+	}
+
+   
 };
 
 
 
 gridPage.updateTrackValue = function(track)
 {
-   if (activePage != gridPage) return;
+	if (activePage != gridPage) return;
 	// this section draws the pads for the main clip launcher
-
 	for(var scene=0; scene<8; scene++)
 	{
 		var i = track + scene*8;
 //TVbene: Colour of armed tracks/clips
-		var col = arm[track] ? Colour.GREEN_LOW : Colour.OFF;
-		 
+		var col = scene < 4 ? Colour.GREEN_LOW : Colour.RED_LOW;
+	 
 		var fullval = mute[track] ? 1 : 3;
 		
 		// TVbene: added Yellow flashing while in select clip mode 
@@ -329,31 +409,31 @@ gridPage.updateTrackValue = function(track)
 		{
 			col = Colour.YELLOW_FLASHING;
 		} 
-        else if (hasContent[i] > 0)
+		else if (hasContent[i] > 0)
 		{
-            if (isQueued[i] > 0)
-            {
-               col = Colour.GREEN_FLASHING;
-            }
-            else if (isRecording[i] > 0)
-            {
-               col = Colour.RED_FULL;
-            }
-            else if (isStopQueued[i] > 0)
-            {
-                col = Colour.RED_FLASHING
-            }
-            else if (isPlaying[i] > 0)
-            {
-               col = Colour.GREEN_FULL;
-            }
-            else
-            {
-               col = Colour.AMBER_FULL;
-            }
+			if (isQueued[i] > 0)
+			{
+			   col = Colour.GREEN_FLASHING;
+			}
+			else if (isRecording[i] > 0)
+			{
+			   col = Colour.RED_FULL;
+			}
+			else if (isStopQueued[i] > 0)
+			{
+				col = Colour.RED_FLASHING
+			}
+			else if (isPlaying[i] > 0)
+			{
+			   col = Colour.GREEN_FULL;
+			}
+			else
+			{
+			   col = Colour.AMBER_FULL;
+			}
 		}
 
-         setCellLED(this.mixerAlignedGrid ? track : scene, this.mixerAlignedGrid ? scene : track, col)
-
-   }
+		 setCellLED(track, scene, col)
+	}
+	
 };
