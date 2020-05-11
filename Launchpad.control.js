@@ -44,7 +44,7 @@ for	(index = 127; index > -1; index--)
 loadAPI(10);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad L1", "1.0", "b73e476c-e61b-11e4-8a00-1681e6b88ec1");
+host.defineController("Novation", "Launchpad R", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 
 
@@ -84,6 +84,9 @@ load("launchpad_step_sequencer.js"); // everything to do with the step sequencer
 
 // activePage is the page displayed on the Launchpad, the function changes the page and displays popups
 var activePage = null;
+
+var offset = null;
+var quant = null;
 
 function setActivePage(page)
 {
@@ -165,11 +168,12 @@ function getTrackObserverFunc(track, varToStore)
    }
 }
 
+//TVbene added support for more than 8 tracks
 function getGridObserverFunc(track, varToStore)
 {
    return function(scene, value)
    {
-      varToStore[scene*8 + track] = value;
+      track < 8 ? varToStore[scene*8 + track] = value : varToStore[track + 24] = value;
    }
 }
 
@@ -193,6 +197,15 @@ function init()
    transport.addLauncherOverdubObserver(function(state){
         WRITEOVR=state;
    });
+   
+
+//TVbene: variables for post record delay and default clip launch quantization
+	transport.getClipLauncherPostRecordingTimeOffset().markInterested();
+	transport.defaultLaunchQuantization().markInterested();
+	quant = transport.defaultLaunchQuantization();
+	offset = transport.getClipLauncherPostRecordingTimeOffset();
+
+
    
    // a Trackbank is the tracks, sends and scenes being controlled, these arguments are set to 8,2,8 in the launchpad_constants.js file changing them will change the size of the grid displayed on the Bitwig Clip Launcher
    trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES)
@@ -218,7 +231,9 @@ function init()
        
       var clipLauncher = track.getClipLauncherSlots();
 
-      clipLauncher.addHasContentObserver(getGridObserverFunc(t, hasContent));
+		clipLauncher.addHasContentObserver(getGridObserverFunc(t, hasContent));
+
+
       clipLauncher.addIsPlayingObserver(getGridObserverFunc(t, isPlaying));
       clipLauncher.addIsRecordingObserver(getGridObserverFunc(t, isRecording));
       clipLauncher.addIsQueuedObserver(getGridObserverFunc(t, isQueued));
@@ -390,7 +405,7 @@ function onMidi(status, data1, data2)
       switch(data1)
       {
          case TopButton.SESSION:
-			transport.stop ();
+			transport.stop();
             break;
 
          case TopButton.USER1:
@@ -423,19 +438,23 @@ function onMidi(status, data1, data2)
             break;
 
          case TopButton.CURSOR_LEFT:
-            activePage.onLeft(isPressed);
+            offset.set(8);
             break;
 
          case TopButton.CURSOR_RIGHT:
-            activePage.onRight(isPressed);
+            offset.set(4);
+			time = offset.getFormatted();
+
             break;
 
          case TopButton.CURSOR_UP:
-            activePage.onUp(isPressed);
+            offset.set(2);
+			if(offset == 2){println("hallo")};
             break;
 
          case TopButton.CURSOR_DOWN:
-            activePage.onDown(isPressed);
+            offset.set(16);
+			if(offset == 16){println("hallo")};
             break;
       }
    }
@@ -446,6 +465,7 @@ function onMidi(status, data1, data2)
       var column = data1 & 0xF;
          
       println("row = " + row + "col = " + column)
+	  
          
       if (column < 8)
       {
@@ -484,10 +504,17 @@ function setTopLED(index, colour)
 }
 
 // Sends the right LED lights to the pendingLEDs array. LED scene have a value of 64 to 72
-function setRightLED(index, colour)
+function setpostrecordLED(index, colour)
 {
    pendingLEDs[LED.SCENE + index] = colour;
 }
+
+// Sends the right LED lights to the pendingLEDs array. LED scene have a value of 64 to 72
+function setquantizeLED(index, colour)
+{
+   pendingLEDs[LED.SCENE + index] = colour;
+}
+
 
 // Sends the main pads to the pendingLEDs array. LED scene have a value of 0 to 63
 function setCellLED(column, row, colour)
@@ -497,6 +524,12 @@ function setCellLED(column, row, colour)
    pendingLEDs[key] = colour;
 }
 
+function setCellLED2(track, colour)
+{
+   var key = track;
+
+   pendingLEDs[key] = colour;
+}
 /** Cache for LEDs needing to be updated, which is used so we can determine if we want to send the LEDs using the
  * optimized approach or not, and to send only the LEDs that has changed.
  */
@@ -527,6 +560,7 @@ function flushLEDs()
    //println("Repaint: " + changedCount + " LEDs");
 
    // if there is a lot of LEDs, use an optimized mode (which looks to me like it sends all in one MIDI message
+   //TVbene changed to prevent optimised mode
    if (changedCount > 100)
    {
       // send using channel 3 optimized mode
