@@ -242,6 +242,7 @@ gridPage.onStepPlay = function(step)
 gridPage.onGridButton = function(row, column, pressed)
 {
 // TVbene adapted for 40 tracks
+
 	if (row < 4) 
 	{
 		var track = column;
@@ -253,7 +254,7 @@ gridPage.onGridButton = function(row, column, pressed)
 		var scene = 0;
 	}
 	
-
+println(isPlaying);
 
 	var t = trackBank.getTrack(track);
 	var l = t.getClipLauncherSlots();
@@ -279,7 +280,7 @@ gridPage.onGridButton = function(row, column, pressed)
 
 	else
 		{	
-			if(isPlaying[track+8*scene] > 0)
+			if(isPlaying[column+8*row] > 0)
 			{	
 				l.stop();
 			}
