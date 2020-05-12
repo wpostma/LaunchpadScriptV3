@@ -19,24 +19,17 @@ gridPage.title = "Clip Launcher";
 ARMED=false;
 
 
-// Updates the scroll buttons
+// TVbene updates the mode buttons on the top
 gridPage.updateOutputState = function()
 {
    clear();
 
-   this.canScrollUp = this.mixerAlignedGrid ? this.canScrollScenesUp : this.canScrollTracksUp;
-   this.canScrollDown = this.mixerAlignedGrid ? this.canScrollScenesDown : this.canScrollTracksDown;
-   this.canScrollLeft = !this.mixerAlignedGrid ? this.canScrollScenesUp : this.canScrollTracksUp;
-   this.canScrollRight = !this.mixerAlignedGrid ? this.canScrollScenesDown : this.canScrollTracksDown;
-    
-   this.updateScrollButtons();
    this.updateGrid();
    var cls1 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.RED_FLASHING,Colour.YELLOW_FULL]); 
    var cls2 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.YELLOW_FLASHING,Colour.YELLOW_FULL]);  
    // Set the top LEDs while in Clip Launcher
-   setTopLED(4, IS_SHIFT_PRESSED ? Colour.RED_FULL : Colour.RED_FULL);
-   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.OFF)); //TVbene: ARMED == 9 is for the delete clip mode
-   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.OFF)); //TVbene: ARMED == 10 is for the select clip mode
+   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
+   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
    setTopLED(7, Colour.AMBER_FULL);
 };
 
@@ -342,25 +335,25 @@ function vuLevelColor(level)
 gridPage.updateVuMeter = function(track)
 {
 	var val = null;
-
-	var time = offset.getFormatted();
+	var offsetFormatted = offset.getFormatted();
+	var quantValue = quant.get();
     for(var i=0; i<4; i++)
 	{
 		var colour = Colour.GREEN_LOW;
 		val = i
-		if(i == 0 && time == "001:00:00:00")
+		if(i == 0 && offsetFormatted == "001:00:00:00")
 		{
 			colour = Colour.GREEN_FULL
 		}
-		else if(i == 1 && time == "002:00:00:00")
+		else if(i == 1 && offsetFormatted == "002:00:00:00")
 		{
 			colour = Colour.GREEN_FULL
 		}
-		else if(i == 2 && time == "004:00:00:00")
+		else if(i == 2 && offsetFormatted == "004:00:00:00")
 		{
 			colour = Colour.GREEN_FULL
 		}		
-		else if(i == 3 && time == "008:00:00:00")
+		else if(i == 3 && offsetFormatted == "008:00:00:00")
 		{
 			colour = Colour.GREEN_FULL
 		}	
@@ -370,15 +363,15 @@ gridPage.updateVuMeter = function(track)
 	{
 		var colour = Colour.RED_LOW;
 		q = j
-		if(j == 5 && quant == "1")
+		if(j == 5 && quantValue == "1")
 		{
 			colour = Colour.RED_FULL
 		}
-		else if(j == 6 && quant == "1/2")
+		else if(j == 6 && quantValue == "1/2")
 		{
 			colour = Colour.RED_FULL
 		}
-		else if(j == 7 && quant == "1/4")
+		else if(j == 7 && quantValue == "1/4")
 		{
 			colour = Colour.RED_FULL
 		}		
