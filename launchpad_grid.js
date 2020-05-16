@@ -71,7 +71,6 @@ gridPage.onSceneButton = function(row, isPressed)
       {       
          case MixerButton.VOLUME:
 			offset.set(4);
-			transport.play();
 			break;
 
          case MixerButton.PAN:
@@ -104,22 +103,6 @@ gridPage.onSceneButton = function(row, isPressed)
 
 
 
-
-
-
-gridPage.onUser1 = function(isPressed)
-{
-  if (isPressed)
-    {
-        if(IS_SHIFT_PRESSED)
-        {
-        ARMED = 9;
-        }
-    }
-}
-
-
-
 //TVbene: Topbuttons 6, 7 now working without shift
 
 gridPage.onUser1 = function(isPressed)
@@ -141,103 +124,21 @@ gridPage.onUser2 = function(isPressed)
 // This detects when the Mixer button is pressed and changes the orientation identifier mixerAlignedGrid and displays the text popup
 gridPage.onShift = function(isPressed)
 {
-    if (mixerButtonToggle == true)
+   
+    if(ARMED > 0)
     {
-    //add in FINE adjustments for mixer buttons
-    }
-    
-    if(ARMED > 0 && armedToggle == false)
-    {
-    armedToggle = true;
-    return;
-    }
-    
-    if(ARMED > 0 && armedToggle == true)
-    {
-    armedToggle = false;
     ARMED = 0;
-    mixerButtonToggle = false;
     return;
     }
+
 }
 
 
 
-// These following 4 functions control the scrolling arrow buttons allowing move around
-gridPage.onLeft = function(isPressed)
-{
-   if (isPressed)
-   {
-        if (IS_SHIFT_PRESSED)
-        {
-         if (this.mixerAlignedGrid) trackBank.scrollTracksPageUp();
-         else trackBank.scrollScenesPageUp();
-        }
-        else
-        {
-        if (this.mixerAlignedGrid) trackBank.scrollTracksUp();
-        else trackBank.scrollScenesUp();
-        }
-   }
-};
 
-gridPage.onRight = function(isPressed)
-{
-   if (isPressed)
-   {
-        if (IS_SHIFT_PRESSED)
-        {
-         if (this.mixerAlignedGrid) trackBank.scrollTracksPageDown();
-         else trackBank.scrollScenesPageDown();
-        }
-        else
-        {
-        if (this.mixerAlignedGrid) trackBank.scrollTracksDown();
-        else trackBank.scrollScenesDown();
-        }
-   }
-};
-
-gridPage.onUp = function(isPressed)
-{
-   if (isPressed)
-   {
-      if (IS_SHIFT_PRESSED)
-      {
-      if (this.mixerAlignedGrid) trackBank.scrollScenesPageUp();
-      else trackBank.scrollTracksPageUp();
-      }
-      else
-      {
-      if (this.mixerAlignedGrid) trackBank.scrollScenesUp();
-      else trackBank.scrollTracksUp();
-      }
-   }
-};
-
-gridPage.onDown = function(isPressed)
-{
-   if (isPressed)
-   {
-      if (IS_SHIFT_PRESSED)
-      {
-         if (this.mixerAlignedGrid) trackBank.scrollScenesPageDown();
-         else trackBank.scrollTracksPageDown();
-      }
-      else
-      {
-      if (this.mixerAlignedGrid) trackBank.scrollScenesDown();
-      else trackBank.scrollTracksDown();
-	  }
-   }
-};
 REFROW=false;
 ROWARM=false;
 
-gridPage.onStepPlay = function(step)
-{
-   gridPage.firstStep = !step;
-};
 
 gridPage.onGridButton = function(row, column, pressed)
 {
@@ -254,8 +155,6 @@ gridPage.onGridButton = function(row, column, pressed)
 		var scene = 0;
 	}
 	
-println(isPlaying);
-
 	var t = trackBank.getTrack(track);
 	var l = t.getClipLauncherSlots();
         
@@ -270,6 +169,7 @@ println(isPlaying);
 			host.showPopupNotification("deleted");
 			}
 		}
+		
 	if(ARMED === 10)
 		{
 			l.select(scene);
