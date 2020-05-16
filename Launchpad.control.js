@@ -85,6 +85,7 @@ load("launchpad_step_sequencer.js"); // everything to do with the step sequencer
 // activePage is the page displayed on the Launchpad, the function changes the page and displays popups
 var activePage = null;
 
+var transport = null;
 var offset = null;
 var quant = null;
 
@@ -192,6 +193,7 @@ function init()
 
    // Create a transport and application control section
    transport = host.createTransport();
+   transport.isPlaying().markInterested();
    application = host.createApplication();
 
    transport.addLauncherOverdubObserver(function(state){
@@ -292,19 +294,10 @@ function init()
       control.setLabel("U" + (u+1));
    }
 
-   // Created a Cursor Clip section. I believe this section is used to create a section used on the Drum Machine device
-   // ToDO: host.createCursorClipSection is deprecated and should be updated
-   cursorClip = host.createCursorClip(SEQ_BUFFER_STEPS, 128);
-   cursorClip.addStepDataObserver(seqPage.onStepExists);
-   cursorClip.addPlayingStepObserver(seqPage.onStepPlay);
-   
-   cursorClip.addPlayingStepObserver(gridPage.onStepPlay);
-   cursorClip.scrollToKey(0);
 
    // Call resetdevice which clears all the lights
    resetDevice();
    setGridMappingMode();
-   enableAutoFlashing();
    setActivePage(gridPage);
 
    updateNoteTranlationTable();
@@ -337,27 +330,12 @@ function resetDevice()
 // enableAutoFlashing and setGridMappingMode are called during initialization.
 // setDutyCycle is called by the animateLogo function, They are likely something to do with light display
 
-function enableAutoFlashing()
-{
-   sendMidi(0xB0, 0, 0x28);
-}
+
 
 function setGridMappingMode()
 {
    sendMidi(0xB0, 0, 1);
 }
-/* 
-function setDutyCycle(numerator, denominator)
-{
-   if (numerator < 9)
-   {
-      sendMidi(0xB0, 0x1E, 16 * (numerator - 1) + (denominator - 3));
-   }
-   else
-   {
-      sendMidi(0xB0, 0x1F, 16 * (numerator - 9) + (denominator - 3));
-   }
-} */
 
 function updateNoteTranlationTable()
 {
@@ -404,8 +382,18 @@ function onMidi(status, data1, data2)
 	  // data1 is the CC, the CC values are defined within the launchpad_contants script and range from 104 to 111 for the topbuttons
       switch(data1)
       {
-         case TopButton.SESSION:
-			transport.stop();
+         case TopButton.CURSOR_UP:
+			if (isPressed)
+			{
+				if (transport.isPlaying() == 1)
+				{	
+					transport.stop();
+				}
+				else
+				{
+					transport.play()
+				}
+			}
             break;
 
          case TopButton.USER1:
@@ -435,26 +423,6 @@ function onMidi(status, data1, data2)
                         IS_SHIFT_PRESSED=false;
                     }
                 }
-            break;
-
-         case TopButton.CURSOR_LEFT:
-            offset.set(8);
-            break;
-
-         case TopButton.CURSOR_RIGHT:
-            offset.set(4);
-			time = offset.getFormatted();
-
-            break;
-
-         case TopButton.CURSOR_UP:
-            offset.set(2);
-			if(offset == 2){println("hallo")};
-            break;
-
-         case TopButton.CURSOR_DOWN:
-            offset.set(16);
-			if(offset == 16){println("hallo")};
             break;
       }
    }
