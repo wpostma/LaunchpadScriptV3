@@ -1,10 +1,12 @@
-// Novation Launchpad script updated from the enchanced script
-//
-// Changes to the previous script
-// Previous Script wss Launchpad Maxi
-// https://github.com/wizgrav/launchpad-maxi
-//
-// UPDATE IN APRIL 2015
+// Novation Launchpad script variant by Warren.Postma@gmail.com
+// lots of stuff deleted.
+
+//  Changes to the previous script
+//  Previous Script wss Launchpad Maxi
+//  https://github.com/wizgrav/launchpad-maxi
+
+//  
+// UPDATE IN APRIL 2015 [https://github.com/TVbene/LaunchpadScriptV3]
 // Changed velocity settings so you can have a "high" and "low" velocity and a "velocity increment" using the user 2 and 3 buttons you can select the // correct velocity.
 // Added flashing yellow led to playing tracks so you know you can stop them.
 // Added UUID to make this unique version.
@@ -23,7 +25,8 @@
 // TODO: Create scene from playing clips
 
 
-
+var trace=0;
+var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
 
 // USER SETTINGS
 
@@ -44,7 +47,7 @@ for	(index = 127; index > -1; index--)
 loadAPI(10);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad R", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
+host.defineController("Novation", "Launchpad MK1-WX", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 
 
@@ -91,6 +94,9 @@ var quant = null;
 
 function setActivePage(page)
 {
+   if (trace>0) {
+      println("setActivePage "+page)
+   }
    var isInit = activePage == null;
     
 
@@ -304,6 +310,7 @@ function init()
    updateVelocityTranslationTable();
    // Calls the function just below which displays the funky Bitwig logo, which ends the initialization stage 
 
+   println("init complete. on grid page. type trace=1 to output trace info.")
 }
 
 
@@ -317,6 +324,8 @@ function exit()
 // Reset all lights by sending MIDI and sets all values in the pendingLEDs array to 0
 function resetDevice()
 {
+   println("resetDevice");
+
    sendMidi(0xB0, 0, 0);
 
    for(var i=0; i<80; i++)
@@ -375,6 +384,10 @@ function onMidi(status, data1, data2)
 
    if (isChannelController(status))
    {
+      if (trace>0){
+       println("ischannelcontroller: data1="+data1+" data2="+data2);
+      }
+
       // isPressed checks whether MIDI signal is above 0 in value declaring that button is being pressed
       var isPressed = data2 > 0;
 
@@ -384,19 +397,38 @@ function onMidi(status, data1, data2)
       {
          case TopButton.CURSOR_UP:
 			if (isPressed)
-			{
+			{  
 				if (transport.isPlaying() == 1)
-				{	
+				{	println("stop");
 					transport.stop();
 				}
 				else
-				{
+				{  println("play");
 					transport.play()
 				}
 			}
+         break;
+         case TopButton.CURSOR_DOWN:
+            if (isPressed)
+            {  
+              // VIEW
+              
+              view_shift = view_shift +1;
+              if(view_shift>3) {
+                 view_shift=0;
+              }
+              println("view_shift "+view_shift);
+            }
+            else
+            {
+               //view_shift=0;
+            }
             break;
 
          case TopButton.USER1:
+            if (trace>0) {
+               println("user1")
+            }
             activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)
                 {
@@ -432,7 +464,9 @@ function onMidi(status, data1, data2)
       var row = data1 >> 4;
       var column = data1 & 0xF;
          
-      println("row = " + row + "col = " + column)
+      if (trace>0) {
+      println(" button : row = " + row + "col = " + column)
+      }
 	  
          
       if (column < 8)
