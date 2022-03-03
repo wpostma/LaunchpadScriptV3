@@ -286,7 +286,7 @@ seqPage.onStepPlay = function(step)
 
 seqPage.onNotePlay = function(isOn, key, velocity)
 {
-   if (trace>0){
+   if (trace>1){
         if (isOn) {
          println("onNotePlay key ON "+key);
       }
@@ -313,6 +313,9 @@ seqPage.hasAnyKey = function(step)
 seqPage.drawSequencer = function()
 {
  
+    if (trace>0) {
+       println("drawSequencer");
+    }
    /*for(var y=0; y<8; y++) //attempt at a new melodic step sequencer
    {
       for(var x=0; x<8; x++)

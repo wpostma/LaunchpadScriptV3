@@ -1,3 +1,5 @@
+var NOTE_ON = 144; // + channel.
+var NOTE_OFF = 128;
 
 // CCs for the Top buttons
 var TopButton =

@@ -2,6 +2,13 @@
 /*
 *  GRID PAGE
 *
+*  Originally this was an 8 scene x 8 track clip launcher grid.
+*
+*  Warren's version, top half is a clip launcher grid for four tracks.
+*  Bottom half is a keyboard note or midi CC transmitter.
+*  The Down arrow changes which bank of keys or midi CC notes are sent.
+*  The color of the bottom half of the page was red when Warren took over this copy of this script.
+*  Eventually Warren wants to make the bottom half very dynamically colored.
 * */
 
 
@@ -17,6 +24,11 @@ gridPage.title = "Clip Launcher";
 
 
 ARMED=false;
+
+// if (MIDIChannel(status) && data1 >= 36 && data1 <= 51)
+//    {
+//       padInput.sendRawMidiEvent(status, data1 + (padOctave*16), data2);
+//    }
 
 
 // TVbene updates the mode buttons on the top
@@ -62,7 +74,8 @@ gridPage.onSession = function(isPressed)
 
     }
 }
-//TVbene: side buttons select post record delay and launch quantization
+// SIDE BUTTONS:
+//   TVbene: side buttons select post record delay and launch quantization
 gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
@@ -107,6 +120,8 @@ gridPage.onSceneButton = function(row, isPressed)
 
 gridPage.onUser1 = function(isPressed)
 {
+  println("user1 : arm function 9");
+
   if (isPressed)
     {
 		ARMED = 9;
@@ -115,6 +130,8 @@ gridPage.onUser1 = function(isPressed)
 
 gridPage.onUser2 = function(isPressed)
 {
+	println("user2 : arm function 10");
+
     if (isPressed)
     {
 		ARMED = 10;
@@ -139,56 +156,89 @@ gridPage.onShift = function(isPressed)
 REFROW=false;
 ROWARM=false;
 
+gridPage.doGridNoteOrCCButton = function(row,column,pressed)
+{
+	var rowInvert = 3 - (row-4);
+	var baseNoteNo = 24+(24*view_shift);
+	var channel = 0;
+	if (rowInvert<0 ) {
+		rowInvert = 0;
+	}
+	var noteIndex = baseNoteNo+ ((rowInvert)*8)+column;
+
+	if (trace>0) {
+	  println("gridPage: lookup midi note or CC index "+noteIndex+" for controls page "+view_shift);
+	}
+	if (pressed) {
+		noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, 127 );
+	}
+	else {	
+		noteInput.sendRawMidiEvent(NOTE_OFF+channel, noteIndex, 0);
+	};
+};
+
 
 gridPage.onGridButton = function(row, column, pressed)
 {
-// TVbene adapted for 40 tracks
+	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
 
 	if (row < 4) 
 	{
 		var track = column;
 		var scene =  row;
-	}
-	else if (row >= 4) 
-	{
-		var track = column + (row - 3) * 8;
-		var scene = 0;
-	}
 	
+		if (pressed && (trace>0) ) { 
+			//println("gridPage.onGridButton row="+row+" col="+column);
+			println("gridPage track ==> "+track);
+			println("gridPage scene ==> "+scene);
+			
+		}
+
+		
 	var t = trackBank.getTrack(track);
 	var l = t.getClipLauncherSlots();
         
 
-	if(ARMED)
-	{
-	//application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
-	if(ARMED === 9)
-		{
-			{
-			l.deleteClip(scene);
-			host.showPopupNotification("deleted");
-			}
-		}
+	// if(ARMED)
+	// {
+	// //application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
+	// if(ARMED === 9)
+	// 	{
+	// 		{
+	// 		l.deleteClip(scene);
+	// 		host.showPopupNotification("deleted");
+	// 		}
+	// 	}
 		
-	if(ARMED === 10)
-		{
-			l.select(scene);
-			host.showPopupNotification("selected");
-		}
+	// if(ARMED === 10)
+	// 	{
+	// 		l.select(scene);
+	// 		host.showPopupNotification("selected");
+	// 	}
 
-	}
+	// }
 
-	else
-		{	
+	// else
+	// 	{	
 			if(isPlaying[column+8*row] > 0)
-			{	
+			{	println("stop clip");
 				l.stop();
 			}
 			else
-			{
+			{   println("launch clip");
 				l.launch(scene);
 			}
-		}
+	//	}
+
+	}
+	else if (row >= 4) 
+	{
+		gridPage.doGridNoteOrCCButton(row,column,pressed);
+		
+
+	}
+
+
 };
 
 // updates the grid and VUmeters

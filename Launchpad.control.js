@@ -101,6 +101,11 @@ var transport = null;
 var offset = null;
 var quant = null;
 
+function sendMidiOut(status,data1,data2) {
+   println("sendMidi "+status+" "+data1+" "+data2);
+   host.getMidiOutPort(0).sendMidi(status,data1,data2);
+}
+
 function setActivePage(page)
 {
    if (trace>0) {
@@ -174,6 +179,7 @@ var isPlaying = initArray(0, 64);
 var isRecording = initArray(0, 64);
 var isQueued = initArray(0, 64);
 var isStopQueued = initArray(0, 64);
+var noteInput = null;
 
 // Observer functions to store receive information into the above arrays
 function getTrackObserverFunc(track, varToStore)
@@ -195,7 +201,9 @@ function getGridObserverFunc(track, varToStore)
        } 
        else {  i =track + 24;
        };
-       println("varToStore["+i+"]="+value+"  (scene="+scene+", track="+track+")" );
+       if (trace>0) {
+        println("varToStore["+i+"]="+value+"  (scene="+scene+", track="+track+")" );
+       }
        varToStore[i] = value;
 
    }
@@ -401,6 +409,11 @@ function updateVelocityTranslationTable()
 
    noteInput.setVelocityTranslationTable(table);
 }
+function sendRawMidi(status,data1,data2)
+{
+   noteInput.sendRawMidiEvent(status,data1,data2);
+}
+
 
 // This is the main function which runs whenever a MIDI signal is sent
 // You can uncomment the printMIDI below to see the MIDI signals within Bitwigs Controller script console
