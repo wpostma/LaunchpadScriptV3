@@ -50,6 +50,15 @@ loadAPI(10);
 host.defineController("Novation", "Launchpad MK1-WX", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 
+function showPopupNotification( amsg) {
+   println('::> '+amsg);
+   host.showPopupNotification( amsg);
+}
+  
+var activeNotes = null;
+var playing=0;
+
+
 
 
 // Special section for Linux users
@@ -107,7 +116,7 @@ function setActivePage(page)
       activePage = page;
       if (!isInit)
       {
-         host.showPopupNotification(page.title);
+         showPopupNotification(":::"+page.title);
       }
 
       updateNoteTranlationTable();
@@ -180,7 +189,15 @@ function getGridObserverFunc(track, varToStore)
 {
    return function(scene, value)
    {
-      track < 8 ? varToStore[scene*8 + track] = value : varToStore[track + 24] = value;
+      var i=0;
+      if (track < 8) {
+          i = scene*8 + track;
+       } 
+       else {  i =track + 24;
+       };
+       println("varToStore["+i+"]="+value+"  (scene="+scene+", track="+track+")" );
+       varToStore[i] = value;
+
    }
 }
 
@@ -201,7 +218,14 @@ function init()
    transport = host.createTransport();
    transport.isPlaying().markInterested();
    application = host.createApplication();
-
+   transport.addIsPlayingObserver (function(pPlaying) {
+      playing = pPlaying;
+      // if(playing) {
+      //     playButton.turnOn();
+      // } else {
+      //     playButton.turnOff();
+      // }
+   });
    transport.addLauncherOverdubObserver(function(state){
         WRITEOVR=state;
    });
@@ -277,6 +301,11 @@ function init()
    // Cursor track allow selection of a track
    cursorTrack = host.createArrangerCursorTrack(0, 0);
    cursorTrack.addNoteObserver(seqPage.onNotePlay);
+
+   // cursorTrack.playingNotes().addValueObserver(function(notes) {
+   //    activeNotes = notes;
+   // });
+
    //deviceBank = cursorTrack.createDeviceBank(1);
    //primaryDevice = deviceBank.getDevice(1);
    //println(primaryDevice);
@@ -396,18 +425,21 @@ function onMidi(status, data1, data2)
       switch(data1)
       {
          case TopButton.CURSOR_UP:
-			if (isPressed)
-			{  
-				if (transport.isPlaying() == 1)
-				{	println("stop");
-					transport.stop();
-				}
-				else
-				{  println("play");
-					transport.play()
-				}
-			}
-         break;
+            if (isPressed)
+            {  
+               println("play="+playing);
+               if (playing != 0) 
+               {	
+                  transport.stop();
+                  showPopupNotification("Stop");
+               }
+               else
+               {  showPopupNotification("Play");
+                  transport.play();
+
+               }
+            }
+            break;
          case TopButton.CURSOR_DOWN:
             if (isPressed)
             {  
@@ -427,7 +459,7 @@ function onMidi(status, data1, data2)
 
          case TopButton.USER1:
             if (trace>0) {
-               println("user1")
+               println("user1");
             }
             activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)

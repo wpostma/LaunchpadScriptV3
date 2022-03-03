@@ -94,6 +94,10 @@ seqPage.updateOutputState = function()
 
 seqPage.onSceneButton = function(row, isPressed)
 {
+   if(trace>0){
+      printly("seqPage.onSceneButton row="+row+" isPressed="+isPressed);
+   }
+
    if (isPressed)
    {
       if(IS_SHIFT_PRESSED)
@@ -282,6 +286,14 @@ seqPage.onStepPlay = function(step)
 
 seqPage.onNotePlay = function(isOn, key, velocity)
 {
+   if (trace>0){
+        if (isOn) {
+         println("onNotePlay key ON "+key);
+      }
+      else {
+         println("onNotePlay key OFF "+key);
+      }
+   }
    noteOn[key] = isOn;
 };
 
