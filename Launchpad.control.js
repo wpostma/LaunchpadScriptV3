@@ -348,6 +348,14 @@ function init()
    // Calls the function just below which displays the funky Bitwig logo, which ends the initialization stage 
 
    println("init complete. on grid page. type trace=1 to output trace info.")
+
+   host.scheduleTask(polledFunction, null, 500);
+}
+
+function polledFunction() {
+  flushLEDs();
+ // println("polling");
+  host.scheduleTask(polledFunction, null, 100);
 }
 
 
@@ -369,7 +377,7 @@ function resetDevice()
    {
       pendingLEDs[i] = 0;
    }
-   flushLEDs();
+  // flushLEDs();
 }
 
 // I'm not sure what these functions do
@@ -539,7 +547,7 @@ function flush()
     activePage.updateOutputState();
 
 
-   flushLEDs();
+ //  flushLEDs();
 }
 
 

@@ -13,6 +13,9 @@
 
 
 
+
+
+
 gridPage = new Page();
 
 gridPage.mixerAlignedGrid = true;
@@ -21,6 +24,8 @@ gridPage.canScrollTracksDown = false;
 gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
+gridPage.BottomState = 0;
+
 
 
 ARMED=false;
@@ -166,10 +171,12 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 	}
 	var noteIndex = baseNoteNo+ ((rowInvert)*8)+column;
 
-	if (trace>0) {
-	  println("gridPage: lookup midi note or CC index "+noteIndex+" for controls page "+view_shift);
-	}
 	if (pressed) {
+			
+		if (trace>0) {
+			println("gridPage: MIDI NOTE "+noteIndex+" for controls page "+view_shift);
+		}
+		
 		noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, 127 );
 	}
 	else {	
@@ -244,6 +251,11 @@ gridPage.onGridButton = function(row, column, pressed)
 // updates the grid and VUmeters
 gridPage.updateGrid = function()
 {
+	
+	gridPage.BottomState = gridPage.BottomState + 1;
+	if (gridPage.BottomState >= 8) {
+		gridPage.BottomState = 0;
+	}
    for(var t=0; t<8; t++)
    {
       this.updateTrackValue(t);
@@ -285,6 +297,7 @@ function vuLevelColor(level)
 // even though this section is called updateVumeter, it also setups the colours of all side buttons when they are pressed
 gridPage.updateVuMeter = function(track)
 {
+//	println("updateVuMeter track "+track);
 	var val = null;
 	var offsetFormatted = offset.getFormatted();
 	var quantValue = quant.get();
@@ -312,20 +325,20 @@ gridPage.updateVuMeter = function(track)
 	}
 	for(var j=5; j<8; j++)
 	{
-		var colour = Colour.RED_LOW;
+		var colour = Colour.YELLOW_LOW;
 		q = j
-		if(j == 5 && quantValue == "1")
-		{
-			colour = Colour.RED_FULL
-		}
-		else if(j == 6 && quantValue == "1/2")
-		{
-			colour = Colour.RED_FULL
-		}
-		else if(j == 7 && quantValue == "1/4")
-		{
-			colour = Colour.RED_FULL
-		}		
+		// if(j == 5 && quantValue == "1")
+		// {
+		// 	colour = Colour.RED_FLASHING//RED_FULL
+		// }
+		// else if(j == 6 && quantValue == "1/2")
+		// {
+		// 	colour = Colour.RED_FLASHING//RED_FULL
+		// }
+		// else if(j == 7 && quantValue == "1/4")
+		// {
+		// 	colour = Colour.RED_FLASHING//RED_FULL
+		// }		
 
 	   setquantizeLED(q, colour);
 	}
@@ -337,15 +350,26 @@ gridPage.updateVuMeter = function(track)
 
 gridPage.updateTrackValue = function(track)
 {
-	if (activePage != gridPage) return;
+	
+
+	//if (activePage != gridPage) return;
+//	println("updateTrackValue "+track);
 	// this section draws the pads for the main clip launcher
 	for(var scene=0; scene<8; scene++)
 	{
 		var i = track + scene*8;
 //TVbene: Colour of armed tracks/clips
-		var col = scene < 4 ? Colour.GREEN_LOW : Colour.RED_LOW;
+		var col = Colour.GREEN_LOW;
+		
+		if (scene>=4){
+           col = Colour.OFF;i
+			if ( ((scene+track)%8) == gridPage.BottomState) {
+				col = Colour.YELLOW_LOW;
+			}
+		} 
 	 
 		var fullval = mute[track] ? 1 : 3;
+		
 		
 		// TVbene: added Yellow flashing while in select clip mode 
 		if(ARMED === 10 && isSelected[i] > 0)
@@ -375,6 +399,7 @@ gridPage.updateTrackValue = function(track)
 			   col = Colour.AMBER_FULL;
 			}
 		}
+
 
 		 setCellLED(track, scene, col)
 	}
