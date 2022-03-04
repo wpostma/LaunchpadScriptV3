@@ -1,3 +1,5 @@
+// Launchpad Split MK1 WP : 2022-03-04
+//
 // Novation Launchpad script variant by Warren.Postma@gmail.com
 // Early rework at API Level 10.
 //
@@ -32,7 +34,7 @@ for	(index = 127; index > -1; index--)
 loadAPI(10);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad MK1-WX", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
+host.defineController("Novation", "Launchpad Split MK1 WP", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 
 function showPopupNotification( amsg) {
