@@ -89,7 +89,7 @@ function doqset(q)
 gridPage.SetQuantNext = function()
 {
 	q = quant.get();
-	println("quant="+q);
+	//println("quant="+q);
 
 	if (q == "1/4" ) {
 		doqset("1/2");
@@ -110,6 +110,8 @@ gridPage.SetQuantNext = function()
 		doqset("1/4");
 	}
 	
+	gridPage.updateGrid();
+	flushLEDs();
 	
 
 }
@@ -120,7 +122,7 @@ gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
    {
-        switch(row)
+     switch(row)
       {       
          case MixerButton.VOLUME:
 			offset.set(4);
@@ -149,8 +151,12 @@ gridPage.onSceneButton = function(row, isPressed)
          case MixerButton.ARM:
 			//quant.set("1/4");
 			println("arm");
-			gridPage.SetQuantNext();
-            break;
+			//gridPage.SetQuantNext();
+			
+			host.scheduleTask(gridPage.SetQuantNext,  100);
+			break;
+
+           
       }
    }
 };
@@ -292,10 +298,10 @@ gridPage.onGridButton = function(row, column, pressed)
 gridPage.updateGrid = function()
 {
 	// stupid animation
-	//gridPage.BottomState = gridPage.BottomState + 1;
-	//if (gridPage.BottomState >= 8) {
-	//	gridPage.BottomState = 0;
-	//}
+	gridPage.BottomState = gridPage.BottomState + 1;
+	if (gridPage.BottomState >= 2) {
+		gridPage.BottomState = 0;
+	}
 
    for(var t=0; t<8; t++)
    {
@@ -362,26 +368,34 @@ gridPage.updateVuMeter = function(track)
 		{
 			colour = Colour.GREEN_FULL
 		}	
-	   setpostrecordLED(val, colour);
+	   //setpostrecordLED(val, colour);
 	}
+
+	// last three scene LEDs are for various status flags
 	for(var j=5; j<8; j++)
 	{
 		var colour = Colour.YELLOW_LOW;
 		q = j
-		if(j == 5 && quantValue == "1")
+		if(j == 5 )
 		{
-			colour = Colour.RED_FLASHING//RED_FULL
+			colour = Colour.GREEN_FULL;
 		}
-		else if(j == 6 && quantValue == "1/2")
+		else if(j == 6 )
 		{
-			colour = Colour.RED_FLASHING//RED_FULL
+			colour = Colour.YELLOW_FULL; 
 		}
-		else if(j == 7 && quantValue == "1/4")
+		else if(j == 7)
 		{
-			colour = Colour.RED_FLASHING//RED_FULL
+			if (gridPage.BottomState==0) {
+					colour = Colour.GREEN_FULL;
+			} else if (gridPage.BottomState==1) {
+				colour = Colour.RED_FULL;
+			} 
+			
 		}		
        //println("quant "+quantValue);
-	   setquantizeLED(q, colour);
+
+	   setSceneLEDColor(q, colour);
 	}
 
    
@@ -400,42 +414,66 @@ gridPage.updateTrackValue = function(track)
 	{
 		var i = track + scene*8;
 //TVbene: Colour of armed tracks/clips
-		var col = Colour.GREEN_LOW;
+		var col = Colour.OFF;
 		
-		if (scene==5){
+		if (scene==4){
            col = Colour.OFF;
+		} 
+		else if (scene==5) {
+			col = Colour.OFF;
 		} 
 		else if (scene==6) {
 			col = Colour.OFF;
 		} 
 		else if (scene==7) {
 			col = Colour.OFF;
-		} 
-		else if (scene==8) {
-			col = Colour.OFF;
+			// quantization shown as a green thing.
+			q = quant.get();
+			if  ((track==0)&&(q=="1/4")) {
+			  col = Colour.GREEN_LOW;	
+			}	
+			else if  ((track==1)&&(q=="1/2")) {
+				col = Colour.GREEN_LOW;	
+			}	
+			else if  ((track==2)&&(q=="1")) {
+				col = Colour.GREEN_LOW;	
+			}	
+			else if  ((track==3)&&(q=="2")) {
+				col = Colour.GREEN_LOW;	
+			}	
+			else if  ((track==4)&&(q=="4")) {
+				col = Colour.GREEN_LOW;	
+			}
+			
+			  
 		} 
 			 
 		var fullval = mute[track] ? 1 : 3;
 		
-		
-		// TVbene: added Yellow flashing while in select clip mode 
-		if(ARMED === 10 && isSelected[i] > 0)
+		if (scene<4)
 		{
-			col = Colour.YELLOW_FLASHING;
-		} 
-		else if (hasContent[i] > 0)
-		{
+		 if (hasContent[i] > 0)
+		 { 
 			if (isQueued[i] > 0)
-			{
-			   col = Colour.GREEN_FLASHING;
+			{  if (gridPage.BottomState==0 ) {	
+			    col = Colour.YELLOW_FULL;
+			   }	
 			}
 			else if (isRecording[i] > 0)
 			{
-			   col = Colour.RED_FULL;
+				if (gridPage.BottomState==0 ) {
+			     col = Colour.RED_FULL;
+				} else if (gridPage.BottomState==1) {
+					col = Colour.RED_LOW ;
+				};
 			}
 			else if (isStopQueued[i] > 0)
 			{
-				col = Colour.RED_FLASHING
+				if (gridPage.BottomState==0 ) {
+					col = Colour.YELLOW_FULL;
+				   } else if (gridPage.BottomState==1) {
+					   col = Colour.RED_LOW ;
+				   };	
 			}
 			else if (isPlaying[i] > 0)
 			{
@@ -443,8 +481,13 @@ gridPage.updateTrackValue = function(track)
 			}
 			else
 			{
-			   col = Colour.AMBER_FULL;
+			   col = Colour.GREEN_LOW; 
 			}
+		 }
+		 else
+		 {
+			 col = Colour.YELLOW_LOW;
+		 }
 		}
 
 
