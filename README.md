@@ -18,6 +18,6 @@ Warren's Launchpad V3 Script 2022-03-03
 
 7. The last row (row 8) will indicate which loop quantize mode is active and the scene button toggles this value (causing the lit pad to move over).  This last row is still used for midi note triggering.  I do plan to add pitch/scale quantization mapping to this but for now it's just semitones, but the lowest bank is set to the same midi note that most clip launcher and drum devices in bitwig expect.  It's not meant to be used to play melodically.
 
-
-
-based on https://github.com/dplduffy/LaunchpadScriptV3
+Derivation:
+based on https://github.com/TVbene/LaunchpadScriptV3
+which was based on https://github.com/dplduffy/LaunchpadScriptV3
