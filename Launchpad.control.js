@@ -176,7 +176,7 @@ var userValue = initArray(0, 24);
 
 var hasContent = initArray(0, 64);
 var isPlaying = initArray(0, 64);
-var isRecording = initArray(0, 64);
+var isRecording = initArray(0, 64); // recording states.
 var isQueued = initArray(0, 64);
 var isStopQueued = initArray(0, 64);
 var noteInput = null;
@@ -191,7 +191,7 @@ function getTrackObserverFunc(track, varToStore)
 }
 
 //TVbene added support for more than 8 tracks
-function getGridObserverFunc(track, varToStore)
+function getGridObserverFunc( track, varToStore)
 {
    return function(scene, value)
    {
@@ -201,9 +201,7 @@ function getGridObserverFunc(track, varToStore)
        } 
        else {  i =track + 24;
        };
-       if (trace>0) {
-        println("varToStore["+i+"]="+value+"  (scene="+scene+", track="+track+")" );
-       }
+       
        varToStore[i] = value;
 
    }
@@ -355,7 +353,9 @@ function init()
 function polledFunction() {
   flushLEDs();
  // println("polling");
-  host.scheduleTask(polledFunction,  2000);
+ println( "isRecording[0]="+isRecording[0] );
+ 
+  host.scheduleTask(polledFunction,  500);
 }
 
 
@@ -428,8 +428,9 @@ function sendRawMidi(status,data1,data2)
 
 function onMidi(status, data1, data2)
 {
+   if (trace>0){
 	printMidi(status, data1, data2);
-
+   }
    if (MIDIChannel(status) != 0) return;
 
    if (isChannelController(status))

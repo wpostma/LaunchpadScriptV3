@@ -18,16 +18,17 @@ keysPage.updateOutputState = function()
    this.updateScrollButtons();
    setTopLED(5, WRITEOVR ? Colour.RED_FULL:Colour.YELLOW_FULL);
 
-   for(var i=0; i<4; i++)
-   {
-       var isCurrent = noteMaps[i] == activeNoteMap;
-       var hasMap = noteMaps[i] != null;
+   //for(var i=0; i<4; i++)
+   //{
+       //var isCurrent = noteMaps[i] == activeNoteMap;
+       //var hasMap = noteMaps[i] != null;
 	   // sets the LED of the current notemap (top 4 side buttons)
-       setRightLED(i, hasMap ? (isCurrent ? Colour.GREEN_FULL : Colour.GREEN_LOW) : Colour.OFF);
-	   // sets the velocity button color (bottom 4 side buttons)
-       setRightLED(4 + i, seqPage.velocityStep == i ? Colour.AMBER_LOW : Colour.AMBER_LOW);
-   }
-   setTopLED(7, gridPage.firstStep ? Colour.RED_FLASHING:Colour.GREEN_FULL);
+      // setRightLED(i, hasMap ? (isCurrent ? Colour.GREEN_FULL : Colour.GREEN_LOW) : Colour.OFF);
+	   
+      // sets the velocity button color (bottom 4 side buttons)
+      // setRightLED(4 + i, seqPage.velocityStep == i ? Colour.AMBER_LOW : Colour.AMBER_LOW);
+   //}
+   setTopLED(7, gridPage.firstStep ? Colour.RED_FULL:Colour.GREEN_FULL);
    this.drawKeys();
 };
 
