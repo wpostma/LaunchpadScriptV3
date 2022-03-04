@@ -79,6 +79,41 @@ gridPage.onSession = function(isPressed)
 
     }
 }
+function doqst(q)
+{
+	showPopupNotification("Loop Quant: "+q);
+	quant.set(q);
+}
+gridPage.SetQuantNext = function()
+{
+	q = quant.get()
+	if (q == "1/4" ) {
+		doqset("1/2");
+	}
+	else if (q== "1/2") {
+		doqset("1");
+	}
+	else if (q== "1") {
+		doqset("2");
+	}
+	else if (q== "2") {
+		doqset("4");
+	}
+	else if (q== "4") {
+		doqset("1/4");
+	}
+	
+		break;
+
+		case MixerButton.SOLO:
+		   //
+		   break;
+
+		case MixerButton.ARM:
+		   //quant.set("1/4");
+
+}
+
 // SIDE BUTTONS:
 //   TVbene: side buttons select post record delay and launch quantization
 gridPage.onSceneButton = function(row, isPressed)
@@ -104,15 +139,16 @@ gridPage.onSceneButton = function(row, isPressed)
             break;
 
          case MixerButton.TRK_ON:
-			quant.set("1");
+			//quant.set("1");
             break;
 
          case MixerButton.SOLO:
-			quant.set("1/2");
+			//quant.set("1/2");
             break;
 
          case MixerButton.ARM:
-			quant.set("1/4");
+			//quant.set("1/4");
+			gridPage.SetQuantNext;
             break;
       }
    }
@@ -330,19 +366,19 @@ gridPage.updateVuMeter = function(track)
 	{
 		var colour = Colour.YELLOW_LOW;
 		q = j
-		// if(j == 5 && quantValue == "1")
-		// {
-		// 	colour = Colour.RED_FLASHING//RED_FULL
-		// }
-		// else if(j == 6 && quantValue == "1/2")
-		// {
-		// 	colour = Colour.RED_FLASHING//RED_FULL
-		// }
-		// else if(j == 7 && quantValue == "1/4")
-		// {
-		// 	colour = Colour.RED_FLASHING//RED_FULL
-		// }		
-
+		if(j == 5 && quantValue == "1")
+		{
+			colour = Colour.RED_FLASHING//RED_FULL
+		}
+		else if(j == 6 && quantValue == "1/2")
+		{
+			colour = Colour.RED_FLASHING//RED_FULL
+		}
+		else if(j == 7 && quantValue == "1/4")
+		{
+			colour = Colour.RED_FLASHING//RED_FULL
+		}		
+       //println("quant "+quantValue);
 	   setquantizeLED(q, colour);
 	}
 
