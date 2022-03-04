@@ -1,14 +1,13 @@
 // Novation Launchpad script variant by Warren.Postma@gmail.com
-// lots of stuff deleted.
-
-//  Changes to the previous script
-//  Previous Script wss Launchpad Maxi
-//  https://github.com/wizgrav/launchpad-maxi
-
-//  
-
-
-// TODO: Create scene from playing clips
+// Early rework at API Level 10.
+//
+//
+//  This script has been through probably 500 different peoples hands and has been largely hacked to death.
+//
+// Main GRID mode is a split of clip view plus half the area is for playing midi notes.
+//
+// If this script is being maintained newer versions will be at
+// https://github.com/wpostma/LaunchpadScriptV3 
 
 
 var trace=0;
