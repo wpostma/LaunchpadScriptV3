@@ -349,13 +349,13 @@ function init()
 
    println("init complete. on grid page. type trace=1 to output trace info.")
 
-   host.scheduleTask(polledFunction, null, 500);
+   host.scheduleTask(polledFunction, null, 100);
 }
 
 function polledFunction() {
   flushLEDs();
  // println("polling");
-  host.scheduleTask(polledFunction, null, 100);
+  host.scheduleTask(polledFunction, null, 2000);
 }
 
 

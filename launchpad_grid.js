@@ -161,10 +161,13 @@ gridPage.onShift = function(isPressed)
 REFROW=false;
 ROWARM=false;
 
+var BASE_NOTE = 36; // C2=36
+var NOTE_PAGE_SIZE = 24;
+
 gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 {
 	var rowInvert = 3 - (row-4);
-	var baseNoteNo = 24+(24*view_shift);
+	var baseNoteNo = BASE_NOTE+(NOTE_PAGE_SIZE*view_shift);
 	var channel = 0;
 	if (rowInvert<0 ) {
 		rowInvert = 0;
