@@ -208,6 +208,8 @@ function init()
    host.getMidiInPort(0).setMidiCallback(onMidi);
 
    sceneBank = host.createSceneBank(4);
+   
+
 
    noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);
@@ -245,6 +247,8 @@ function init()
    for(var t=0; t<NUM_TRACKS; t++)
    {
       var track = trackBank.getChannel(t);
+
+      trackBank.getChannel(t).isActivated().markInterested();
 
       track.getVolume().addValueObserver(8, getTrackObserverFunc(t, volume));
       track.getPan().addValueObserver(userVarPans, getTrackObserverFunc(t, pan));
@@ -463,7 +467,7 @@ function onMidi(status, data1, data2)
               if(view_shift>3) {
                  view_shift=0;
               }
-              println("view_shift "+view_shift);
+              showPopupNotification("sub mode "+view_shift);
             }
             else
             {

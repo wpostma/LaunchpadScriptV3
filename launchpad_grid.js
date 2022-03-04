@@ -393,7 +393,13 @@ gridPage.updateVuMeter = function(track)
 
 gridPage.updateTrackValue = function(track)
 {
+	active = trackBank.getChannel(track).isActivated().get();
+	selected = false;
+
+	//selected = trackBank.getChannel(track) == cursorTrack.getChannel();
 	
+
+	//println("active "+active);
 
 	//if (activePage != gridPage) return;
 //	println("updateTrackValue "+track);
@@ -482,7 +488,16 @@ gridPage.updateTrackValue = function(track)
 		 }
 		 else
 		 {
+			 // not selected track : yellow.
+			 if (selected) {
+				 col = Colour.YELLOW_FULL;
+			 } 
+			 else if ( active ) {
 			 col = Colour.YELLOW_LOW;
+			 } 
+			 else {
+				col = Colour.OFF; // disabled
+			 }
 		 }
 		}
 
