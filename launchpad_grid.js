@@ -455,12 +455,16 @@ gridPage.updateTrackValue = function(track)
 		 if (hasContent[i] > 0)
 		 { 
 			if (isQueued[i] > 0)
-			{  if (gridPage.BottomState==0 ) {	
-			    col = Colour.YELLOW_FULL;
-			   }	
+			{ // about to play
+				 if (gridPage.BottomState==0 ) {
+				col = Colour.GREEN_FULL;
+			   } else if (gridPage.BottomState==1) {
+				   col = Colour.YELLOW_FULL;
+			   };	
 			}
 			else if (isRecording[i] > 0)
 			{
+				 // what about about to record?
 				if (gridPage.BottomState==0 ) {
 			     col = Colour.RED_FULL;
 				} else if (gridPage.BottomState==1) {
@@ -468,7 +472,7 @@ gridPage.updateTrackValue = function(track)
 				};
 			}
 			else if (isStopQueued[i] > 0)
-			{
+			{ // about to stop
 				if (gridPage.BottomState==0 ) {
 					col = Colour.YELLOW_FULL;
 				   } else if (gridPage.BottomState==1) {
@@ -477,7 +481,11 @@ gridPage.updateTrackValue = function(track)
 			}
 			else if (isPlaying[i] > 0)
 			{
-			   col = Colour.GREEN_FULL;
+				if (gridPage.BottomState < 2 ) {
+					col = Colour.GREEN_FULL;
+				   } else {
+					   col = Colour.GREEN_LOW;
+				   };	
 			}
 			else
 			{

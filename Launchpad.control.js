@@ -353,12 +353,12 @@ function init()
 function polledFunction() {
   flushLEDs();
  // println("polling");
- println( "isRecording[0]="+isRecording[0] );
+ //println( "isRecording[0]="+isRecording[0] );
  
   host.scheduleTask(polledFunction,  500);
 }
 
-
+ 
 
 // Function called on exit of the script
 function exit()
