@@ -79,14 +79,18 @@ gridPage.onSession = function(isPressed)
 
     }
 }
-function doqst(q)
+
+function doqset(q)
 {
-	showPopupNotification("Loop Quant: "+q);
+	showPopupNotification("Loop Quantize: "+q);
 	quant.set(q);
 }
+
 gridPage.SetQuantNext = function()
 {
-	q = quant.get()
+	q = quant.get();
+	println("quant="+q);
+
 	if (q == "1/4" ) {
 		doqset("1/2");
 	}
@@ -102,15 +106,11 @@ gridPage.SetQuantNext = function()
 	else if (q== "4") {
 		doqset("1/4");
 	}
+	else {
+		doqset("1/4");
+	}
 	
-		break;
-
-		case MixerButton.SOLO:
-		   //
-		   break;
-
-		case MixerButton.ARM:
-		   //quant.set("1/4");
+	
 
 }
 
@@ -148,7 +148,8 @@ gridPage.onSceneButton = function(row, isPressed)
 
          case MixerButton.ARM:
 			//quant.set("1/4");
-			gridPage.SetQuantNext;
+			println("arm");
+			gridPage.SetQuantNext();
             break;
       }
    }
@@ -290,11 +291,12 @@ gridPage.onGridButton = function(row, column, pressed)
 // updates the grid and VUmeters
 gridPage.updateGrid = function()
 {
-	
-	gridPage.BottomState = gridPage.BottomState + 1;
-	if (gridPage.BottomState >= 8) {
-		gridPage.BottomState = 0;
-	}
+	// stupid animation
+	//gridPage.BottomState = gridPage.BottomState + 1;
+	//if (gridPage.BottomState >= 8) {
+	//	gridPage.BottomState = 0;
+	//}
+
    for(var t=0; t<8; t++)
    {
       this.updateTrackValue(t);
@@ -400,13 +402,19 @@ gridPage.updateTrackValue = function(track)
 //TVbene: Colour of armed tracks/clips
 		var col = Colour.GREEN_LOW;
 		
-		if (scene>=4){
-           col = Colour.OFF;i
-			if ( ((scene+track)%8) == gridPage.BottomState) {
-				col = Colour.YELLOW_LOW;
-			}
+		if (scene==5){
+           col = Colour.OFF;
 		} 
-	 
+		else if (scene==6) {
+			col = Colour.OFF;
+		} 
+		else if (scene==7) {
+			col = Colour.OFF;
+		} 
+		else if (scene==8) {
+			col = Colour.OFF;
+		} 
+			 
 		var fullval = mute[track] ? 1 : 3;
 		
 		
