@@ -210,12 +210,15 @@ function getGridObserverFunc( track, varToStore)
 var noteOn = initArray(false, 128);
 WRITEOVR = false;
 
+var sceneBank = null;
 
 // The init function gets called when initializing by Bitwig
 function init()
 {
    // setup MIDI in
    host.getMidiInPort(0).setMidiCallback(onMidi);
+
+   sceneBank = host.createSceneBank(4);
 
    noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);

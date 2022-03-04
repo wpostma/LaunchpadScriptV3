@@ -122,24 +122,12 @@ gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
    {
+	   if (row<=3) {
+		sceneBank.getScene(row).launch();
+	   }
+	   else
      switch(row)
-      {       
-         case MixerButton.VOLUME:
-			offset.set(4);
-			break;
-
-         case MixerButton.PAN:
-            offset.set(8);
-            break;
-
-         case MixerButton.SEND_A:
-            offset.set(16);
-            break;
-
-         case MixerButton.SEND_B:
-            offset.set(32);
-            break;
-
+      {   
          case MixerButton.TRK_ON:
 			//quant.set("1");
             break;
@@ -150,13 +138,10 @@ gridPage.onSceneButton = function(row, isPressed)
 
          case MixerButton.ARM:
 			//quant.set("1/4");
-			println("arm");
-			//gridPage.SetQuantNext();
-			
-			host.scheduleTask(gridPage.SetQuantNext,  100);
+			gridPage.SetQuantNext();
+			//host.scheduleTask(gridPage.SetQuantNext,  100);
 			break;
 
-           
       }
    }
 };
@@ -216,6 +201,13 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 		rowInvert = 0;
 	}
 	var noteIndex = baseNoteNo+ ((rowInvert)*8)+column;
+
+	if (noteIndex<0) {
+		noteIndex = 0;
+	} else if (noteIndex>108)
+	{
+		noteIndex = 108;
+	};
 
 	if (pressed) {
 			
