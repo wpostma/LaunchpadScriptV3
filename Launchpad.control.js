@@ -349,13 +349,13 @@ function init()
 
    println("init complete. on grid page. type trace=1 to output trace info.")
 
-   host.scheduleTask(polledFunction, null, 100);
+   host.scheduleTask(polledFunction,  100);
 }
 
 function polledFunction() {
   flushLEDs();
  // println("polling");
-  host.scheduleTask(polledFunction, null, 2000);
+  host.scheduleTask(polledFunction,  2000);
 }
 
 
@@ -559,13 +559,7 @@ function setTopLED(index, colour)
 }
 
 // Sends the right LED lights to the pendingLEDs array. LED scene have a value of 64 to 72
-function setpostrecordLED(index, colour)
-{
-   pendingLEDs[LED.SCENE + index] = colour;
-}
-
-// Sends the right LED lights to the pendingLEDs array. LED scene have a value of 64 to 72
-function setquantizeLED(index, colour)
+function setSceneLEDColor(index, colour)
 {
    pendingLEDs[LED.SCENE + index] = colour;
 }
