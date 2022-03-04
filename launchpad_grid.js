@@ -153,12 +153,8 @@ gridPage.onSceneButton = function(row, isPressed)
 
 gridPage.onUser1 = function(isPressed)
 {
-  println("user1 : arm function 9");
-
-  if (isPressed)
-    {
-		ARMED = 9;
-    }
+   println("grid user1 : press "+isPressed);
+   
 }
 
 gridPage.onUser2 = function(isPressed)

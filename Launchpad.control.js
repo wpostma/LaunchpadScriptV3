@@ -6,21 +6,7 @@
 //  https://github.com/wizgrav/launchpad-maxi
 
 //  
-// UPDATE IN APRIL 2015 [https://github.com/TVbene/LaunchpadScriptV3]
-// Changed velocity settings so you can have a "high" and "low" velocity and a "velocity increment" using the user 2 and 3 buttons you can select the // correct velocity.
-// Added flashing yellow led to playing tracks so you know you can stop them.
-// Added UUID to make this unique version.
-// Cleaned up note maps and keys. Holding shift and pressing the left and right keys will now cycle through the modes note modes.
-// Added Yellow flashing LED on Track page when track is playing, red flashing when track is stopping.
-// Cleaned up edit mode.  Pressing the session button and user 1 now implements Cut/Paste. Pressing the session button and user 2 now impletements   
-// Copy/Paste.  Pressing the shift button and any of the mixer row buttons choses the length of clip to create for and touching the grid will create 
-// an empty clip.
-// Changed Mixer Buttons to toggle switches from Momentary
-// Added Push Scale Modes (linear modes still accesable by pressing shift and D)
-// Changed Pan Buttons so they are centered
-// Added fine adjustments of all mixer controls
-// Added toggle click (shift + user1 in key page)
-// Fixed Launch Scene (Shift + Any Grid Button)
+
 
 // TODO: Create scene from playing clips
 
@@ -181,6 +167,8 @@ var isQueued = initArray(0, 64);
 var isStopQueued = initArray(0, 64);
 var noteInput = null;
 
+var isSetPressed = false;
+
 // Observer functions to store receive information into the above arrays
 function getTrackObserverFunc(track, varToStore)
 {
@@ -315,7 +303,7 @@ function init()
    //    activeNotes = notes;
    // });
 
-   //deviceBank = cursorTrack.createDeviceBank(1);
+   deviceBank = cursorTrack.createDeviceBank(1);
    //primaryDevice = deviceBank.getDevice(1);
    //println(primaryDevice);
     //isDrumMachine = primaryDevice.addNameObserver(10, "noDevice", blah);
@@ -439,7 +427,7 @@ function onMidi(status, data1, data2)
    if (isChannelController(status))
    {
       if (trace>0){
-       println("ischannelcontroller: data1="+data1+" data2="+data2);
+       println("onMidi ischannelcontroller: data1="+data1+" data2="+data2);
       }
 
       // isPressed checks whether MIDI signal is above 0 in value declaring that button is being pressed
@@ -482,11 +470,39 @@ function onMidi(status, data1, data2)
             }
             break;
 
-         case TopButton.USER1:
-            if (trace>0) {
-               println("user1");
+         case TopButton.CURSOR_LEFT:
+            if (isSetPressed)  {
+               println("isSetPressed-left");
+         }   
+         //trackBank.scrollChannelsPageUp()
+         //trackBank.scrollChannelsPageDown()
+         // 
+         // 
+            if (isPressed) {
+               isSetPressed ? deviceBank.scrollUp() : cursorTrack.selectPrevious();
             }
-            activePage.onUser1(isPressed);
+            break;
+
+         case TopButton.CURSOR_RIGHT:
+            if (isSetPressed)  {
+                  println("isSetPressed-right");
+            }   
+            if (isPressed) {
+               isSetPressed ? deviceBank.scrollDown() : cursorTrack.selectNext();
+            }
+            break;
+	
+         case TopButton.SESSION:
+            
+            isSetPressed  = isPressed;
+            println("isSetPressed="+isSetPressed)
+            break;
+
+         case TopButton.USER1:
+           
+                println("user1");
+         
+                activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)
                 {
                     IS_KEYS_PRESSED=false;
