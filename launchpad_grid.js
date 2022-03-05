@@ -394,8 +394,6 @@ gridPage.updateVuMeter = function(track)
 gridPage.updateTrackValue = function(track)
 {
 	active = trackBank.getChannel(track).isActivated().get();
-	selected = false;
-
 	selected = active && trackEquality[track].get();
 	//println("selected "+selected);
 	
