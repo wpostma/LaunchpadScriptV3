@@ -396,7 +396,8 @@ gridPage.updateTrackValue = function(track)
 	active = trackBank.getChannel(track).isActivated().get();
 	selected = false;
 
-	//selected = trackBank.getChannel(track) == cursorTrack.getChannel();
+	selected = active && trackEquality[track].get();
+	//println("selected "+selected);
 	
 
 	//println("active "+active);

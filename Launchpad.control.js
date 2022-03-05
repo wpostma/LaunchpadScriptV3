@@ -201,6 +201,9 @@ WRITEOVR = false;
 
 var sceneBank = null;
 
+var trackEquality = [];
+
+
 // The init function gets called when initializing by Bitwig
 function init()
 {
@@ -263,6 +266,7 @@ function init()
       track.addIsSelectedObserver(getTrackObserverFunc(t, isSelected));
       track.addIsQueuedForStopObserver(getTrackObserverFunc(t, isQueuedForStop));
        
+
       var clipLauncher = track.getClipLauncherSlots();
 
 		clipLauncher.addHasContentObserver(getGridObserverFunc(t, hasContent));
@@ -303,6 +307,13 @@ function init()
    // Cursor track allow selection of a track
    cursorTrack = host.createArrangerCursorTrack(0, 0);
    cursorTrack.addNoteObserver(seqPage.onNotePlay);
+   
+   for (var t = 0;t<NUM_TRACKS;t++) {
+      var track = trackBank.getChannel(t);
+      trackEquality[t] = cursorTrack.createEqualsValue(track);
+   
+   }
+  
 
    // cursorTrack.playingNotes().addValueObserver(function(notes) {
    //    activeNotes = notes;
