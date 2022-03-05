@@ -412,16 +412,16 @@ gridPage.updateTrackValue = function(track)
 		var col = Colour.OFF;
 		
 		if (scene==4){
-           col = Colour.OFF;
+           col = (track>=4) ? Colour.RED_LOW : Colour.RED_FULL;
 		} 
 		else if (scene==5) {
-			col = Colour.OFF;
+			col = (track>=4) ? Colour.RED_FULL : Colour.RED_LOW;
 		} 
 		else if (scene==6) {
-			col = Colour.OFF;
+			col = (track>=4) ? Colour.RED_LOW : Colour.RED_FULL;
 		} 
 		else if (scene==7) {
-			col = Colour.OFF;
+			col = (track>=4) ? Colour.RED_FULL : Colour.RED_LOW;
 			// quantization shown as a green thing.
 			q = quant.get();
 			if  ((track==0)&&(q=="1/4")) {
