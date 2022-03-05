@@ -25,6 +25,8 @@ gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
 gridPage.BottomState = 0;
+gridPage.currentVelocity = 127;
+
 
 
 
@@ -35,7 +37,17 @@ ARMED=false;
 //       padInput.sendRawMidiEvent(status, data1 + (padOctave*16), data2);
 //    }
 
-
+gridPage.ChangeVelocity = function()
+{
+	gridPage.currentVelocity = gridPage.currentVelocity + 40;
+	if  (gridPage.currentVelocity>=128 ) {
+		gridPage.currentVelocity = 40;
+	}
+	if (gridPage.currentVelocity>=119) {
+		gridPage.currentVelocity = 127;
+	}
+	showPopupNotification("Velocity "+gridPage.currentVelocity);
+}
 // TVbene updates the mode buttons on the top
 gridPage.updateOutputState = function()
 {
@@ -128,8 +140,8 @@ gridPage.onSceneButton = function(row, isPressed)
 	   else
      switch(row)
       {   
-         case MixerButton.TRK_ON:
-			//quant.set("1");
+         case MixerButton.TRK_ON: 
+			gridPage.ChangeVelocity();
             break;
 
          case MixerButton.SOLO:
@@ -211,7 +223,7 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 			println("gridPage: MIDI NOTE "+noteIndex+" for controls page "+view_shift);
 		}
 		
-		noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, 127 );
+		noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, gridPage.currentVelocity );
 	}
 	else {	
 		noteInput.sendRawMidiEvent(NOTE_OFF+channel, noteIndex, 0);

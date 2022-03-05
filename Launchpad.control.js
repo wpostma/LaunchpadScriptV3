@@ -553,17 +553,23 @@ function onMidi(status, data1, data2)
       var row = data1 >> 4;
       var column = data1 & 0xF;
          
-      if (trace>0) {
-      println(" button : row = " + row + "col = " + column)
-      }
-	  
          
       if (column < 8)
       {
+
+         if (trace>0) {
+            println(" midi GRID note  row = " + row + "col = " + column)
+            }
+           
          activePage.onGridButton(row, column, data2 > 0);
       }
       else
       {
+         
+         if (trace>0) {
+            println(" midi SCENE button #" + row )
+            }
+         
          activePage.onSceneButton(row, data2 > 0);
       }
    }

@@ -120,7 +120,9 @@ keysPage.scrollKey = function(offset)
 
 keysPage.onGridButton = function(row, column, pressed)
 {
-   /*var key = activeNoteMap.cellToKey(column, row);
+   println("keys onGridButton");
+   
+   var key = activeNoteMap.cellToKey(column, row);
 
    if (key >= 0)
    {
@@ -134,7 +136,7 @@ keysPage.onGridButton = function(row, column, pressed)
       {
          cursorTrack.stopNote(key, velocity);
       }
-   }*/
+   }
 };
 
 // Draws the keys
