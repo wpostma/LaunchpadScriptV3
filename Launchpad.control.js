@@ -429,6 +429,26 @@ function sendRawMidi(status,data1,data2)
    noteInput.sendRawMidiEvent(status,data1,data2);
 }
 
+function previousMode() {
+   //println("previousMOde");
+   if (activePage == gridPage) {
+      setActivePage(keysPage);
+      showPopupNotification("Keys Mode");
+   } else {
+      setActivePage(gridPage);
+      showPopupNotification("Grid/Keys Split Mode");
+   } 
+   activePage.updateOutputState();
+
+
+   //  flushLEDs();
+
+}
+
+function nextMode() {
+   //println("nextMode");
+   previousMode();
+}
 
 // This is the main function which runs whenever a MIDI signal is sent
 // You can uncomment the printMIDI below to see the MIDI signals within Bitwigs Controller script console
@@ -495,7 +515,7 @@ function onMidi(status, data1, data2)
          // 
          // 
             if (isPressed) {
-               isSetPressed ? deviceBank.scrollUp() : cursorTrack.selectPrevious();
+               isSetPressed ? previousMode() : cursorTrack.selectPrevious();
             }
             break;
 
@@ -504,7 +524,7 @@ function onMidi(status, data1, data2)
                   println("isSetPressed-right");
             }   
             if (isPressed) {
-               isSetPressed ? deviceBank.scrollDown() : cursorTrack.selectNext();
+               isSetPressed ? nextMode() : cursorTrack.selectNext();
             }
             break;
 	

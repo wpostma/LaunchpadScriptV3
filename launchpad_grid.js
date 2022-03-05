@@ -9,6 +9,8 @@
 *  The Down arrow changes which bank of keys or midi CC notes are sent.
 *  The color of the bottom half of the page was red when Warren took over this copy of this script.
 *  Eventually Warren wants to make the bottom half very dynamically colored.
+*
+* 
 * */
 
 
@@ -32,10 +34,7 @@ gridPage.currentVelocity = 127;
 
 ARMED=false;
 
-// if (MIDIChannel(status) && data1 >= 36 && data1 <= 51)
-//    {
-//       padInput.sendRawMidiEvent(status, data1 + (padOctave*16), data2);
-//    }
+
 
 gridPage.ChangeVelocity = function()
 {
