@@ -203,6 +203,7 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 	var rowInvert = 3 - (row-4);
 	var baseNoteNo = BASE_NOTE+(NOTE_PAGE_SIZE*view_shift);
 	var channel = 0;
+	
 	if (rowInvert<0 ) {
 		rowInvert = 0;
 	}
@@ -210,22 +211,37 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 
 	if (noteIndex<0) {
 		noteIndex = 0;
-	} else if (noteIndex>108)
+	};
+	
+	if (noteIndex<=108)
 	{
-		noteIndex = 108;
+		println("doGridNoteOrCCButton A");
+	
+		if (noteIndex>=0) {
+			if (pressed) {
+					
+				if (trace>0) {
+					println("gridPage: MIDI NOTE "+noteIndex+" for controls page "+view_shift);
+				}
+				
+				noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, gridPage.currentVelocity );
+			}
+			else {	
+				noteInput.sendRawMidiEvent(NOTE_OFF+channel, noteIndex, 0);
+			};
+			}
+	}
+	else
+	{println("doGridNoteOrCCButton B");
+	
+		//noteIndex = 108;
+		ccIndex = noteIndex-88;
+		println("cc "+ccIndex);
+		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/pressed ? 127 : 0 );
+        noteIndex = -1;
 	};
 
-	if (pressed) {
-			
-		if (trace>0) {
-			println("gridPage: MIDI NOTE "+noteIndex+" for controls page "+view_shift);
-		}
-		
-		noteInput.sendRawMidiEvent(NOTE_ON+channel, noteIndex, gridPage.currentVelocity );
-	}
-	else {	
-		noteInput.sendRawMidiEvent(NOTE_OFF+channel, noteIndex, 0);
-	};
+
 };
 
 
@@ -413,18 +429,31 @@ gridPage.updateTrackValue = function(track)
 		var i = track + scene*8;
 //TVbene: Colour of armed tracks/clips
 		var col = Colour.OFF;
-		
+	
+		 a = Colour.RED_LOW;
+		 b = Colour.RED_FULL;
+		 if (view_shift==1)  {
+			 a = Colour.GREEN_LOW;
+			 b = Colour.GREEN_FULL;
+		 } else  if (view_shift==2)  {
+			a = Colour.AMBER_FULL;
+			b = Colour.YELLOW_LOW;
+		} else  if (view_shift==3)  {
+			a = Colour.OFF;
+			b = Colour.YELLOW_LOW;
+		}
+
 		if (scene==4){
-           col = (track>=4) ? Colour.RED_LOW : Colour.RED_FULL;
-		} 
+           col = (track>=4) ? a : b;
+		}
 		else if (scene==5) {
-			col = (track>=4) ? Colour.RED_FULL : Colour.RED_LOW;
+			col = (track>=4) ? b : a;
 		} 
 		else if (scene==6) {
-			col = (track>=4) ? Colour.RED_LOW : Colour.RED_FULL;
+			col = (track>=4) ? a : b;
 		} 
 		else if (scene==7) {
-			col = (track>=4) ? Colour.RED_FULL : Colour.RED_LOW;
+			col = (track>=4) ? b : a;
 			// quantization shown as a green thing.
 			q = quant.get();
 			if  ((track==0)&&(q=="1/4")) {
@@ -506,7 +535,8 @@ gridPage.updateTrackValue = function(track)
 		}
 
 
-		 setCellLED(track, scene, col)
+		 setCellLED(track, scene, col);
+
 	}
 	
 };
