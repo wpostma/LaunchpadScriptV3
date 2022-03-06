@@ -215,8 +215,13 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 	
 	if (noteIndex<=108)
 	{
-		println("doGridNoteOrCCButton A");
-	
+		//println("doGridNoteOrCCButton A");
+	    if (noteIndex==108)  {
+			noteIndex = 36;
+		} else if (noteIndex==107)  {
+			noteIndex = 0;
+		};
+
 		if (noteIndex>=0) {
 			if (pressed) {
 					
@@ -232,11 +237,14 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 			}
 	}
 	else
-	{println("doGridNoteOrCCButton B");
+	{
+	  // println("doGridNoteOrCCButton B");
 	
 		//noteIndex = 108;
 		ccIndex = noteIndex-88;
-		println("cc "+ccIndex);
+		if (trace>0) {
+		println("Midi CC "+ccIndex);
+		}
 		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/pressed ? 127 : 0 );
         noteIndex = -1;
 	};
