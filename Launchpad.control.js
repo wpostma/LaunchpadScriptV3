@@ -134,6 +134,7 @@ var TrackModeColumn =
    RETURN_TO_ARRANGEMENT:7
 };
 
+var timerState = 0;
 
 var TEMPMODE = -1;
 
@@ -223,6 +224,7 @@ function init()
    application = host.createApplication();
    transport.addIsPlayingObserver (function(pPlaying) {
       playing = pPlaying;
+      println("playing "+playing);
       // if(playing) {
       //     playButton.turnOn();
       // } else {
@@ -366,7 +368,10 @@ function polledFunction() {
   flushLEDs();
  // println("polling");
  //println( "isRecording[0]="+isRecording[0] );
- 
+  timerState = timerState + 1;
+  if (timerState > 3 ) {
+     timerState = 0;
+  }
   host.scheduleTask(polledFunction,  500);
 }
 

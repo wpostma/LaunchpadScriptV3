@@ -26,7 +26,6 @@ gridPage.canScrollTracksDown = false;
 gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
-gridPage.BottomState = 0;
 gridPage.currentVelocity = 127;
 
 
@@ -296,11 +295,6 @@ gridPage.onGridButton = function(row, column, pressed)
 // updates the grid and VUmeters
 gridPage.updateGrid = function()
 {
-	// stupid animation
-	gridPage.BottomState = gridPage.BottomState + 1;
-	if (gridPage.BottomState >= 2) {
-		gridPage.BottomState = 0;
-	}
 
    for(var t=0; t<8; t++)
    {
@@ -358,7 +352,7 @@ function getClipsPlaying(scene) {
 // first four buttons are play stop and last four are command buttons.
 gridPage.updateSideButtons  = function()
 {
-  println("updateSideButtons");
+  //println("updateSideButtons");
   	var val = null;
 	var offsetFormatted = offset.getFormatted();
 	var quantValue = quant.get();
@@ -378,8 +372,8 @@ gridPage.updateSideButtons  = function()
 	else {
 		for(var j=0; j<4; j++)
 		{
-			scenePlaying = getClipsPlaying(j);
-		   if ((scenePlaying) && (gridPage.BottomState==0)) {
+			scenePlaying = playing && getClipsPlaying(j);
+		   if ((scenePlaying) && (timerState==0)) {
 			setSceneLEDColor(j,  Colour.OFF );
 		   } else {
 			setSceneLEDColor(j, scenePlaying ? Colour.GREEN_FULL : Colour.GREEN_LOW );
@@ -460,32 +454,32 @@ gridPage.updateTrackValue = function(track)
 		 { 
 			if (isQueued[i] > 0)
 			{ // about to play
-				 if (gridPage.BottomState==0 ) {
+				 if (timerState==0 ) {
 				col = Colour.GREEN_FULL;
-			   } else if (gridPage.BottomState==1) {
+			   } else if (timerState==1) {
 				   col = Colour.YELLOW_FULL;
 			   };	
 			}
 			else if (isRecording[i] > 0)
 			{
 				 // what about about to record?
-				if (gridPage.BottomState==0 ) {
+				if (timerState==0 ) {
 			     col = Colour.RED_FULL;
-				} else if (gridPage.BottomState==1) {
+				} else if (timerState==1) {
 					col = Colour.RED_LOW ;
 				};
 			}
 			else if (isStopQueued[i] > 0)
 			{ // about to stop
-				if (gridPage.BottomState==0 ) {
+				if (timerState==0 ) {
 					col = Colour.YELLOW_FULL;
-				   } else if (gridPage.BottomState==1) {
+				   } else if (timerState==1) {
 					   col = Colour.RED_LOW ;
 				   };	
 			}
 			else if (isPlaying[i] > 0)
 			{
-				if (gridPage.BottomState < 2 ) {
+				if (timerState < 2 ) {
 					col = Colour.GREEN_FULL;
 				   } else {
 					   col = Colour.GREEN_LOW;
