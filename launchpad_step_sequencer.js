@@ -358,8 +358,8 @@ seqPage.drawSequencer = function()
 
    for(var i=0; i<4; i++)
    {
-      setRightLED(i, seqPage.stepSize == i ? Colour.GREEN_FULL : Colour.GREEN_LOW);
-      setRightLED(4 + i, seqPage.velocityStep == i ? Colour.AMBER_LOW : Colour.AMBER_LOW);
+      setSceneLEDColor(i, seqPage.stepSize == i ? Colour.GREEN_FULL : Colour.GREEN_LOW);
+      setSceneLEDColor(4 + i, seqPage.velocityStep == i ? Colour.AMBER_LOW : Colour.AMBER_LOW);
    }
 
    for(var x=0; x<8; x++)

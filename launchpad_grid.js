@@ -58,7 +58,7 @@ gridPage.updateOutputState = function()
    // Set the top LEDs while in Clip Launcher
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
-   setTopLED(7, Colour.AMBER_FULL);
+   setTopLED(7, IS_SHIFT_PRESSED ? Colour.AMBER_FULL : Colour.GREEN_LOW);
 };
 
 gridPage.onSession = function(isPressed)
@@ -305,8 +305,10 @@ gridPage.updateGrid = function()
    for(var t=0; t<8; t++)
    {
       this.updateTrackValue(t);
-      this.updateVuMeter(t);
    }
+
+   this.updateSideButtons();
+   
 };
 
 // sets the colours for the VUmeters
@@ -340,63 +342,61 @@ function vuLevelColor(level)
    return Colour.OFF;
 }
 
-// even though this section is called updateVumeter, it also setups the colours of all side buttons when they are pressed
-gridPage.updateVuMeter = function(track)
+
+function getClipsPlaying(scene) {
+	n = false;
+	for (track = 0; track < NUM_TRACKS;track++) {	
+		if (isPlaying[track + (scene*8)]) {
+			n = true;
+			break;
+		}
+	}
+	return n;
+}
+
+// updates side buttons but no longer actually updates the vu meter.
+// first four buttons are play stop and last four are command buttons.
+gridPage.updateSideButtons  = function()
 {
-//	println("updateVuMeter track "+track);
-	var val = null;
+  println("updateSideButtons");
+  	var val = null;
 	var offsetFormatted = offset.getFormatted();
 	var quantValue = quant.get();
-    for(var i=0; i<4; i++)
-	{
-		var colour = Colour.GREEN_LOW;
-		val = i
-		if(i == 0 && offsetFormatted == "001:00:00:00")
-		{
-			colour = Colour.GREEN_FULL
-		}
-		else if(i == 1 && offsetFormatted == "002:00:00:00")
-		{
-			colour = Colour.GREEN_FULL
-		}
-		else if(i == 2 && offsetFormatted == "004:00:00:00")
-		{
-			colour = Colour.GREEN_FULL
-		}		
-		else if(i == 3 && offsetFormatted == "008:00:00:00")
-		{
-			colour = Colour.GREEN_FULL
-		}	
-	   //setpostrecordLED(val, colour);
-	}
+
+			
+
+
 
 	// last three scene LEDs are for various status flags
-	for(var j=5; j<8; j++)
-	{
-		var colour = Colour.YELLOW_LOW;
-		q = j
-		if(j == 5 )
-		{
-			colour = Colour.GREEN_FULL;
-		}
-		else if(j == 6 )
-		{
-			colour = Colour.YELLOW_FULL; 
-		}
-		else if(j == 7)
-		{
-			if (gridPage.BottomState==0) {
-					colour = Colour.GREEN_FULL;
-			} else if (gridPage.BottomState==1) {
-				colour = Colour.RED_FULL;
-			} 
+	if (IS_SHIFT_PRESSED ) {
+		for(var j=4; j<8; j++)
+			{
 			
-		}		
-       //println("quant "+quantValue);
-
-	   setSceneLEDColor(q, colour);
+			setSceneLEDColor(j, Colour.AMBER_FULL);
+			}
 	}
+	else {
+		for(var j=0; j<4; j++)
+		{
+			scenePlaying = getClipsPlaying(j);
+		   if ((scenePlaying) && (gridPage.BottomState==0)) {
+			setSceneLEDColor(j,  Colour.OFF );
+		   } else {
+			setSceneLEDColor(j, scenePlaying ? Colour.GREEN_FULL : Colour.GREEN_LOW );
+		   }
+		 
+		}
 
+		setSceneLEDColor(4, Colour.YELLOW_LOW);
+		setSceneLEDColor(5, Colour.YELLOW_FULL);
+		setSceneLEDColor(6, Colour.RED_LOW);
+		setSceneLEDColor(6, Colour.GREEN_LOW);
+		
+	
+	}
+	
+
+	
    
 };
 

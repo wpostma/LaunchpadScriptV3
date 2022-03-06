@@ -141,7 +141,7 @@ var IS_GRID_PRESSED = false;
 //var IS_EDIT_PRESSED = false;
 var IS_KEYS_PRESSED = false;
 //var IS_RECORD_PRESSED = false;
-var IS_SHIFT_PRESSED = false;
+var IS_SHIFT_PRESSED = false; // mapped to mixer key (top row of round buttons, rightmost/8th key)
 
 // Declare arrays which are used to store information received from Bitwig about what is going on to display on pads
 var volume = initArray(0, 8);
@@ -343,6 +343,11 @@ function init()
    }
 
 
+   cursorClip = host.createCursorClip(SEQ_BUFFER_STEPS, 128);
+   cursorClip.addStepDataObserver(seqPage.onStepExists);
+   cursorClip.addPlayingStepObserver(seqPage.onStepPlay);
+   cursorClip.scrollToKey(0);
+   
    // Call resetdevice which clears all the lights
    resetDevice();
    setGridMappingMode();
@@ -434,7 +439,12 @@ function previousMode() {
    if (activePage == gridPage) {
       setActivePage(keysPage);
       showPopupNotification("Keys Mode");
-   } else {
+   } else if (activePage==keysPage) {
+      setActivePage(seqPage);
+      showPopupNotification("Sequencer Mode");
+
+   }
+   else {
       setActivePage(gridPage);
       showPopupNotification("Grid/Keys Split Mode");
    } 
@@ -554,13 +564,19 @@ function onMidi(status, data1, data2)
          case TopButton.MIXER:
             activePage.onShift(isPressed);
                 if (isPressed)
-                {
+                { if (trace>0) {
+                   println("shift ON");
+                  }
+
                     IS_SHIFT_PRESSED = true;
                 }
                 else
                 {
                     if(IS_SHIFT_PRESSED)
-                    {
+                    {  if (trace>0) {
+                     println("shift OFF");
+                    }
+  
                         IS_SHIFT_PRESSED=false;
                     }
                 }
