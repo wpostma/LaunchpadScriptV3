@@ -262,48 +262,26 @@ gridPage.onGridButton = function(row, column, pressed)
 		var track = column;
 		var scene =  row;
 	
-		if (pressed && (trace>0) ) { 
-			//println("gridPage.onGridButton row="+row+" col="+column);
-			println("gridPage track ==> "+track);
-			println("gridPage scene ==> "+scene);
+	
 			
+		var t = trackBank.getTrack(track);
+		var l = t.getClipLauncherSlots();
+			
+
+		if (pressed) {
+				if(isPlaying[column+8*row] > 0)
+				{	
+					if (!IS_SHIFT_PRESSED) {
+						println("stop track "+(track+1) +" clip "+(scene+1));				
+						l.stop();
+					}
+
+				}
+				else
+				{   println("launch track "+(track+1)+" clip "+(scene+1));
+					l.launch(scene);
+				}
 		}
-
-		
-	var t = trackBank.getTrack(track);
-	var l = t.getClipLauncherSlots();
-        
-
-	// if(ARMED)
-	// {
-	// //application.focusPanelAbove(); I believe this was causing the tracks to get cut and pasted
-	// if(ARMED === 9)
-	// 	{
-	// 		{
-	// 		l.deleteClip(scene);
-	// 		host.showPopupNotification("deleted");
-	// 		}
-	// 	}
-		
-	// if(ARMED === 10)
-	// 	{
-	// 		l.select(scene);
-	// 		host.showPopupNotification("selected");
-	// 	}
-
-	// }
-
-	// else
-	// 	{	
-			if(isPlaying[column+8*row] > 0)
-			{	println("stop clip");
-				l.stop();
-			}
-			else
-			{   println("launch clip");
-				l.launch(scene);
-			}
-	//	}
 
 	}
 	else if (row >= 4) 
@@ -426,6 +404,7 @@ gridPage.updateTrackValue = function(track)
 	selected = active && trackEquality[track].get();
 	//println("selected "+selected);
 	
+	tplay = transport.isPlaying().get();
 
 	//println("active "+active);
 
@@ -489,15 +468,15 @@ gridPage.updateTrackValue = function(track)
 		{
 		 if (hasContent[i] > 0)
 		 { 
-			if (isQueued[i] > 0)
+			if ((isQueued[i] > 0)&&(tplay))
 			{ // about to play
-				 if (timerState==0 ) {
+				if ( (timerState < 2 ) ||  !transport.isPlaying()  )  {
 				col = Colour.GREEN_FULL;
 			   } else if (timerState==1) {
 				   col = Colour.YELLOW_FULL;
 			   };	
 			}
-			else if (isRecording[i] > 0)
+			else if ((isRecording[i] > 0)&&tplay)
 			{
 				 // what about about to record?
 				if (timerState==0 ) {
@@ -506,7 +485,7 @@ gridPage.updateTrackValue = function(track)
 					col = Colour.RED_LOW ;
 				};
 			}
-			else if (isStopQueued[i] > 0)
+			else if ((isStopQueued[i] > 0)&&tplay)
 			{ // about to stop
 				if (timerState==0 ) {
 					col = Colour.YELLOW_FULL;
@@ -516,10 +495,14 @@ gridPage.updateTrackValue = function(track)
 			}
 			else if (isPlaying[i] > 0)
 			{
-				if (timerState < 2 ) {
+			
+				if  ((timerState < 2 )||(!tplay))  {
 					col = Colour.GREEN_FULL;
-				   } else {
+				   } else  {
+					
+											
 					   col = Colour.GREEN_LOW;
+					
 				   };	
 			}
 			else

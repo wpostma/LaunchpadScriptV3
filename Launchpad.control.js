@@ -495,11 +495,23 @@ function onMidi(status, data1, data2)
          case TopButton.CURSOR_UP:
             if (isPressed)
             {  
+               if (IS_SHIFT_PRESSED) {
+                  println("shift+play");
+               }
                println("play="+playing);
                if (playing != 0) 
                {	
                   transport.stop();
                   showPopupNotification("Stop");
+                  if (IS_SHIFT_PRESSED) {
+                     println("Stop all clips.")
+                    	for (track=0; track<NUM_TRACKS;track++) {
+                        var t = trackBank.getTrack(track);
+                        var l = t.getClipLauncherSlots();
+                        l.stop();
+                     }
+                     
+                  }
                }
                else
                {  showPopupNotification("Play");
