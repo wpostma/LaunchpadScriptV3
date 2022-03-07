@@ -8,6 +8,9 @@
 //
 // Main GRID mode is a split of clip view plus half the area is for playing midi notes.
 //
+// TODO Make the top four rows be banked. 4 banks of 4 tracks = 16 tracks.
+//
+//
 // If this script is being maintained newer versions will be at
 // https://github.com/wpostma/LaunchpadScriptV3 
 
@@ -504,7 +507,9 @@ function onMidi(status, data1, data2)
                   transport.stop();
                   showPopupNotification("Stop");
                   if (IS_SHIFT_PRESSED) {
-                     println("Stop all clips.")
+                     println("Rewind.");
+                     transport.rewind();
+                     println("Stop all clips.");
                     	for (track=0; track<NUM_TRACKS;track++) {
                         var t = trackBank.getTrack(track);
                         var l = t.getClipLauncherSlots();
@@ -514,7 +519,13 @@ function onMidi(status, data1, data2)
                   }
                }
                else
-               {  showPopupNotification("Play");
+               {  
+                  
+                  if (IS_SHIFT_PRESSED) {
+                     println("Rewind.");
+                     transport.rewind();
+                  };
+                  showPopupNotification("Play");
                   transport.play();
 
                }
