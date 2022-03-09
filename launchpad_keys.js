@@ -8,6 +8,18 @@ keysPage = new Page();
 
 keysPage.title = "Keys / Drums";
 
+
+keysPage.CursorLeft = function(isPressed)
+{
+
+}
+
+
+keysPage.CursorRight = function(isPressed)
+{
+
+}
+
 keysPage.updateOutputState = function()
 {
    clear();

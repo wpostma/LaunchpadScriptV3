@@ -87,7 +87,7 @@ var LED =
 // Number of tracks, sends and scenes, they are called from the Launchpad.control.js file only during the init() function
 var NUM_TRACKS = 40;
 var NUM_SENDS = 2;
-var NUM_SCENES = 4;
+var NUM_SCENES = 8;
 var NUM_EFFECT_TRACKS = 1;
 var NUM_EFFECT_SCENES = 1;
 

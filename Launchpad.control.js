@@ -18,6 +18,8 @@
 var trace=0;
 var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
 
+
+
 // USER SETTINGS
 
 //don't change this
@@ -469,7 +471,18 @@ function previousMode() {
 
 function nextMode() {
    //println("nextMode");
-   previousMode();
+   if (activePage==seqPage) {
+      setActivePage(keysPage);
+      showPopupNotification("Keys Mode");
+   } else if (activePage == gridPage ) {
+      setActivePage(seqPage);
+      showPopupNotification("Sequencer Mode");
+
+   }
+   else {
+      setActivePage(gridPage);
+      showPopupNotification("Grid/Keys Split Mode");
+   } 
 }
 
 // This is the main function which runs whenever a MIDI signal is sent
@@ -549,22 +562,21 @@ function onMidi(status, data1, data2)
             break;
 
          case TopButton.CURSOR_LEFT:
-            if (isSetPressed)  {
-               println("isSetPressed-left");
-         }   
-         //trackBank.scrollChannelsPageUp()
-         //trackBank.scrollChannelsPageDown()
-         // 
-         // 
+            if (IS_SHIFT_PRESSED) {
+               activePage.CursorLeft(isPressed);
+            }
+            else 
             if (isPressed) {
                isSetPressed ? previousMode() : cursorTrack.selectPrevious();
             }
             break;
 
          case TopButton.CURSOR_RIGHT:
-            if (isSetPressed)  {
-                  println("isSetPressed-right");
-            }   
+         
+            if (IS_SHIFT_PRESSED) {
+               activePage.CursorRight(isPressed);
+            }
+            else 
             if (isPressed) {
                isSetPressed ? nextMode() : cursorTrack.selectNext();
             }

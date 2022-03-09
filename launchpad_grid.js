@@ -27,6 +27,8 @@ gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
 gridPage.currentVelocity = 127;
+gridPage.split = true
+gridPage.grid_shift=0; //0,4,8,12
 
 
 
@@ -34,6 +36,29 @@ gridPage.currentVelocity = 127;
 ARMED=false;
 
 
+gridPage.CursorLeft = function(isPressed)
+{
+	if (isPressed) {
+		gridPage.grid_shift = gridPage.grid_shift -4;
+		if (gridPage.grid_shift<0) {
+			gridPage.grid_shift = 12;
+		}
+		showPopupNotification('Grid '+gridPage.grid_shift);
+	}
+}
+
+
+gridPage.CursorRight = function(isPressed)
+{
+	if (isPressed) {
+		gridPage.grid_shift = gridPage.grid_shift +4;
+		if (gridPage.grid_shift>12) {
+			gridPage.grid_shift =0;
+		}
+		showPopupNotification('Grid '+gridPage.grid_shift);
+	}
+	
+}
 
 gridPage.ChangeVelocity = function()
 {
@@ -257,10 +282,10 @@ gridPage.onGridButton = function(row, column, pressed)
 {
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
 
-	if (row < 4) 
+	if ((row < 4)||(!gridPage.split)) 
 	{
 		var track = column;
-		var scene =  row;
+		var scene =  row+gridPage.grid_shift;
 	
 	
 			
@@ -269,7 +294,7 @@ gridPage.onGridButton = function(row, column, pressed)
 			
 
 		if (pressed) {
-				if(isPlaying[column+8*row] > 0)
+				if(isPlaying[column+8*scene] > 0)
 				{	
 					if (!IS_SHIFT_PRESSED) {
 						println("stop track "+(track+1) +" clip "+(scene+1));				
@@ -284,7 +309,7 @@ gridPage.onGridButton = function(row, column, pressed)
 		}
 
 	}
-	else if (row >= 4) 
+	else if ((row >= 4)&&(gridPage.split)) 
 	{
 		gridPage.doGridNoteOrCCButton(row,column,pressed);
 		
@@ -298,9 +323,9 @@ gridPage.onGridButton = function(row, column, pressed)
 gridPage.updateGrid = function()
 {
 
-   for(var t=0; t<8; t++)
+   for(var r=0; r<8; r++)
    {
-      this.updateTrackValue(t);
+      this.updateTrackValue(r); // one column of grid
    }
 
    this.updateSideButtons();

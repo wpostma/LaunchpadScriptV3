@@ -53,6 +53,18 @@ seqPage.playingStep = -1;
 
 seqPage.stepSize = STEP_SIZE.STEP_1_16;
 
+
+seqPage.CursorLeft = function(isPressed)
+{
+
+}
+
+
+seqPage.CursorRight = function(isPressed)
+{
+
+}
+
 seqPage.onSession = function(isPressed)
 {
 }
