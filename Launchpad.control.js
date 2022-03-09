@@ -176,6 +176,10 @@ var noteInput = null;
 
 var isSetPressed = false;
 
+function getPlaying(row,column) {
+   return isPlaying[column + 8*row];
+}
+
 // Observer functions to store receive information into the above arrays
 function getTrackObserverFunc(track, varToStore)
 {
@@ -185,20 +189,21 @@ function getTrackObserverFunc(track, varToStore)
    }
 }
 
-//TVbene added support for more than 8 tracks
-function getGridObserverFunc( track, varToStore)
+function getGridObserverFunc(track, varToStore)
 {
    return function(scene, value)
    {
-      var i=0;
-      if (track < 8) {
-          i = scene*8 + track;
-       } 
-       else {  i =track + 24;
-       };
-       
-       varToStore[i] = value;
-
+      varToStore[scene*8 + track] = value;
+   }
+}
+function getGridObserverFunc2(track, varToStore)
+{
+   return function(scene, value)
+   {
+      if (trace>0){
+      println("scene:"+scene+" track:"+track+" play:"+value);
+      }
+      varToStore[scene*8 + track] = value;
    }
 }
 
@@ -279,7 +284,7 @@ function init()
 		clipLauncher.addHasContentObserver(getGridObserverFunc(t, hasContent));
 
 
-      clipLauncher.addIsPlayingObserver(getGridObserverFunc(t, isPlaying));
+      clipLauncher.addIsPlayingObserver(getGridObserverFunc2(t, isPlaying));
       clipLauncher.addIsRecordingObserver(getGridObserverFunc(t, isRecording));
       clipLauncher.addIsQueuedObserver(getGridObserverFunc(t, isQueued));
       clipLauncher.addIsStopQueuedObserver(getGridObserverFunc(t, isStopQueued)); 

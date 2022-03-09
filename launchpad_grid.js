@@ -39,11 +39,12 @@ ARMED=false;
 gridPage.CursorLeft = function(isPressed)
 {
 	if (isPressed) {
-		gridPage.grid_shift = gridPage.grid_shift -4;
+		gridPage.grid_shift = gridPage.grid_shift - 2;
 		if (gridPage.grid_shift<0) {
-			gridPage.grid_shift = 12;
+			gridPage.grid_shift = 4;
 		}
-		showPopupNotification('Grid '+gridPage.grid_shift);
+		
+		showPopupNotification('Grid +'+gridPage.grid_shift);;
 	}
 }
 
@@ -51,11 +52,11 @@ gridPage.CursorLeft = function(isPressed)
 gridPage.CursorRight = function(isPressed)
 {
 	if (isPressed) {
-		gridPage.grid_shift = gridPage.grid_shift +4;
-		if (gridPage.grid_shift>12) {
+		gridPage.grid_shift = gridPage.grid_shift +2;
+		if (gridPage.grid_shift>4) {
 			gridPage.grid_shift =0;
 		}
-		showPopupNotification('Grid '+gridPage.grid_shift);
+		showPopupNotification('Grid +'+gridPage.grid_shift);
 	}
 	
 }
@@ -294,7 +295,8 @@ gridPage.onGridButton = function(row, column, pressed)
 			
 
 		if (pressed) {
-				if(isPlaying[column+8*scene] > 0)
+				//if(isPlaying[column+8*scene] > 0)
+				if(  getPlaying(scene,column) )
 				{	
 					if (!IS_SHIFT_PRESSED) {
 						println("stop track "+(track+1) +" clip "+(scene+1));				
@@ -327,6 +329,7 @@ gridPage.updateGrid = function()
    {
       this.updateTrackValue(r); // one column of grid
    }
+
 
    this.updateSideButtons();
    
@@ -422,25 +425,26 @@ gridPage.updateSideButtons  = function()
 };
 
 
-
+// track = column
 gridPage.updateTrackValue = function(track)
 {
-	active = trackBank.getChannel(track).isActivated().get();
-	selected = active && trackEquality[track].get();
+	track_offset = track;
+
+	active = trackBank.getChannel(track_offset).isActivated().get();
+	selected = active && trackEquality[track_offset].get();
 	//println("selected "+selected);
 	
 	tplay = transport.isPlaying().get();
 
 	//println("active "+active);
 
-	//if (activePage != gridPage) return;
-//	println("updateTrackValue "+track);
-	// this section draws the pads for the main clip launcher
+	// scenes are ROWS in the launchpad in this script. 
 	for(var scene=0; scene<8; scene++)
 	{
-		var i = track + scene*8;
-//TVbene: Colour of armed tracks/clips
+		var i = track_offset + ((scene+gridPage.grid_shift) *8);
+
 		var col = Colour.OFF;
+		var fullval = mute[track_offset] ? 1 : 3;
 	
 		 a = Colour.RED_LOW;
 		 b = Colour.RED_FULL;
@@ -487,7 +491,7 @@ gridPage.updateTrackValue = function(track)
 			  
 		} 
 			 
-		var fullval = mute[track] ? 1 : 3;
+	
 		
 		if (scene<4)
 		{
