@@ -29,6 +29,8 @@ gridPage.title = "Clip Launcher";
 gridPage.currentVelocity = 127;
 gridPage.split = true
 gridPage.grid_shift=0; //0,4,8,12
+gridPage.scene_active = -1; // no active scene
+
 
 
 
@@ -160,6 +162,7 @@ gridPage.onSceneButton = function(row, isPressed)
    {
 	   if (row<=3) {
 		sceneBank.getScene(row).launch();
+		gridPage.scene_active = row + gridPage.grid_shift;
 	   }
 	   else
      switch(row)
@@ -321,7 +324,7 @@ gridPage.onGridButton = function(row, column, pressed)
 
 };
 
-// updates the grid and VUmeters
+// updates the grid (no more vumeter feature)
 gridPage.updateGrid = function()
 {
 
@@ -402,7 +405,7 @@ gridPage.updateSideButtons  = function()
 	else {
 		for(var j=0; j<4; j++)
 		{
-			scenePlaying = playing && getClipsPlaying(j);
+			scenePlaying = playing && ( j+gridPage.grid_shift == gridPage.scene_active );
 		   if ((scenePlaying) && (timerState==0)) {
 			setSceneLEDColor(j,  Colour.OFF );
 		   } else {
