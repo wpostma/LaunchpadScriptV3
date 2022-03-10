@@ -729,10 +729,10 @@ function clear()
 
 function flush()
 {
-    activePage.updateOutputState();
+    activePage.updateOutputState(); // // set LED state vars
 
 
- //  flushLEDs();
+   flushLEDs();
 }
 
 

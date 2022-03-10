@@ -80,6 +80,7 @@ gridPage.updateOutputState = function()
    clear();
 
    this.updateGrid();
+   var c = Colour.OFF;
    var cls1 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.RED_FLASHING,Colour.YELLOW_FULL]); 
    var cls2 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.YELLOW_FLASHING,Colour.YELLOW_FULL]);  
    // Set the top LEDs while in Clip Launcher
@@ -87,6 +88,18 @@ gridPage.updateOutputState = function()
 
    setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.OFF );
 
+   switch(view_shift) {
+	   case 0:
+		   	c = Colour.GREEN_FULL; break;
+		case 1:
+			c = Colour.GREEN_LOW; break;
+		case 2:
+			c = Colour.YELLOW_LOW; break;
+		default:
+			c = Colour.RED_LOW;
+   }
+	setTopLED(1,  c );
+   
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
    setTopLED(7, IS_SHIFT_PRESSED ? Colour.AMBER_FULL : Colour.GREEN_LOW);
