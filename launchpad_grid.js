@@ -179,8 +179,10 @@ gridPage.onSceneButton = function(row, isPressed)
    {
 	   if (row<=3) {
 		masterTrack.mute().set(false);
-		sceneBank.getScene(row+gridPage.grid_shift).launch();
-		gridPage.scene_active = row + gridPage.grid_shift;
+		scene = row+gridPage.grid_shift;
+		//println("scene="+scene);
+		sceneBank.getScene(scene).launch();
+		gridPage.scene_active = scene; 
 	   }
 	   else
      switch(row)
@@ -303,12 +305,12 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 gridPage.onGridButton = function(row, column, pressed)
 {
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
-
+    // println("gridPage.onGridButton row "+row+" column "+column+" pressed "+pressed );
 	if ((row < 4)||(!gridPage.split)) 
 	{
 		var track = column;
 		var scene =  row+gridPage.grid_shift;
-	
+		//println("scene "+scene);
 	
 			
 		var t = trackBank.getChannel(track);
@@ -318,14 +320,16 @@ gridPage.onGridButton = function(row, column, pressed)
 		if (pressed) {
 
 				if (gridPage.armed_track>=0) {
-						trackBank.getChannel(gridPage.armed_track).arm().set(false);
+					//println("darm");
+					trackBank.getChannel(gridPage.armed_track).arm().set(false);
+					//println("darm2");
 				}
 				
 				trackBank.scrollToChannel(track);
 				trackBank.getChannel(track).arm().set(true);
-				println("arm");
+				//println("arm");
 				gridPage.armed_track = track;
-
+				//println("arm2");
 
 				if (IS_SHIFT_PRESSED) {
 					println("clear scene");
@@ -345,14 +349,22 @@ gridPage.onGridButton = function(row, column, pressed)
 				else
 				{  
 				
-					println("launch track "+(track+1)+" clip "+(scene+1));
-					l.launch(scene);
+					if ((scene>=0)&&(scene<=7)) {
+						println("launch track "+(track+1)+" clip "+(scene+1));
+						l.launch(scene);
+					} else {
+						println("launch track "+(track+1)+" clip "+(scene+1)+" ? ");
+						
+					}
+
 				}
 		}
 
 	}
 	else if ((row >= 4)&&(gridPage.split)) 
 	{
+		//println("noc");
+
 		gridPage.doGridNoteOrCCButton(row,column,pressed);
 		
 

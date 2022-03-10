@@ -295,7 +295,7 @@ function init()
    // setup MIDI in
    host.getMidiInPort(0).setMidiCallback(onMidi);
 
-   sceneBank = host.createSceneBank(4);
+   sceneBank = host.createSceneBank(NUM_SCENES);
    
 
 
