@@ -1,38 +1,89 @@
-// Launchpad Split MK1 WP : 2022-03-04
+// FrankenLaunchpad Split MK1 WP : 2022-03-09
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
-// Early rework at API Level 10.
+// Heavily modified script for live guitar looping.
+// Intended to be used with a specially configured template
+// bitwig project.
+//
+// API Level 10 
+//
+// Script of Theseus: This script has been through uncountable
+// hands, but is mostly based on some early bitwig 1.x era stuff
+// shipped by Bitwig.
+//
+// Use the default scripts or the DrivenByMoss scripts if you want
+// more features.  Many features from the standard Bitwig script
+// are actually removed.
+//
+// Main GRID mode is a split of clip view plus bottom half of  the
+// grid area is for playing midi notes, or midi CC notes, or for
+// various "looper pedal" type functions that might be useful for
+// live looping with keys or guitars or vocals. 
+//
+// The top four rows of the grid start out accessing scene 1-4.
+// The MIXER button plus page left and page right shift this from 
+// 2-6 and then from 4-8.  By trying to go too far left when at scene 1-4
+// you can quickly get to scene 4-8 without going through the other
+// middle state.
 //
 //
-//  This script has been through probably 500 different peoples hands and has been largely hacked to death.
+// TODO:
 //
-// Main GRID mode is a split of clip view plus half the area is for playing midi notes.
+// *GUITAR LOOPER LOGIC:
+//  - Ability to set up a project that will keep the live guitar
+//    always playing through a non-looped audio track that is
+//    monitoring the guitar input, except when we want it ducked.
+//  - Ability to seamlessly multi track loop 1 to 8 different tracks
+//    all mapped to one audio input and manage which tracks are 
+//    monitoring, so only ONE is ever monitoring.
+//  - Clip delete and re-record. 
+//  - Undo/Redo actions from launchpad buttons.
+//   
+// MORE MUSICAL METRONOME:
+//  - Ability to trigger a track playback that is off the visible
+//    launchpad grid that exists only as a tempo reference, but is
+//    more musical than the built in metronome. It could contain
+//    a shaker sound, or an acoustic drum "tchak".
 //
-// TODO Make the top four rows be banked. 4 banks of 4 tracks = 16 tracks.
-//
+// *MUSICAL STOP:
+//   When jamming and you hit play/stop it's very musically unsatisfying
+//   just to stop suddenly.
+//   - Programmable fade out time (shown as a launchpad button light)
+//   - 1 second fade out, 4 second fade out, 8 second fade out.
+//   
+// *LAYERED INSTRUMENTS CROSS FADE:
+//    Using a layer container to cross fade between one or both
+//    instruments inside the instrument layer.
+//    (Same clip keeps playing but the levels 
+//      in the instrument change)
+//  
+// *TRACK TO TRACK CROSS FADE:
+//    Cross fade where you stop one track after the other one has
+//    started and faded in.  Fade out controls the master volume
+//    and must restore it to its original value when track play
+//    has stopped.
 //
 // If this script is being maintained newer versions will be at
 // https://github.com/wpostma/LaunchpadScriptV3 
 
+// you can't change things currently limited to 8 without 
+// rewriting a large amount of this script due to its
+// assumption that there are 8 scenes and that the launchpad 
+// grid is always 8 by 8.
 
-var trace=0;
+var trace=0; //  type trace=1 in the controller script console to enable most debug messages
 var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
+var activeNotes = null;
+var playing=0;
+var userVarPans = 8; // DO NOT CHANGE
+var userVelNote = false; // false recommended, true NOT recommended.
 
-
-
-// USER SETTINGS
-
-//don't change this
-var userVarPans = 8;
-
-// Playing of pad on velocity change is turned off, setting this to true will turn it on
-var userVelNote = false;
 
 // New velocity setup, has a set number for low and high, and you use the two middle buttons to index the rest of the velocities.velocity setup is in Launchpad_Step_Sequencer.js
 var velocities2 = [];
 for	(index = 127; index > -1; index--)
 {
-    velocities2[velocities2.length] = index;
+    velocities2[velocities2.length] = index;  // javascript, genius or shit. you decide.
 }
 
 // Start the API
@@ -41,19 +92,9 @@ loadAPI(10);
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
 host.defineController("Novation", "Launchpad Split MK1 WP", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
-
-function showPopupNotification( amsg) {
-   println('::> '+amsg);
-   host.showPopupNotification( amsg);
-}
-  
-var activeNotes = null;
-var playing=0;
-
-
-
-
-// Special section for Linux users
+host.addDeviceNameBasedDiscoveryPair(["Launchpad"], ["Launchpad"]);
+host.addDeviceNameBasedDiscoveryPair(["Launchpad S"], ["Launchpad S"]);
+host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini"], ["Launchpad Mini"]);
 if(host.platformIsLinux())
 {
 	for(var i=1; i<16; i++)
@@ -62,6 +103,18 @@ if(host.platformIsLinux())
 	   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + + i.toString() + " MIDI 1"], ["Launchpad Mini " + + i.toString() + " MIDI 1"]);
 	}
 }
+
+function showPopupNotification( amsg) {
+   println('::> '+amsg);
+   host.showPopupNotification( amsg);
+}
+  
+
+
+
+
+
+
 
 // TempMode is a variable used for the Temporary views used in ClipLauncher mode.
 var TempMode =
@@ -98,6 +151,9 @@ function sendMidiOut(status,data1,data2) {
    host.getMidiOutPort(0).sendMidi(status,data1,data2);
 }
 
+// set one of the primary modes active.
+// note that many of the top row buttons are always controlled
+// in the main script (this file).
 function setActivePage(page)
 {
    if (trace>0) {
@@ -413,8 +469,8 @@ function resetDevice()
 
 // I'm not sure what these functions do
 // enableAutoFlashing and setGridMappingMode are called during initialization.
-// setDutyCycle is called by the animateLogo function, They are likely something to do with light display
-
+// setDutyCycle is called by the animateLogo function,
+// They are likely something to do with the bitwig logo.
 
 
 function setGridMappingMode()
@@ -453,6 +509,7 @@ function sendRawMidi(status,data1,data2)
    noteInput.sendRawMidiEvent(status,data1,data2);
 }
 
+// cycle through modes in backward order
 function previousMode() {
    //println("previousMOde");
    if (activePage == gridPage) {
@@ -474,6 +531,7 @@ function previousMode() {
 
 }
 
+// cycle through modes in forward order
 function nextMode() {
    //println("nextMode");
    if (activePage==seqPage) {
@@ -722,6 +780,10 @@ var activeLEDs = new Array(80);
 function flushLEDs()
 {
 
+   if (trace>1) {
+      println("flushLEDs called");
+   };
+
 	// changedCount contains number of lights changed
    var changedCount = 0;
 
@@ -734,13 +796,19 @@ function flushLEDs()
    // exit function if there are none to be changed
    if (changedCount == 0) return;
 
-   //uncommenting this displays a count of the number of LEDs to be changed
-   //println("Repaint: " + changedCount + " LEDs");
-
-   // if there is a lot of LEDs, use an optimized mode (which looks to me like it sends all in one MIDI message
+   
+   if (trace>1) {
+      println("flushLEDs active. changedCount "+changedCount);
+   };
+   
+   // if there is a lot of LEDs, use an optimized mode
+   // (which looks to me like it sends all in one MIDI message
    //TVbene changed to prevent optimised mode
    if (changedCount > 100)
    {
+      if (trace>1) {
+         println("flushLEDs optimized. "+changedCount);
+      };
       // send using channel 3 optimized mode
       for(var i = 0; i<80; i+=2)
       {

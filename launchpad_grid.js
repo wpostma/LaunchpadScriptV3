@@ -285,7 +285,7 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 
 };
 
-
+// record clips and play them.
 gridPage.onGridButton = function(row, column, pressed)
 {
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
@@ -302,6 +302,10 @@ gridPage.onGridButton = function(row, column, pressed)
 			
 
 		if (pressed) {
+				if (IS_SHIFT_PRESSED) {
+					println("clear scene");
+					l.deleteClip(scene);
+				}
 				//if(isPlaying[column+8*scene] > 0)
 				if(  getPlaying(scene,column) )
 				{	
@@ -312,7 +316,9 @@ gridPage.onGridButton = function(row, column, pressed)
 
 				}
 				else
-				{   println("launch track "+(track+1)+" clip "+(scene+1));
+				{  
+				
+					println("launch track "+(track+1)+" clip "+(scene+1));
 					l.launch(scene);
 				}
 		}
