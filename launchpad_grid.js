@@ -165,7 +165,7 @@ gridPage.onSceneButton = function(row, isPressed)
    if (isPressed)
    {
 	   if (row<=3) {
-		sceneBank.getScene(row).launch();
+		sceneBank.getScene(row+gridPage.grid_shift).launch();
 		gridPage.scene_active = row + gridPage.grid_shift;
 	   }
 	   else
@@ -413,12 +413,18 @@ gridPage.updateSideButtons  = function()
 	var offsetFormatted = offset.getFormatted();
 	var quantValue = quant.get();
 
-			
+	var alt = Colour.GREEN_LOW;
 
 
 
 	// last three scene LEDs are for various status flags
 	if (IS_SHIFT_PRESSED ) {
+		for(var j=0; j<4; j++)
+			{
+			
+			setSceneLEDColor(j, Colour.YELLOW_LOW);
+			}
+	
 		for(var j=4; j<8; j++)
 			{
 			
@@ -431,8 +437,18 @@ gridPage.updateSideButtons  = function()
 			scenePlaying = playing && ( j+gridPage.grid_shift == gridPage.scene_active );
 		   if ((scenePlaying) && (timerState==0)) {
 			setSceneLEDColor(j,  Colour.OFF );
-		   } else {
-			setSceneLEDColor(j, scenePlaying ? Colour.GREEN_FULL : Colour.GREEN_LOW );
+		   } 
+		   else 
+		   {
+				
+			     if (( gridPage.grid_shift==2)&&(j==1)) {
+					 alt = Colour.YELLOW_LOW;
+				 } else if (( gridPage.grid_shift==4)&&(j==3)) {
+					alt = Colour.YELLOW_LOW;
+				}
+				else
+					alt = Colour.GREEN_LOW;
+			    setSceneLEDColor(j, scenePlaying ? Colour.GREEN_FULL : alt );
 		   }
 		 
 		}
