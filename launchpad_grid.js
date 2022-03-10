@@ -30,7 +30,7 @@ gridPage.currentVelocity = 127;
 gridPage.split = true
 gridPage.grid_shift=0; //0,4,8,12
 gridPage.scene_active = -1; // no active scene
-
+gridPage.armed_track = -1;
 
 
 
@@ -297,14 +297,27 @@ gridPage.onGridButton = function(row, column, pressed)
 	
 	
 			
-		var t = trackBank.getTrack(track);
+		var t = trackBank.getChannel(track);
 		var l = t.getClipLauncherSlots();
 			
 
 		if (pressed) {
+
+				if (gridPage.armed_track>=0) {
+						trackBank.getChannel(gridPage.armed_track).arm().set(false);
+				}
+				
+				trackBank.scrollToChannel(track);
+				trackBank.getChannel(track).arm().set(true);
+				println("arm");
+				gridPage.armed_track = track;
+
+
 				if (IS_SHIFT_PRESSED) {
 					println("clear scene");
 					l.deleteClip(scene);
+					
+					showPopupNotification('Delete Clip '+(scene+1))
 				}
 				//if(isPlaying[column+8*scene] > 0)
 				if(  getPlaying(scene,column) )
