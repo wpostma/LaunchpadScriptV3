@@ -77,6 +77,9 @@ var activeNotes = null;
 var playing=0;
 var userVarPans = 8; // DO NOT CHANGE
 var userVelNote = false; // false recommended, true NOT recommended.
+var MUSICAL_STOP_STATE = 0;
+var MasterTrackVolume = 1.0;
+ 
 
 
 // New velocity setup, has a set number for low and high, and you use the two middle buttons to index the rest of the velocities.velocity setup is in Launchpad_Step_Sequencer.js
@@ -270,6 +273,21 @@ var sceneBank = null;
 
 var trackEquality = [];
 
+function getMasterVol() {
+   return masterTrack.volume().value().get();
+}
+function setMasterVol(v) {
+      if (v<0) {
+         v = 0;
+      }
+      if(v >1.0) {
+         v= 1.0;
+      }
+   println("setMasterVol "+v);
+
+   masterTrack.volume().value().set(v);
+}
+   
 
 // The init function gets called when initializing by Bitwig
 function init()
@@ -300,7 +318,7 @@ function init()
    transport.addLauncherOverdubObserver(function(state){
         WRITEOVR=state;
    });
-   
+
 
 //TVbene: variables for post record delay and default clip launch quantization
 	transport.getClipLauncherPostRecordingTimeOffset().markInterested();
@@ -399,6 +417,11 @@ function init()
       masterVuMeter = level;
    });
 
+   masterTrack.volume().value().markInterested();
+   
+   
+
+
    // Picks up the controllable knobs, buttons which have been set via "Learn Controller Assignment". There are 24 set here because there are 3 pages of user controls with 8 assignable controls on each
    userControls = host.createUserControls(24);
 
@@ -438,10 +461,29 @@ function polledFunction() {
   if (timerState > 3 ) {
      timerState = 0;
   }
-  host.scheduleTask(polledFunction,  500);
+  host.scheduleTask(polledFunction,  200);
+
+  if (MUSICAL_STOP_STATE>0) { 
+       println("Musical stop... ");
+       MUSICAL_STOP_STATE = MUSICAL_STOP_STATE+1; 
+       vol =  MasterTrackVolume - ( 0.05*MUSICAL_STOP_STATE);
+        if (vol <0 ) { 
+            vol = 0; 
+         }
+       setMasterVol(vol);
+        
+  }
+
 }
 
- 
+function clearMusicalStopState() {
+   println("clearMusicalStopState");
+   MUSICAL_STOP_STATE = 0;
+   setMasterVol(MasterTrackVolume);
+   masterTrack.mute().set(true);
+}
+
+
 
 // Function called on exit of the script
 function exit()
@@ -548,6 +590,20 @@ function nextMode() {
    } 
 }
 
+function RewindAndStopAllClips() {
+   if (IS_SHIFT_PRESSED) {
+      println("Rewind.");
+      transport.rewind();
+      println("Stop all clips.");
+        for (track=0; track<NUM_TRACKS;track++) {
+         var t = trackBank.getTrack(track);
+         var l = t.getClipLauncherSlots();
+         l.stop();
+      }
+      
+   }
+
+}
 // This is the main function which runs whenever a MIDI signal is sent
 // You can uncomment the printMIDI below to see the MIDI signals within Bitwigs Controller script console
 
@@ -574,25 +630,19 @@ function onMidi(status, data1, data2)
          case TopButton.CURSOR_UP:
             if (isPressed)
             {  
-               if (IS_SHIFT_PRESSED) {
-                  println("shift+play");
+               if (IS_SHIFT_PRESSED && playing) {
+                  println("shift+play: musical stop");
+                  MUSICAL_STOP_STATE = 1;
+                  MasterTrackVolume = getMasterVol();
+
+                  return;
                }
                println("play="+playing);
                if (playing != 0) 
                {	
                   transport.stop();
                   showPopupNotification("Stop");
-                  if (IS_SHIFT_PRESSED) {
-                     println("Rewind.");
-                     transport.rewind();
-                     println("Stop all clips.");
-                    	for (track=0; track<NUM_TRACKS;track++) {
-                        var t = trackBank.getTrack(track);
-                        var l = t.getClipLauncherSlots();
-                        l.stop();
-                     }
-                     
-                  }
+                 
                }
                else
                {  
@@ -603,7 +653,15 @@ function onMidi(status, data1, data2)
                   };
                   showPopupNotification("Play");
                   transport.play();
+                  masterTrack.mute().set(false);
 
+               }
+            }
+            else
+            {  if (MUSICAL_STOP_STATE>0) {
+                  transport.stop();
+                  RewindAndStopAllClips();
+                  host.scheduleTask(clearMusicalStopState,  2000);
                }
             }
             break;

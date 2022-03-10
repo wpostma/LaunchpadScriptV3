@@ -178,6 +178,7 @@ gridPage.onSceneButton = function(row, isPressed)
    if (isPressed)
    {
 	   if (row<=3) {
+		masterTrack.mute().set(false);
 		sceneBank.getScene(row+gridPage.grid_shift).launch();
 		gridPage.scene_active = row + gridPage.grid_shift;
 	   }
