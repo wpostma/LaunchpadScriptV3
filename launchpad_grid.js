@@ -43,12 +43,12 @@ ARMED=false;
 
 gridPage.nextPreset = function()
 {  println("next preset");
-	//cursorDevice.switchToNextPreset()
+	//cursorDevice.switchToNextPreset(); // use browser instead
 };
 
 gridPage.previousPreset = function()
 {   println("previous preset");
-	//cursorDevice.previousParameterPage();
+	//cursorDevice.switchToPreviousPreset(); // use browser instead
 };
  
 gridPage.nextParameterPage = function()
@@ -272,7 +272,7 @@ gridPage.onSceneButton = function(row, isPressed)
 				}
 			} 
 			else {
-				println("vel");
+				println("Change Keys velocity");
 		    	gridPage.ChangeVelocity();
 			}
             break;
@@ -282,6 +282,7 @@ gridPage.onSceneButton = function(row, isPressed)
 				gridPage.cursorDeviceReplace();
 
 			} else if (IS_SHIFT_PRESSED) {
+				// you can create a track given any known bitwig device name or plugin name
 				createSpecialTrack('Drum Machine');
 			} else {
 				gridPage.SetQuantNext();
@@ -299,18 +300,31 @@ gridPage.onSceneButton = function(row, isPressed)
 
 gridPage.onUser1 = function(isPressed)
 {
-   println("grid user1 : press "+isPressed);
+	if (isPressed) {
+		if (isSetPressed) {
+			gridPage.previousPreset();
+
+		} else if (IS_SHIFT_PRESSED) {
+		
+		} else {
+			
+		}
+	}
    
 }
 
 gridPage.onUser2 = function(isPressed)
 {
-	println("grid user2 "+isPressed);
+	if (isPressed) {
+		if (isSetPressed) {
+			gridPage.nextPreset();
 
-    // if (isPressed)
-    // {
-	// 	ARMED = 10;
-    // }
+		} else if (IS_SHIFT_PRESSED) {
+		
+		} else {
+			
+		}
+	}
 }
 
 // This detects when the Mixer button is pressed and changes the orientation identifier mixerAlignedGrid and displays the text popup

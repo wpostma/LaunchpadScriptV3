@@ -38,3 +38,6 @@ Derivation:
 
 based on https://github.com/TVbene/LaunchpadScriptV3
 which was based on https://github.com/dplduffy/LaunchpadScriptV3
+
+Also includes stuff borrowed from here:
+  https://github.com/wpostma/bitwig_scripts/blob/master/Controller%20Scripts/yamaha_mx49_mx61/Yamaha-MX49-MX61.control.js
