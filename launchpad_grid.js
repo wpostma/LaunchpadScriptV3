@@ -31,20 +31,34 @@ gridPage.split = true
 gridPage.grid_shift=0; //0,4,8,12
 gridPage.scene_active = -1; // no active scene
 gridPage.armed_track = -1;
+gridPage.canCycle = false; // parameter pages : cycle when reach end? 
 
 
 
 
 ARMED=false;
 
+
+
+
+gridPage.nextPreset = function()
+{  println("next preset");
+	//cursorDevice.switchToNextPreset()
+};
+
+gridPage.previousPreset = function()
+{   println("previous preset");
+	//cursorDevice.previousParameterPage();
+};
+ 
 gridPage.nextParameterPage = function()
-{  println("npp");
-	cursorDevice.nextParameterPage();
+{  println("next parameter page");
+   remoteControls.selectNextPage(gridPage.canCycle); // replaces CursorTrack.nextParameterPage() which is DEPRECATED but not documented as such.
 };
 
 gridPage.previousParameterPage= function()
-{ println("ppp");
-	cursorDevice.previousParameterPage();
+{   println("previous param page");
+	remoteControls.selectPreviousPage(gridPage.canCycle); // replaces CursorTrack.previousParameterPage() which is DEPRECATED but not documented as such.
 };
  
 

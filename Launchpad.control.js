@@ -1,4 +1,4 @@
-// FrankenLaunchpad Split MK1 WP : 2022-03-09
+// FrankenLaunchpad Split MK1 WP : 2022-03-18
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
 // Heavily modified script for live guitar looping.
@@ -393,12 +393,20 @@ function init()
    // Cursor track allow selection of a track
    cursorTrack = host.createArrangerCursorTrack(0, 0);
    cursorTrack.addNoteObserver(seqPage.onNotePlay);
+   cursorDevice = cursorTrack.createCursorDevice();
+   cursorDevice.exists().markInterested();
+   remoteControls = cursorDevice.createCursorRemoteControlsPage(8);
+
+
    
    for (var t = 0;t<NUM_TRACKS;t++) {
       var track = trackBank.getChannel(t);
       trackEquality[t] = cursorTrack.createEqualsValue(track);
    
    }
+   cursorDeviceBrowser = cursorDevice.createDeviceBrowser(4,4);//columns,results
+
+
   
 
    // cursorTrack.playingNotes().addValueObserver(function(notes) {
