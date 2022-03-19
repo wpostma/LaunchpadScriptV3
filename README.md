@@ -2,22 +2,38 @@ Launchpad Script V3 for Live Looping
 ==============
 
 
-Warren's Launchpad V3 Script 2022-03-03 
+Warren's Launchpad V3 Script 2022-03-18
 
-1. Always starts up in a clip launcher + midi key playing split mode. Top half is 4 rows, each ROW is one scene. Each of the 8 columns of the grid is one instrument. This is meant to correspond to the view where bitwig is showing instruments in columns, scenes as rows.  The scene launch buttons, the first four of them actually launch... scenes.  Weird eh?
 
-2. More features and modes coming soon, but the script this was based on heavily removed stuff until there was not much left but the main page.  There's no intent to make this a full function Launchpad script, but rather a quirky clip recording and playback jamming tool only.
+1. Always starts up in a clip launcher + midi key playing split mode. Top half is 4 rows, each ROW is one scene. Each of the 8 columns of the grid is one instrument. This is meant to correspond to the view where bitwig is showing instruments in columns, scenes as rows.  The scene launch buttons, the first four of them actually launch... scenes.  Weird eh?  That's a lot like the way this worked in Live.
+
+2. There's no intent to make this a full function Launchpad script as DrivenByMOss, but rather to be a quirky alternative, focused around clip recording and playback as a keys and guitar jamming tool.
 
 3. A pdf might get made at some point and a youtube video showing this when it's further along.
 
-4. The up arrow key is a PLAY/STOP CONTROL.
+4. Top Row Button Functions (may differ by mode, items below are how it works in grid mode)
+    UP - Play/Stop. Hit to play and when playing hit again to stop. Hit shift key to do a fade out and stop.
+    DOWN - MODE/VIEW. Press while in grid mode to shift the bottom half through different octaves of keys. The highest set of keys also has midi CCs.
+    LEFT - Previous track.  +SHIFT = Previous Mode.
+    RIGHT - Next track. +SHIFT = Next mode.
+    USER1 - not yet defined.
+    USER2 - not yet defined.
+    MIXER - Acts as a shift key with many other buttons including UP,DOWN,LEFT,RIGHT, and many of the side buttons.
 
-5.  The down arrow key is a mode/view command.  For now the main thing it does is change which bank of midi notes the bottom half of the pad sends.
+5. Side buttons ( grid mode)
+    First four are SCENE launch buttons.
+    Next four are:
 
-6. The bottom half of the 8x8 grid is midi note sends.
+    STOP - Next Preset Page.  +SHIFT = Preset Page.
+    TRKON - Not defined next. May become Next preset and +SHIFT would be previous preset.
+    SOLO - Keyboard velocity. Since the MK1 launchpad is not velocity sensitive, this lets you toggle among some fixed velocities.
+    ARM - Loop quantize
 
-7. The last row (row 8) will indicate which loop quantize mode is active and the scene button toggles this value (causing the lit pad to move over).  This last row is still used for midi note triggering.  I do plan to add pitch/scale quantization mapping to this but for now it's just semitones, but the lowest bank is set to the same midi note that most clip launcher and drum devices in bitwig expect.  It's not meant to be used to play melodically.
+6. Bottom four rows of clip/note pads.
+   The bottom half of the 8x8 grid is midi note sends.  Which note it sends changes when you press MODE/VIEW (DOWN).
+   The last row (row 8) will indicate which loop quantize mode is active and the scene button toggles this value (causing the lit pad to move over).  This last row is still used for midi note triggering.  I do plan to add pitch/scale quantization mapping to this but for now it's just semitones, but the lowest bank is set to the same midi note that most clip launcher and drum devices in bitwig expect.  It's not meant to be used to play melodically.
 
 Derivation:
+
 based on https://github.com/TVbene/LaunchpadScriptV3
 which was based on https://github.com/dplduffy/LaunchpadScriptV3
