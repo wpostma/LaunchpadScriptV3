@@ -207,6 +207,15 @@ gridPage.SetQuantNext = function()
 
 }
 
+gridPage.cursorDeviceReplace = function()
+{
+	if (cursorDevice.exists().get()) {
+		cursorDevice.browseToReplaceDevice();
+	} else {
+		cursorDevice.browseToInsertAtStartOfChain();
+	}
+}
+
 // SIDE BUTTONS:
 //   TVbene: side buttons select post record delay and launch quantization
 gridPage.onSceneButton = function(row, isPressed)
@@ -241,14 +250,42 @@ gridPage.onSceneButton = function(row, isPressed)
             break;
 
          case MixerButton.SOLO:
-			println("vel");
-		    gridPage.ChangeVelocity();
+			if (isSetPressed) {
+				isSolo =  cursorDevice.getChannel().getSolo().get(); 
+				cursorDevice.getChannel().getSolo().set( !isSolo );
+				if (!isSolo) {
+					cursorDevice.getChannel().getMute().set(false);
+					showPopupNotification("SOLO");
+				} else {
+					showPopupNotification("SOLO Off");
+				}
+
+
+			} else if (IS_SHIFT_PRESSED) {
+				isMute =  cursorDevice.getChannel().getMute().get(); 
+				cursorDevice.getChannel().getMute().set( !isMute );
+				if (!isMute) {
+					cursorDevice.getChannel().getSolo().set( false );
+					showPopupNotification("MUTE");
+				} else {
+					showPopupNotification("MUTE Off");
+				}
+			} 
+			else {
+				println("vel");
+		    	gridPage.ChangeVelocity();
+			}
             break;
 
          case MixerButton.ARM:
-			//quant.set("1/4");
-			gridPage.SetQuantNext();
-			//host.scheduleTask(gridPage.SetQuantNext,  100);
+			if (isSetPressed) {
+				gridPage.cursorDeviceReplace();
+
+			} else if (IS_SHIFT_PRESSED) {
+				createSpecialTrack('Drum Machine');
+			} else {
+				gridPage.SetQuantNext();
+			}
 			break;
 
       }
@@ -258,7 +295,7 @@ gridPage.onSceneButton = function(row, isPressed)
 
 
 
-//TVbene: Topbuttons 6, 7 now working without shift
+
 
 gridPage.onUser1 = function(isPressed)
 {
@@ -268,12 +305,12 @@ gridPage.onUser1 = function(isPressed)
 
 gridPage.onUser2 = function(isPressed)
 {
-	println("user2 : arm function 10");
+	println("grid user2 "+isPressed);
 
-    if (isPressed)
-    {
-		ARMED = 10;
-    }
+    // if (isPressed)
+    // {
+	// 	ARMED = 10;
+    // }
 }
 
 // This detects when the Mixer button is pressed and changes the orientation identifier mixerAlignedGrid and displays the text popup
@@ -400,7 +437,7 @@ gridPage.onGridButton = function(row, column, pressed)
 				}
 				else
 				{  
-				
+					masterTrack.mute().set(false);
 					if ((scene>=0)&&(scene<=7)) {
 						println("launch track "+(track+1)+" clip "+(scene+1));
 						l.launch(scene);

@@ -288,6 +288,40 @@ function setMasterVol(v) {
    masterTrack.volume().value().set(v);
 }
    
+function createSpecialTrack(pluginName) {
+   application.createInstrumentTrack(0);
+   
+   host.scheduleTask( function() {
+       trackBank.scrollToChannel(0);
+       c = RGB_COLORS[Math.floor(Math.random()*RGB_COLORS.length)]
+       trackBank.getChannel(0).color().set(c[0], c[1], c[2])
+       trackBank.getChannel(0).browseToInsertAtStartOfChain();
+       application.arrowKeyDown();
+       host.scheduleTask( function() {
+           for (var i=0; i<cursorResultBank.getSize(); i++) {
+               item = cursorResultBank.getItem(i)
+               item.isSelected().set(true);
+               name = item.name().getValue();
+               println( "Sel " + i + " -> " +item.name().getValue());
+               if (name == pluginName) break;
+           }
+           browser.commit();
+           t = trackBank.getChannel(0);
+           t.selectInMixer(); 
+
+       }, 300); 
+   }, 100);
+
+}
+
+selectedName = [""]
+
+function getSelectedNameObserver() {
+   return function( name ) {
+       println( "selected name: "+name );
+       selectedName[0] = name
+   }
+}
 
 // The init function gets called when initializing by Bitwig
 function init()
@@ -393,10 +427,17 @@ function init()
    // Cursor track allow selection of a track
    cursorTrack = host.createArrangerCursorTrack(0, 0);
    cursorTrack.addNoteObserver(seqPage.onNotePlay);
-   cursorDevice = cursorTrack.createCursorDevice();
-   cursorDevice.exists().markInterested();
+   cursorDevice = cursorTrack.createCursorDevice(); //primaryDevice
+   cursorDevice.exists().markInterested(); 
+   cursorDevice.getChannel().getSolo().markInterested(); 
+   cursorDevice.getChannel().getMute().markInterested(); 
    remoteControls = cursorDevice.createCursorRemoteControlsPage(8);
 
+   browser  = host.createPopupBrowser();
+   resultColumn = browser.resultsColumn();
+   cursorResult = resultColumn.createCursorItem();
+   cursorResult.addValueObserver(100, "", getSelectedNameObserver() );
+   cursorResultBank = resultColumn.createItemBank(1000);
 
    
    for (var t = 0;t<NUM_TRACKS;t++) {
@@ -714,7 +755,15 @@ function onMidi(status, data1, data2)
          case TopButton.SESSION:
             
             isSetPressed  = isPressed;
-            println("isSetPressed="+isSetPressed)
+            if (isSetPressed)
+            { 
+               println("[META] Pressed");
+            } 
+            else
+            { 
+               println("[META] Release");
+            }
+
             break;
 
          case TopButton.USER1:

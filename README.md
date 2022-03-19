@@ -14,8 +14,9 @@ Warren's Launchpad V3 Script 2022-03-18
 4. Top Row Button Functions (may differ by mode, items below are how it works in grid mode)
     UP - Play/Stop. Hit to play and when playing hit again to stop. Hit shift key to do a fade out and stop.
     DOWN - MODE/VIEW. Press while in grid mode to shift the bottom half through different octaves of keys. The highest set of keys also has midi CCs.
-    LEFT - Previous track.  +SHIFT = Previous Mode.
-    RIGHT - Next track. +SHIFT = Next mode.
+    LEFT - Previous track. +SHIFT= TrackBank Shift Up     +META = Previous Mode. 
+    RIGHT - Next track.    +SHIFT=  TrackBank Shift Down  +META = Next mode. 
+    SESSION - META key. Works as a second shift key, for key combinations.
     USER1 - not yet defined.
     USER2 - not yet defined.
     MIXER - Acts as a shift key with many other buttons including UP,DOWN,LEFT,RIGHT, and many of the side buttons.
@@ -25,7 +26,7 @@ Warren's Launchpad V3 Script 2022-03-18
     Next four are:
 
     STOP - Next Preset Page.  +SHIFT = Preset Page.
-    TRKON - Not defined next. May become Next preset and +SHIFT would be previous preset.
+    TRKON - Next Device.  +SHIFT = PRevious Device.
     SOLO - Keyboard velocity. Since the MK1 launchpad is not velocity sensitive, this lets you toggle among some fixed velocities.
     ARM - Loop quantize
 
