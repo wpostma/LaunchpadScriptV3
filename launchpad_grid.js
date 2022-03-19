@@ -44,11 +44,13 @@ ARMED=false;
 gridPage.nextPreset = function()
 {  println("next preset");
 	//cursorDevice.switchToNextPreset(); // use browser instead
+	browser.selectNextFile();
 };
 
 gridPage.previousPreset = function()
 {   println("previous preset");
 	//cursorDevice.switchToPreviousPreset(); // use browser instead
+	browser.selectPreviousFile();
 };
  
 gridPage.nextParameterPage = function()
@@ -322,7 +324,7 @@ gridPage.onUser2 = function(isPressed)
 		} else if (IS_SHIFT_PRESSED) {
 		
 		} else {
-			
+			// browser.startBrowsing(); no worky.
 		}
 	}
 }
