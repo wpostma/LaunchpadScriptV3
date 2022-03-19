@@ -37,6 +37,28 @@ gridPage.armed_track = -1;
 
 ARMED=false;
 
+gridPage.nextParameterPage = function()
+{  println("npp");
+	cursorDevice.nextParameterPage();
+};
+
+gridPage.previousParameterPage= function()
+{ println("ppp");
+	cursorDevice.previousParameterPage();
+};
+ 
+
+
+gridPage.previousDevice = function()
+{
+	cursorDevice.selectPrevious();
+	
+};
+
+gridPage.nextDevice = function()
+{
+	cursorDevice.selectNext();
+};
 
 gridPage.CursorLeft = function(isPressed)
 {
@@ -178,6 +200,7 @@ gridPage.onSceneButton = function(row, isPressed)
    if (isPressed)
    {
 	   if (row<=3) {
+		// top half is like ableton live launchpad, launches a scene.
 		masterTrack.mute().set(false);
 		scene = row+gridPage.grid_shift;
 		//println("scene="+scene);
@@ -187,12 +210,25 @@ gridPage.onSceneButton = function(row, isPressed)
 	   else
      switch(row)
       {   
+		  	case MixerButton.STOP:
+				if (IS_SHIFT_PRESSED) {
+					gridPage.previousParameterPage();
+				} else {
+				   gridPage.nextParameterPage();
+				}
+			   
+			  break;
          case MixerButton.TRK_ON: 
-			gridPage.ChangeVelocity();
+		 	if (IS_SHIFT_PRESSED) {
+				 gridPage.previousDevice();
+			 } else {
+				gridPage.nextDevice();
+			 }
             break;
 
          case MixerButton.SOLO:
-			//quant.set("1/2");
+			println("vel");
+		    gridPage.ChangeVelocity();
             break;
 
          case MixerButton.ARM:
@@ -246,11 +282,13 @@ ROWARM=false;
 
 var BASE_NOTE = 36; // C2=36
 var NOTE_PAGE_SIZE = 24;
+var BASE_NOTES = [36,12,48,96];
 
 gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 {
 	var rowInvert = 3 - (row-4);
-	var baseNoteNo = BASE_NOTE+(NOTE_PAGE_SIZE*view_shift);
+	var baseNoteNo = BASE_NOTES[view_shift];
+	
 	var channel = 0;
 	
 	if (rowInvert<0 ) {
