@@ -745,6 +745,11 @@ gridPage.updateTrackValue = function(track)
 	
 	tplay = transport.isPlaying().get();
 
+	//
+	randcol=-1;
+	if (Math.random()>0.9)
+		randcol = 2+Math.floor(Math.random()*6);
+
 	//println("active "+active);
 
 	// scenes are ROWS in the launchpad in this script. 
@@ -809,7 +814,7 @@ gridPage.updateTrackValue = function(track)
 			 } 
 			 else if ( active ) {
 				 col = Colour.OFF;
-				 if (tplay&&(Math.random()>0.75)) {
+				 if (tplay&&(randcol==track)) {
 				 		col=Colour.ORANGE;
 						 
 				}

@@ -543,9 +543,9 @@ function exit()
 // Reset all lights by sending MIDI and sets all values in the pendingLEDs array to 0
 function resetDevice()
 {  
-  if (trace>0) {
+  //if (trace>0) {
    println("resetDevice");
-  } 
+  //} 
    sendMidi(0xB0, 0, 0);
 
    for(var i=0; i<LED_COUNT; i++)
