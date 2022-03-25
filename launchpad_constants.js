@@ -141,7 +141,7 @@ function ViewShiftColour(index) {
       case 2:
          return Colour.YELLOW_LOW;
       case 3:
-         return Colour.ORANGE;
+         return Colour.GREEN_LOW;
       case 4:
          return Colour.RED_FULL;
       default:

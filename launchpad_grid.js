@@ -330,7 +330,7 @@ gridPage.onUser1 = function(isPressed)
 		}
 	}
 	else {
-		println("skippy");
+		//println("user1 button release");
 	}
    
 }
@@ -505,8 +505,9 @@ gridPage.onGridButton = function(row, column, pressed)
 	}
 	else if ((row >= gridPage.maxrow)&&(gridPage.split)) 
 	{
+		if (trace>2) {
 		println("note @ "+row+" "+column);
-
+		}
 
 		gridPage.doGridNoteOrCCButton(row,column,pressed);
 		
@@ -545,6 +546,7 @@ function setBottomSparkle(coloura,colourb)
 gridPage.updateGrid = function()
 {
 	
+	clipActive = transport.isPlaying().get();
 
    for(var col=0; col<gridPage.maxcol; col++)
    {
@@ -557,7 +559,7 @@ gridPage.updateGrid = function()
 				setCellLED(gridPage.columnDown,gridPage.rowDown, Colour.YELLOW_FULL);
 			}
 			else
-			if ((!IS_SHIFT_PRESSED)&&(!isSetPressed)&&isPlaying) {
+			if ((!IS_SHIFT_PRESSED)&&(!isSetPressed)&&clipActive) {
 				
 					setBottomSparkle(ViewShiftColour(view_shift),Colour.ORANGE);
 				
@@ -750,7 +752,7 @@ gridPage.updateTrackValue = function(track)
 	{
 		var i = track_offset + ((scene+gridPage.grid_shift) *8);
 
-		var col = Colour.OFF;
+		var col = Colour.ORANGE;
 		var fullval = mute[track_offset] ? 1 : 3;
 	
 		 if (hasContent[i] > 0)
@@ -788,7 +790,7 @@ gridPage.updateTrackValue = function(track)
 				   } else  {
 					
 											
-					   col = Colour.GREEN_LOW;
+					   col = Colour.GREEN_LOW; 
 					
 				   };	
 			}
@@ -799,16 +801,26 @@ gridPage.updateTrackValue = function(track)
 		 }
 		 else
 		 {
+			 
+
 			 // not selected track : yellow.
 			 if (selected) {
 				 col = Colour.YELLOW_LOW;
 			 } 
 			 else if ( active ) {
 				 col = Colour.OFF;
+				 if (tplay&&(Math.random()>0.75)) {
+				 		col=Colour.ORANGE;
+						 
+				}
+
 			 } 
 			 else {
 				col = Colour.RED_LOW; // disabled
 			 }
+			 //if (col =12) {
+			 // println("track "+track+" scene "+scene+ " "+Math.random());
+			 //}
 		 }
 		
 
