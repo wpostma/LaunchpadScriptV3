@@ -35,6 +35,8 @@ gridPage.canCycle = false; // parameter pages : cycle when reach end?
 
 gridPage.maxrow = 8;
 gridPage.maxcol = 8;
+gridPage.rowDown= -1;
+gridPage.columnDown= -1;
 
 
 
@@ -219,7 +221,9 @@ gridPage.cursorDeviceReplace = function()
 	} else {
 		cursorDevice.browseToInsertAtStartOfChain();
 	}
-}// side buttons
+}
+
+// side buttons press. (scene,  vol,pan,etc)
 gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
@@ -230,8 +234,8 @@ gridPage.onSceneButton = function(row, isPressed)
 		scene = row+gridPage.grid_shift;
 		
 		sceneBank.getScene(scene).launch();
-		println("launch "+scene);
-		
+		println("launch scene "+scene+1 );
+
 		gridPage.scene_active = scene; 
 	   }
 	   else
@@ -371,6 +375,15 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 {
 	var rowInvert = 3 - (row-4);
 	var baseNoteNo = BASE_NOTES[view_shift];
+
+	if (pressed) {
+		gridPage.rowDown=row;
+		gridPage.columnDown=column;
+	} else {
+		gridPage.rowDown=-1;
+		gridPage.columnDown=-1;
+
+	}
 	
 	var channel = 0;
 	
@@ -516,9 +529,22 @@ function setBottomSplitGridColour(colour)
       setCellLED(c,r, colour );
 }
 
+function setBottomSparkle(coloura,colourb) 
+{
+   for (var c=0;c<8;c++) //
+   for (var r=4;r<8;r++) {
+	   	if (Math.random()>0.3)
+      		setCellLED(c,r, coloura )
+		else
+			setCellLED(c,r, colourb )
+   }
+}
+
+
 // updates the grid (no more vumeter feature)
 gridPage.updateGrid = function()
 {
+	
 
    for(var col=0; col<gridPage.maxcol; col++)
    {
@@ -526,6 +552,17 @@ gridPage.updateGrid = function()
    }
    if (gridPage.split) {
 			//	draw bottom area keys
+			if ((gridPage.columnDown>=0)&&(gridPage.rowDown>=0)) {
+				setBottomSparkle(Colour.ORANGE,ViewShiftColour(view_shift));
+				setCellLED(gridPage.columnDown,gridPage.rowDown, Colour.YELLOW_FULL);
+			}
+			else
+			if ((!IS_SHIFT_PRESSED)&&(!isSetPressed)&&isPlaying) {
+				
+					setBottomSparkle(ViewShiftColour(view_shift),Colour.ORANGE);
+				
+			}
+			else
 			setBottomSplitGridColour(ViewShiftColour(view_shift));
    }
 
