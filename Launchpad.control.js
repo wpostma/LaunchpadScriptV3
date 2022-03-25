@@ -1,4 +1,4 @@
-// FrankenLaunchpad Split MK1 WP : 2022-03-18
+// FrankenLaunchpad Split MK1 WP : 2022-03-24
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
 // Heavily modified script for live guitar looping.
@@ -542,15 +542,18 @@ function exit()
 
 // Reset all lights by sending MIDI and sets all values in the pendingLEDs array to 0
 function resetDevice()
-{  if (trace>0) {
+{  
+  if (trace>0) {
    println("resetDevice");
   } 
    sendMidi(0xB0, 0, 0);
 
-   for(var i=0; i<80; i++)
+   for(var i=0; i<LED_COUNT; i++)
    {
+      activeLEDs[i] = -1;
       pendingLEDs[i] = 0;
    }
+
    for(var i=0; i<64; i++)
    {
       isPlaying[i] = 0;
@@ -768,7 +771,7 @@ function onMidi(status, data1, data2)
 
          case TopButton.USER1:
            
-                println("user1");
+                println("user1 "+isPressed);
          
                 activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)
@@ -836,7 +839,7 @@ function onMidi(status, data1, data2)
 // Clears all the lights
 function clear()
 {
-   for(var i=0; i<80; i++)
+   for(var i=0; i<LED_COUNT; i++)
    {
       pendingLEDs[i] = Colour.OFF;
    }
@@ -887,8 +890,8 @@ function setCellLED2(track, colour)
  
  // arrays of 80 buttons, the main 64 pads and the 8 at the top and 8 at side. Pending is used for lights to be sent, active contains the lights already on
 
-var pendingLEDs = new Array(80);
-var activeLEDs = new Array(80);
+var pendingLEDs = new Array(LED_COUNT);
+var activeLEDs = new Array(LED_COUNT);
 
 // This function compares the LEDs in pending to those in active and if there is a difference it will send them via MIDI message
 // If there is more than 30 lights changed it sends the MIDI in a single message ("optimized mode") rather than individually
@@ -916,27 +919,9 @@ function flushLEDs()
       println("flushLEDs active. changedCount "+changedCount);
    };
    
-   // if there is a lot of LEDs, use an optimized mode
-   // (which looks to me like it sends all in one MIDI message
-   //TVbene changed to prevent optimised mode
-   if (changedCount > 100)
-   {
-      if (trace>1) {
-         println("flushLEDs optimized. "+changedCount);
-      };
-      // send using channel 3 optimized mode
-      for(var i = 0; i<80; i+=2)
-      {
-         sendMidi(0x92, pendingLEDs[i], pendingLEDs[i+1]);
-         activeLEDs[i] = pendingLEDs[i];
-         activeLEDs[i+1] = pendingLEDs[i+1];
-      }
-      sendMidi(0xB0, 104 + 7, activeLEDs[79]); // send dummy message to leave optimized mode
-   }
-   // if not a lot of LEDs need changing send them in individual MIDI messages
-   else
-   {
-      for(var i = 0; i<80; i++)
+  
+   
+      for(var i = 0; i<LED_COUNT; i++)
       {
          if (pendingLEDs[i] != activeLEDs[i])
          {
@@ -960,7 +945,7 @@ function flushLEDs()
             }
          }
       }
-   }
+   
 }
 
 // This function is not called anywhere within the rest of the Launchpad script. textToPattern sounds like it may have been the start of displaying text on the Launchpad, or could be left from another script for another device.

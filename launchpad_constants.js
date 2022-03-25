@@ -1,7 +1,7 @@
 var NOTE_ON = 144; // + channel.
 var NOTE_OFF = 128;
-
 var CC_MSG =  176; // + midi channel.
+var LED_COUNT = 90;
 
 // CCs for the Top buttons
 var TopButton =
@@ -131,5 +131,24 @@ var seqPageNoteMode = false;
 var sendNumber = 0;
 var setPan = 0;
 var undo1 = false;
+
+function ViewShiftColour(index) {
+   switch (index) {
+      case 0:
+         return Colour.GREEN_FULL;
+      case 1:
+         return Colour.YELLOW_FULL;
+      case 2:
+         return Colour.YELLOW_LOW;
+      case 3:
+         return Colour.ORANGE;
+      case 4:
+         return Colour.RED_FULL;
+      default:
+         return Colour.OFF;
+
+   }
+}
+    
 
 

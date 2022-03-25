@@ -27,11 +27,14 @@ gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
 gridPage.currentVelocity = 127;
-gridPage.split = true
+gridPage.split = false;
 gridPage.grid_shift=0; //0,4,8,12
 gridPage.scene_active = -1; // no active scene
 gridPage.armed_track = -1;
 gridPage.canCycle = false; // parameter pages : cycle when reach end? 
+
+gridPage.maxrow = 8;
+gridPage.maxcol = 8;
 
 
 
@@ -217,14 +220,11 @@ gridPage.cursorDeviceReplace = function()
 		cursorDevice.browseToInsertAtStartOfChain();
 	}
 }
-
-// SIDE BUTTONS:
-//   TVbene: side buttons select post record delay and launch quantization
 gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
    {
-	   if (row<=3) {
+	   if (row<=gridPage.maxrow) {
 		// top half is like ableton live launchpad, launches a scene.
 		masterTrack.mute().set(false);
 		scene = row+gridPage.grid_shift;
@@ -307,10 +307,24 @@ gridPage.onUser1 = function(isPressed)
 			gridPage.previousPreset();
 
 		} else if (IS_SHIFT_PRESSED) {
+			println("shift user1");
 		
 		} else {
 			
+			gridPage.split = !gridPage.split;
+			println("split ="+gridPage.split);
+			if (gridPage.split) {
+				gridPage.maxrow =4; 
+
+			} 
+			else {
+				gridPage.maxrow = 8;
+			}
+
 		}
+	}
+	else {
+		println("skippy");
 	}
    
 }
@@ -411,7 +425,7 @@ gridPage.onGridButton = function(row, column, pressed)
 {
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
     // println("gridPage.onGridButton row "+row+" column "+column+" pressed "+pressed );
-	if ((row < 4)||(!gridPage.split)) 
+	if ((row < gridPage.maxrow)||(!gridPage.split)) 
 	{
 		var track = column;
 		var scene =  row+gridPage.grid_shift;
@@ -466,9 +480,10 @@ gridPage.onGridButton = function(row, column, pressed)
 		}
 
 	}
-	else if ((row >= 4)&&(gridPage.split)) 
+	else if ((row >= gridPage.maxrow)&&(gridPage.split)) 
 	{
-		//println("noc");
+		println("note @ "+row+" "+column);
+
 
 		gridPage.doGridNoteOrCCButton(row,column,pressed);
 		
@@ -478,13 +493,30 @@ gridPage.onGridButton = function(row, column, pressed)
 
 };
 
+function setTopSplitGridColour(colour) 
+{
+   for (var c=0;c<8;c++) //
+   for (var r=0;r<4;r++) // GRID_NOTE_ROWS
+      setCellLED(c,r, colour );
+}
+function setBottomSplitGridColour(colour) 
+{
+   for (var c=0;c<8;c++) //
+   for (var r=4;r<8;r++) // GRID_NOTE_ROWS
+      setCellLED(c,r, colour );
+}
+
 // updates the grid (no more vumeter feature)
 gridPage.updateGrid = function()
 {
 
-   for(var r=0; r<8; r++)
+   for(var col=0; col<gridPage.maxcol; col++)
    {
-      this.updateTrackValue(r); // one column of grid
+      this.updateTrackValue(col); // one column of grid
+   }
+   if (gridPage.split) {
+			//	draw bottom area keys
+			setBottomSplitGridColour(ViewShiftColour(view_shift));
    }
 
 
@@ -550,12 +582,13 @@ gridPage.updateSideButtons  = function()
 
 	// last three scene LEDs are for various status flags
 	if (IS_SHIFT_PRESSED ) {
-		for(var j=0; j<4; j++)
+		for(var j=0; j<gridpage.maxrow; j++)
 			{
 			
 			setSceneLEDColor(j, Colour.YELLOW_LOW);
 			}
 	
+		if (gridPage.split)
 		for(var j=4; j<8; j++)
 			{
 			
@@ -563,7 +596,7 @@ gridPage.updateSideButtons  = function()
 			}
 	}
 	else {
-		for(var j=0; j<4; j++)
+		for(var j=0; j<gridPage.maxrow; j++)
 		{
 			scenePlaying = playing && ( j+gridPage.grid_shift == gridPage.scene_active );
 		   if ((scenePlaying) && (timerState==0)) {
@@ -584,10 +617,12 @@ gridPage.updateSideButtons  = function()
 		 
 		}
 
-		setSceneLEDColor(4, Colour.YELLOW_LOW);
-		setSceneLEDColor(5, Colour.YELLOW_FULL);
-		setSceneLEDColor(6, Colour.RED_LOW);
-		setSceneLEDColor(6, Colour.GREEN_LOW);
+		if (!gridPage.split) {
+		 setSceneLEDColor(4, Colour.YELLOW_LOW);
+		 setSceneLEDColor(5, Colour.YELLOW_FULL);
+		 setSceneLEDColor(6, Colour.RED_LOW);
+		 setSceneLEDColor(6, Colour.GREEN_LOW);
+		}
 		
 	
 	}
@@ -597,28 +632,8 @@ gridPage.updateSideButtons  = function()
    
 };
 
+/*
 
-// track = column
-gridPage.updateTrackValue = function(track)
-{
-	track_offset = track;
-
-	active = trackBank.getChannel(track_offset).isActivated().get();
-	selected = active && trackEquality[track_offset].get();
-	//println("selected "+selected);
-	
-	tplay = transport.isPlaying().get();
-
-	//println("active "+active);
-
-	// scenes are ROWS in the launchpad in this script. 
-	for(var scene=0; scene<8; scene++)
-	{
-		var i = track_offset + ((scene+gridPage.grid_shift) *8);
-
-		var col = Colour.OFF;
-		var fullval = mute[track_offset] ? 1 : 3;
-	
 		 a = Colour.RED_LOW;
 		 b = Colour.RED_FULL;
 		 if (view_shift==1)  {
@@ -666,8 +681,31 @@ gridPage.updateTrackValue = function(track)
 			 
 	
 		
-		if (scene<4)
-		{
+		
+*/
+
+
+// track = column
+gridPage.updateTrackValue = function(track)
+{
+	track_offset = track;
+
+	active = trackBank.getChannel(track_offset).isActivated().get();
+	selected = active && trackEquality[track_offset].get();
+	//println("selected "+selected);
+	
+	tplay = transport.isPlaying().get();
+
+	//println("active "+active);
+
+	// scenes are ROWS in the launchpad in this script. 
+	for(var scene=0; scene<gridPage.maxrow; scene++)
+	{
+		var i = track_offset + ((scene+gridPage.grid_shift) *8);
+
+		var col = Colour.OFF;
+		var fullval = mute[track_offset] ? 1 : 3;
+	
 		 if (hasContent[i] > 0)
 		 { 
 			if ((isQueued[i] > 0)&&(tplay))
@@ -716,16 +754,16 @@ gridPage.updateTrackValue = function(track)
 		 {
 			 // not selected track : yellow.
 			 if (selected) {
-				 col = Colour.YELLOW_FULL;
+				 col = Colour.YELLOW_LOW;
 			 } 
 			 else if ( active ) {
-			 col = Colour.YELLOW_LOW;
+				 col = Colour.OFF;
 			 } 
 			 else {
-				col = Colour.OFF; // disabled
+				col = Colour.RED_LOW; // disabled
 			 }
 		 }
-		}
+		
 
 
 		 setCellLED(track, scene, col);
