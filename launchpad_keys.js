@@ -11,13 +11,15 @@ keysPage.title = "Keys / Drums";
 
 keysPage.CursorLeft = function(isPressed)
 {
+ println("cursor left on keys");
 
 }
 
 
 keysPage.CursorRight = function(isPressed)
 {
-
+ println("cursor right on keys");
+ 
 }
 
 keysPage.updateOutputState = function()

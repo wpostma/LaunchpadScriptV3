@@ -228,7 +228,7 @@ gridPage.onSceneButton = function(row, isPressed)
 		// top half is like ableton live launchpad, launches a scene.
 		masterTrack.mute().set(false);
 		scene = row+gridPage.grid_shift;
-		//println("scene="+scene);
+		
 		sceneBank.getScene(scene).launch();
 		gridPage.scene_active = scene; 
 	   }
@@ -459,6 +459,10 @@ gridPage.onGridButton = function(row, column, pressed)
 				//if(isPlaying[column+8*scene] > 0)
 				if(  getPlaying(scene,column) )
 				{	
+					if (isSetPressed) {
+						l.record(scene);
+					}
+					else
 					if (!IS_SHIFT_PRESSED) {
 						println("stop track "+(track+1) +" clip "+(scene+1));				
 						l.stop();
@@ -470,7 +474,11 @@ gridPage.onGridButton = function(row, column, pressed)
 					masterTrack.mute().set(false);
 					if ((scene>=0)&&(scene<=7)) {
 						println("launch track "+(track+1)+" clip "+(scene+1));
-						l.launch(scene);
+						if (isSetPressed) {
+							l.record(scene);
+						}
+						else
+							l.launch(scene);
 					} else {
 						println("launch track "+(track+1)+" clip "+(scene+1)+" ? ");
 						
@@ -582,7 +590,7 @@ gridPage.updateSideButtons  = function()
 
 	// last three scene LEDs are for various status flags
 	if (IS_SHIFT_PRESSED ) {
-		for(var j=0; j<gridpage.maxrow; j++)
+		for(var j=0; j< gridPage.maxrow; j++)
 			{
 			
 			setSceneLEDColor(j, Colour.YELLOW_LOW);
