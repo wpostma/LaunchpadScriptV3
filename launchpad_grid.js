@@ -219,7 +219,7 @@ gridPage.cursorDeviceReplace = function()
 	} else {
 		cursorDevice.browseToInsertAtStartOfChain();
 	}
-}
+}// side buttons
 gridPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed)
@@ -230,6 +230,8 @@ gridPage.onSceneButton = function(row, isPressed)
 		scene = row+gridPage.grid_shift;
 		
 		sceneBank.getScene(scene).launch();
+		println("launch "+scene);
+		
 		gridPage.scene_active = scene; 
 	   }
 	   else
