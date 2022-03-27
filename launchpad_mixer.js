@@ -69,7 +69,7 @@ mixerPage.polledFunction = function()
 		println("anim mixer index "+i);
 		ccIndex = 108+i;
 		println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
-		println("mixerPage.mixerAnimate[i] "+mixerPage.mixerAnimate[i]);
+		println("mixerPage.mixerAnimate["+i+"] "+mixerPage.mixerAnimate[i]);
 
 		delta = mixerPage.mixerAnimate[i]-mixerPage.mixerCCValues[i];
 		if (delta>5) {
