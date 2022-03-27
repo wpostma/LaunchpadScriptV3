@@ -26,6 +26,8 @@ gridPage.canScrollTracksDown = false;
 gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
+gridPage.notify = gridPage.title + " (User1:Split Keys/Clips)";
+
 gridPage.currentVelocity = 127;
 gridPage.split = false;
 gridPage.grid_shift=0; //0,4,8,12

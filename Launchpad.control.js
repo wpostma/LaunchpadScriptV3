@@ -96,15 +96,18 @@ loadAPI(10);
 host.defineController("Novation", "Launchpad Split MK1 WP", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Launchpad"], ["Launchpad"]);
+
 host.addDeviceNameBasedDiscoveryPair(["Launchpad S"], ["Launchpad S"]);
 host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini"], ["Launchpad Mini"]);
-if(host.platformIsLinux())
+for(var i=1; i<20; i++)
 {
-	for(var i=1; i<16; i++)
-	{
-	   host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + + i.toString() + " MIDI 1"], ["Launchpad S " + + i.toString() + " MIDI 1"]);
-	   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + + i.toString() + " MIDI 1"], ["Launchpad Mini " + + i.toString() + " MIDI 1"]);
-	}
+   var name = i.toString() + "- Launchpad";
+   host.addDeviceNameBasedDiscoveryPair([name], [name]);
+//   host.addDeviceNameBasedDiscoveryPair(["Launchpad MIDI " + i.toString()], ["Launchpad MIDI " + i.toString()]);
+//   host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + i.toString()], ["Launchpad S " + i.toString()]);
+//   host.addDeviceNameBasedDiscoveryPair(["Launchpad S MIDI " + i.toString()], ["Launchpad S MIDI " + i.toString()]);
+//   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + i.toString()], ["Launchpad Mini " + i.toString()]);
+//   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini MIDI " + i.toString()], ["Launchpad Mini MIDI " + i.toString()]);
 }
 
 function showPopupNotification( amsg) {
@@ -140,7 +143,53 @@ load("launchpad_page.js"); // defines the page type which is used for the differ
 load("launchpad_notemap.js"); // works out all the notemaps, the scales and drawing of the black and white keys
 load("launchpad_grid.js"); // draws the main clip launcher and other pages such as volume, pan, sends, and user controls
 load("launchpad_keys.js"); // draws the keys as set in launchpad_notemap and places them across the pads
+load("launchpad_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
+
 load("launchpad_step_sequencer.js"); // everything to do with the step sequencer
+
+
+
+
+var pageModes = [ gridPage, keysPage,seqPage,mixerPage, false ];
+gridPage.pageIndex = 0;
+keysPage.pageIndex = 1;
+seqPage.pageIndex = 2;
+mixerPage.pageIndex = 3;
+var pageCount = 4;
+
+// cycle through modes in backward order
+function previousMode() {
+   activePageIndex = activePage.pageIndex-1;
+   if (activePageIndex<0) {
+      activePageIndex = pageCount-1;
+   }
+
+   activePage =  pageModes[activePageIndex];
+   println(activePage.title);
+
+   setActivePage(activePage);
+   showPopupNotification(activePage.notify);
+   activePage.updateOutputState();
+  //  flushLEDs();
+}
+
+
+// cycle through modes in forward order
+function nextMode()  {
+ activePageIndex = activePage.pageIndex+1;
+ if (activePageIndex >= pageCount) {
+   activePageIndex = 0;
+}
+
+activePage =  pageModes[activePageIndex];
+println(activePage.title);
+
+setActivePage(activePage);
+showPopupNotification(activePage.notify);
+activePage.updateOutputState();
+//  flushLEDs();
+}
+
 
 // activePage is the page displayed on the Launchpad, the function changes the page and displays popups
 var activePage = null;
@@ -603,44 +652,6 @@ function sendRawMidi(status,data1,data2)
    noteInput.sendRawMidiEvent(status,data1,data2);
 }
 
-// cycle through modes in backward order
-function previousMode() {
-   //println("previousMOde");
-   if (activePage == gridPage) {
-      setActivePage(keysPage);
-      showPopupNotification("Keys Mode");
-   } else if (activePage==keysPage) {
-      setActivePage(seqPage);
-      showPopupNotification("Sequencer Mode");
-
-   }
-   else {
-      setActivePage(gridPage);
-      showPopupNotification("Grid/Keys Split Mode");
-   } 
-   activePage.updateOutputState();
-
-
-   //  flushLEDs();
-
-}
-
-// cycle through modes in forward order
-function nextMode() {
-   //println("nextMode");
-   if (activePage==seqPage) {
-      setActivePage(keysPage);
-      showPopupNotification("Keys Mode");
-   } else if (activePage == gridPage ) {
-      setActivePage(seqPage);
-      showPopupNotification("Sequencer Mode");
-
-   }
-   else {
-      setActivePage(gridPage);
-      showPopupNotification("Grid/Keys Split Mode");
-   } 
-}
 
 function RewindAndStopAllClips() {
    if (IS_SHIFT_PRESSED) {
@@ -874,8 +885,10 @@ function setCellLED(column, row, colour)
    var key = row * 8 + column;
 
    pendingLEDs[key] = colour;
-   //println( " pendingLEDs @"+column+", "+row+" = "+colour);
-
+   
+   if (trace>=2) {
+      println( " pendingLEDs @"+column+", "+row+" = "+colour);
+   }
 }
 
 function setCellLED2(track, colour)
@@ -883,6 +896,9 @@ function setCellLED2(track, colour)
    var key = track;
 
    pendingLEDs[key] = colour;
+   if (trace>=2) {
+      println("setCellLED2 track "+track);
+   }
 }
 /** Cache for LEDs needing to be updated, which is used so we can determine if we want to send the LEDs using the
  * optimized approach or not, and to send only the LEDs that has changed.
@@ -898,7 +914,7 @@ var activeLEDs = new Array(LED_COUNT);
 function flushLEDs()
 {
 
-   if (trace>1) {
+   if (trace>3) {
       println("flushLEDs called");
    };
 
@@ -915,7 +931,7 @@ function flushLEDs()
    if (changedCount == 0) return;
 
    
-   if (trace>1) {
+   if (trace>3) {
       println("flushLEDs active. changedCount "+changedCount);
    };
    

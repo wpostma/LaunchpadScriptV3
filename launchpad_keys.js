@@ -7,7 +7,7 @@
 keysPage = new Page();
 
 keysPage.title = "Keys / Drums";
-
+keysPage.notify = keysPage.title;
 
 keysPage.CursorLeft = function(isPressed)
 {

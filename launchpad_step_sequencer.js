@@ -40,6 +40,7 @@ function stepSizeName(s)
 }
 
 seqPage.title = "Step Sequencer";
+seqPage.notify = seqPage.title;
 seqPage.key = 36;
 seqPage.velocityStep = 0;
 seqPage.velocity = velocities2[seqPage.velocityStep];
