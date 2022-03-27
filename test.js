@@ -21,6 +21,16 @@ function load(afile) {
 
 }
 
+global.Page = function Page() {
+    this.canScrollLeft = false;
+    this.canScrollRight = false;
+    this.canScrollUp = false;
+    this.canScrollDown = false;
+};
+
+load('launchpad_mixer.js');
+println("page checked");
+
 /*
 function load(afile)
 {
