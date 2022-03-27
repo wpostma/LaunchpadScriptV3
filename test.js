@@ -1,3 +1,16 @@
+// nodejs test code.
+// 
+// Using NodeJS as a parser to syntax check and check for basic typos in base controller
+// script.  Run test.cmd or type node test.js to run this tester.
+//
+// have to define any globals as this tester does not accumulate any namespace pollution as it
+// runs, the bitwig javascript engine defines load() as something which pollutes the global
+// namespace.  So we define globals explicitly here.
+//
+// Do not try to use the global keyword in Bitwig APIs, Bitwig apis are not  NodeJS.
+// 
+
+
 
 const util = require('util');
 
@@ -28,8 +41,19 @@ global.Page = function Page() {
     this.canScrollDown = false;
 };
 
+// load pages first if we want to check they aren't missing curly brackets or have extra curly brackets or parens.
+println("--------------------------");
+println("page checks begin");
+
 load('launchpad_mixer.js');
-println("page checked");
+load('launchpad_grid.js');
+load('launchpad_keys.js');
+
+println("page checks complete");
+println("--------------------------");
+
+println(" ");
+println("master script checks begin ");
 
 /*
 function load(afile)

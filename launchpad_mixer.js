@@ -21,7 +21,7 @@ mixerPage.canScrollTracksUp = false;
 mixerPage.canScrollTracksDown = false;
 mixerPage.canScrollScenesUp = false;
 mixerPage.canScrollScenesDown = false;
-mixerPage.title = "Faders Mode"; 
+mixerPage.title = "Fader/Mix Mode"; 
 mixerPage.notify = mixerPage.title+"  (user1 toggle mixer/device knobs)";
 mixerPage.currentVelocity = 127;
 mixerPage.split = false;
@@ -32,15 +32,71 @@ mixerPage.maxcol = 8;
 mixerPage.rowDown= -1;
 mixerPage.columnDown= -1;
 mixerPage.mixerCCValues = [];
+mixerPage.mixerAnimate = [];
+mixerPage.pollingRate = 30;
 mixerPage.mixerButtonLevel = [];
+mixerPage.ccMode = true; // faders output CCs
+mixerPage.ccAnimation = true; // timed writes
 
-for(var i=1; i<20; i++)
+
+for(var i= 0; i<20; i++)
 {
     mixerPage.mixerCCValues[i] = 0; //0-127
     mixerPage.mixerButtonLevel[i] = 0; //0-7
+	mixerPage.mixerAnimate[i] = -1; // animation not active
+
+	println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
 }
 
+mixerPage.polledFunction = function()
+{
+	/*
+		if (!mixerPage.ccAnimation) {
+		mixerPage.mixerCCValues[mixerIndex] = mixValue;
+    
+	} else {
+		mixerPage.mixerAnimate[mixerIndex] = mixValue;
+    
+	}
+	*/
 
+  if (!mixerPage.ccAnimation) 
+  	return;
+	
+  var channel = 0; // probably don't need to set this >0
+  for (i=0;i<8;i++) {
+	  if (mixerPage.mixerAnimate[i] >= 0) {
+		println("anim mixer index "+i);
+		ccIndex = 108+i;
+		println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
+		println("mixerPage.mixerAnimate[i] "+mixerPage.mixerAnimate[i]);
+
+		delta = mixerPage.mixerAnimate[i]-mixerPage.mixerCCValues[i];
+		if (delta>5) {
+			delta=5;
+		} else if (delta<-5) 
+		{
+			delta=-5;
+		}
+		//println("delta",delta);
+		mixValue = mixerPage.mixerCCValues[i]+delta;
+		mixerPage.mixerCCValues[i]=mixValue;
+		//println("animate ",mixValue)
+		if (mixValue<0)
+			mixValue = 0;
+		if (mixValue>127)
+			mixValue = 127;
+		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+		if (mixerPage.mixerCCValues[i]==mixerPage.mixerAnimate[i]) {
+			mixerPage.mixerAnimate[i] = -1;
+			println("animation completed");
+		}
+
+
+	  }
+  }
+
+};
 
 
 
@@ -282,13 +338,17 @@ mixerPage.onShift = function(isPressed)
 
 var BASE_NOTE = 36; // C2=36
 var NOTE_PAGE_SIZE = 24;
-var MIXER_VALUES= [0,12,25,35,45,65,105,127]; // as midi CC
+var MIXER_VALUES= [0,16,33,63,80,96,116,127]; // as midi CC
 
 mixerPage.doCCButton = function(row,column,pressed)
 {
+	var channel = 0; // probably don't need to set this >0
 	var rowInvert = 7-row; 
 	var mixerIndex =  column + mixerPage.mixer_shift;
     
+	
+    println("doCCButton "+row+" "+column+" "+pressed);
+	
 	if (pressed) {
 		mixerPage.rowDown=row;
 		mixerPage.columnDown=column;
@@ -299,29 +359,47 @@ mixerPage.doCCButton = function(row,column,pressed)
 
 	}
     mixerPage.lastMixer = mixerIndex;
-    mixvalue = MIXER_VALUES[rowInvert];
+    var mixValue = MIXER_VALUES[rowInvert];
     
     mixerPage.lastMixerValue = row;
 
-    mixerPage.mixerCCValues[mixerIndex] = mixvalue;
+
     mixerPage.mixerButtonLevel[mixerIndex] = row; // so we know which one to light up.
     
+    println("mixerIndex"+mixerIndex+": value "+mixValue);
     
-    
-    println("mixer "+mixerIndex+" value "+mixvalue );
-
-	if (mixerPage.ccMode)
-	{
-	    println("MIDI CC SEND FOR MIXER");
-        
+	if (mixerPage.ccMode) {
+	 
 		//noteIndex = 108;
-		ccIndex = noteIndex-88;
-		if (trace>0) {
-		println("Midi CC "+ccIndex);
+		ccIndex = 108+mixerIndex;
+		
+
+
+		if (!mixerPage.ccAnimation) {
+			if (trace>0) {
+			println("DIRECT FADER/MIXER "+(mixerIndex+1)+" Midi CC "+ccIndex+" value="+mixValue);
+			}
+			// DIGITAL send CC
+			//noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/pressed ? 127 : 0 );
+		println("fuckfuck  javascript really");
+			
+			noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+			mixerPage.mixerCCValues[mixerIndex] = mixValue;
+		} else {
+			println("mixerPage.mixerAnimate")
+			mixerPage.mixerAnimate[mixerIndex] = mixValue;	
 		}
-		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/pressed ? 127 : 0 );
+		
         noteIndex = -1;
-	};
+	}
+	else {
+		if (trace>0) {
+			println("faves mixer "+mixerIndex+" value "+mixValue );
+		
+			}
+
+			
+	}
 
 
 };

@@ -6,10 +6,20 @@ function Page()
    this.canScrollRight = false;
    this.canScrollUp = false;
    this.canScrollDown = false;
+   this.pollingRate  = 200;
+   this.title = "page";
+   this.notification = "page";
+
 }
 
 Page.prototype.updateOutputState = function()
 {
+};
+
+Page.prototype.polledFunction = function()
+{
+  // println("page polling");
+
 };
 
 // defines the colours of the arrow buttons at the top of the pages

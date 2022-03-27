@@ -560,7 +560,7 @@ function polledFunction() {
   if (timerState > 3 ) {
      timerState = 0;
   }
-  host.scheduleTask(polledFunction,  200);
+  host.scheduleTask(polledFunction,  activePage.pollingRate);
 
   if (MUSICAL_STOP_STATE>0) { 
        println("Musical stop... ");
@@ -572,6 +572,8 @@ function polledFunction() {
        setMasterVol(vol);
         
   }
+  activePage.polledFunction();
+
 
 }
 
@@ -831,7 +833,7 @@ function onMidi(status, data1, data2)
       {
 
          if (trace>0) {
-            println(" midi GRID note  row = " + row + "col = " + column)
+            println(  activePage.title + ":   onGridButton row = " + row + "col = " + column)
             }
            
          activePage.onGridButton(row, column, data2 > 0);
@@ -887,7 +889,7 @@ function setCellLED(column, row, colour)
 
    pendingLEDs[key] = colour;
    
-   if (trace>=2) {
+   if (trace>=3) {
       println( " pendingLEDs @"+column+", "+row+" = "+colour);
    }
 }
