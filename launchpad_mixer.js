@@ -28,6 +28,8 @@ mixerPage.maxrow = 8;
 mixerPage.maxcol = 8;
 mixerPage.rowDown= -1;
 mixerPage.columnDown= -1;
+mixerPage.mixerCCValues = [];
+mixerPage.mixerButtonLevel = [];
 
 for(var i=1; i<20; i++)
 {
