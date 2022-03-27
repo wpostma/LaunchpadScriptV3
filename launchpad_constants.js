@@ -121,7 +121,7 @@ var NUM_SCENES = 8;
 var NUM_EFFECT_TRACKS = 1;
 var NUM_EFFECT_SCENES = 1;
 
-//new global variables
+//new controller variables
 var mixerButtonToggle = false;
 var mixerDetailMode = false;
 var armedToggle = false;

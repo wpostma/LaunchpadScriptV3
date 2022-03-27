@@ -147,6 +147,7 @@ load("launchpad_mixer.js"); // CC faders you can map to anything, or faders mapp
 
 load("launchpad_step_sequencer.js"); // everything to do with the step sequencer
 
+//var mixerPage = {};
 
 
 

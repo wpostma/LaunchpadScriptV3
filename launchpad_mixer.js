@@ -10,8 +10,11 @@
 
 
 
-
 mixerPage = new Page();
+
+//var mixerPage = mixerPage; // nope.
+
+
 
 mixerPage.mixerAlignedGrid = true;
 mixerPage.canScrollTracksUp = false;
