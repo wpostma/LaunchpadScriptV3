@@ -71,7 +71,7 @@
 // assumption that there are 8 scenes and that the launchpad 
 // grid is always 8 by 8.
 
-var trace= 2; //  type trace=1 in the controller script console to enable most debug messages
+var trace= 0; //  type trace=1 in the controller script console to enable most debug messages
 var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
 var activeNotes = null;
 var playing=0;

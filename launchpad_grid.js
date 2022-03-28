@@ -749,8 +749,8 @@ gridPage.updateTrackValue = function(track)
 
 	//
 	randcol=-1;
-	if (Math.random()>0.9)
-		randcol = 2+Math.floor(Math.random()*6);
+	// if (Math.random()>0.9)
+	// 	randcol = 2+Math.floor(Math.random()*6);
 
 	//println("active "+active);
 
