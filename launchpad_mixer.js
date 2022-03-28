@@ -39,15 +39,42 @@ mixerPage.ccMode = true; // faders output CCs
 mixerPage.ccAnimation = true; // timed writes
 
 
-for(var i= 0; i<20; i++)
+mixerPage.resetMixerVisualLevel = function()
 {
-    mixerPage.mixerCCValues[i] = 0; //0-127
-    mixerPage.mixerButtonLevel[i] = 0; //0-7
-	mixerPage.mixerAnimate[i] = -1; // animation not active
+	for(var i= 0; i<20; i++)
+	{
+		mixerPage.mixerCCValues[i] = 0; //0-127,  row 7 means zero, row 0 means CC max value (127)
+		mixerPage.mixerButtonLevel[i] = 7; //0-7  (7=lowest row lit)
+		mixerPage.mixerAnimate[i] = -1; // animation not active when < 0, any other value is an active animation value, even 0.
 
-	println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
+		//println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
+	}
 }
 
+mixerPage.resetMixerVisualLevel();
+
+
+mixerPage.writeMixerValue = function(channel,index,mixValue) {
+	if (mixerPage.ccMode) {
+		
+		ccIndex = 108+index;
+			noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+	}
+	else {
+		// write to quick controls.
+		//remoteControls or userControl.
+		scaledMixValue = mixValue/127;
+		if (scaledMixValue<0)
+			scaledMixValue = 0;
+		if (scaledMixValue>1)
+			scaledMixValue =1;
+		//userControls.getControl(index).value().set(scaledMixValue);
+		remoteControls.getParameter(index).value().set(scaledMixValue);
+		println("CONTROL#"+index+": "+scaledMixValue);
+		
+	}
+	
+}
 mixerPage.polledFunction = function()
 {
 	/*
@@ -66,17 +93,17 @@ mixerPage.polledFunction = function()
   var channel = 0; // probably don't need to set this >0
   for (i=0;i<8;i++) {
 	  if (mixerPage.mixerAnimate[i] >= 0) {
-		println("anim mixer index "+i);
+		//println("anim mixer index "+i);
 		ccIndex = 108+i;
-		println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
-		println("mixerPage.mixerAnimate["+i+"] "+mixerPage.mixerAnimate[i]);
+		//println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
+		//println("mixerPage.mixerAnimate["+i+"] "+mixerPage.mixerAnimate[i]);
 
 		delta = mixerPage.mixerAnimate[i]-mixerPage.mixerCCValues[i];
-		if (delta>5) {
-			delta=5;
-		} else if (delta<-5) 
+		if (delta>8) {
+			delta=8;
+		} else if (delta<-8) 
 		{
-			delta=-5;
+			delta=-8;
 		}
 		//println("delta",delta);
 		mixValue = mixerPage.mixerCCValues[i]+delta;
@@ -86,10 +113,13 @@ mixerPage.polledFunction = function()
 			mixValue = 0;
 		if (mixValue>127)
 			mixValue = 127;
-		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+		
+		mixerPage.writeMixerValue(channel, i, mixValue ); // animated mixer write
+
+
 		if (mixerPage.mixerCCValues[i]==mixerPage.mixerAnimate[i]) {
 			mixerPage.mixerAnimate[i] = -1;
-			println("animation completed");
+			//println("animation completed");
 		}
 
 
@@ -174,58 +204,63 @@ mixerPage.ChangeVelocity = function()
 }
 
 
-mixerPage.mixerLEDSetup= function(colourA,colourB) 
+mixerPage.mixerLEDSOff = function() 
 {
    
      for (var c=0;c<8;c++)
-     {  var colour = (c % 2 ? colourA:colourB );
+     {  
         for (var r=0;r<8;r++) 
         {
         
-            setCellLED(c,r, colour );
+            setCellLED(c,r, Colour.OFF );
         }
     }
 }
 
 
-mixerPage.updateMixer = function () 
+mixerPage.updateMixerLED = function () 
 {
      // draw bars
   
-    mixerPage.mixerLEDSetup( Colour.YELLOW_LOW,Colour.GREEN_LOW );
-
+    mixerPage.mixerLEDSOff();
+	
     for (c=0;c<8;c++) {
         var mixerIndex = c+mixerPage.mixer_shift;
         var hotColour = c%2 ? Colour.YELLOW_FULL: Colour.GREEN_FULL;
         setCellLED(c, /*row=*/mixerPage.mixerButtonLevel[mixerIndex], hotColour );
+		if (mixerPage.mixerButtonLevel[mixerIndex]<8) {
+			for (var r=8;r>mixerPage.mixerButtonLevel[mixerIndex];r--) {
+			  var barColour = c%2 ? Colour.YELLOW_FULL: Colour.GREEN_FULL;
+			  setCellLED(c, r, barColour );
+			}
+        	  
+		}
     }
 
 }
 
+// updateLED
 mixerPage.updateOutputState = function()
 {
    clear();
 
-   this.updateMixer();
+   this.updateMixerLED();
 
 
-   setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.OFF );
+   setTopLED(0,   Colour.YELLOW_FULL); 
+	setTopLED(1,  Colour.YELLOW_FULL);
+	setTopLED(2,  Colour.YELLOW_FULL);
+	setTopLED(3,  Colour.YELLOW_FULL);
+	setTopLED(4,  Colour.OFF); //session
+	setTopLED(5, mixerPage.ccMode ? Colour.GREEN_FULL:Colour.ORANGE );
+	setTopLED(6, Colour.OFF);
+	setTopLED(7, Colour.OFF);
+	
 
-   switch(view_shift) {
-	   case 0:
-		   	c = Colour.GREEN_FULL; break;
-		case 1:
-			c = Colour.GREEN_LOW; break;
-		case 2:
-			c = Colour.YELLOW_LOW; break;
-		default:
-			c = Colour.RED_LOW;
-   }
-	setTopLED(1,  c );
-   
-   setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
-   setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
-   setTopLED(7, IS_SHIFT_PRESSED ? Colour.AMBER_FULL : Colour.GREEN_LOW);
+	for (i=0;i<7;i++)
+		setSceneLEDColor(i,Colour.OFF);
+
+  
 };
 
 mixerPage.onSession = function(isPressed)
@@ -316,8 +351,12 @@ mixerPage.onSceneButton = function(row, isPressed)
 
 mixerPage.onUser1 = function(isPressed)
 {
-	
-   
+	if (isPressed) {
+		mixerPage.ccMode = !mixerPage.ccMode;
+		println("mixerPage.ccMode="+mixerPage.ccMode);
+		mixerPage.resetMixerVisualLevel();
+		mixerPage.updateOutputState();
+	}
 }
 
 mixerPage.onUser2 = function(isPressed)
@@ -368,38 +407,17 @@ mixerPage.doCCButton = function(row,column,pressed)
     
     println("mixerIndex"+mixerIndex+": value "+mixValue);
     
-	if (mixerPage.ccMode) {
+	
 	 
-		//noteIndex = 108;
-		ccIndex = 108+mixerIndex;
-		
 
-
-		if (!mixerPage.ccAnimation) {
-			if (trace>0) {
-			println("DIRECT FADER/MIXER "+(mixerIndex+1)+" Midi CC "+ccIndex+" value="+mixValue);
-			}
-			// DIGITAL send CC
-			//noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/pressed ? 127 : 0 );
-		println("fuckfuck  javascript really");
-			
-			noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
-			mixerPage.mixerCCValues[mixerIndex] = mixValue;
-		} else {
-			println("mixerPage.mixerAnimate")
-			mixerPage.mixerAnimate[mixerIndex] = mixValue;	
-		}
-		
-        noteIndex = -1;
+	if (!mixerPage.ccAnimation) {
+		mixerPage.writeMixerValue(channel, mixerIndex, /*data2*/mixValue ) // direct write, no animation
+		mixerPage.mixerCCValues[mixerIndex] = mixValue;
+	} else {
+		println("mixerPage.mixerAnimate")
+		mixerPage.mixerAnimate[mixerIndex] = mixValue;	
 	}
-	else {
-		if (trace>0) {
-			println("faves mixer "+mixerIndex+" value "+mixValue );
-		
-			}
 
-			
-	}
 
 
 };

@@ -521,7 +521,8 @@ function init()
    
 
 
-   // Picks up the controllable knobs, buttons which have been set via "Learn Controller Assignment". There are 24 set here because there are 3 pages of user controls with 8 assignable controls on each
+   // Picks up the controllable knobs, buttons which have been set via "Learn Controller Assignment".
+   // There are 24 set here because there are 3 pages of user controls with 8 assignable controls on each
    userControls = host.createUserControls(24);
 
    for(var u=0; u<24; u++)

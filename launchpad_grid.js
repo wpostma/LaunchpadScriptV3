@@ -131,19 +131,19 @@ gridPage.updateOutputState = function()
    // Set the top LEDs while in Clip Launcher
    clipActive = transport.isPlaying().get();
 
-   setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.OFF );
+   setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.GREEN_LOW );
 
    switch(view_shift) {
 	   case 0:
-		   	c = Colour.GREEN_FULL; break;
+		   	c = Colour.GREEN_LOW; break;
 		case 1:
-			c = Colour.GREEN_LOW; break;
+			c = Colour.ORANGE; break;
 		case 2:
 			c = Colour.YELLOW_LOW; break;
 		default:
 			c = Colour.RED_LOW;
    }
-	setTopLED(1,  c );
+	setTopLED(2,  c );
    
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
