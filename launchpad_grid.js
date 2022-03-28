@@ -124,6 +124,10 @@ gridPage.updateOutputState = function()
 {
    clear();
 
+   if (trace>1) {
+   println("updateOutputState");
+   }
+
    this.updateGrid();
    var c = Colour.OFF;
    var cls1 = ((WRITEOVR) ? [Colour.RED_FLASHING,Colour.RED_FULL]:[Colour.RED_FLASHING,Colour.YELLOW_FULL]); 
@@ -131,7 +135,8 @@ gridPage.updateOutputState = function()
    // Set the top LEDs while in Clip Launcher
    clipActive = transport.isPlaying().get();
 
-   setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.GREEN_LOW );
+   setTopLED(0,  clipActive ? Colour.GREEN_FULL : Colour.YELLOW_LOW );
+   setTopLED(1,  clipActive ? Colour.GREEN_FULL : Colour.YELLOW_LOW );
 
    switch(view_shift) {
 	   case 0:
@@ -144,6 +149,8 @@ gridPage.updateOutputState = function()
 			c = Colour.RED_LOW;
    }
 	setTopLED(2,  c );
+	setTopLED(3,  c );
+	
    
    setTopLED(5, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 9 ? (ARMED?cls1[0]:cls1[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 9 is for the delete clip mode
    setTopLED(6, IS_SHIFT_PRESSED ? Colour.YELLOW_FULL : (ARMED == 10 ? (ARMED?cls2[0]:cls2[1]):Colour.GREEN_LOW)); //TVbene: ARMED == 10 is for the select clip mode
@@ -312,15 +319,16 @@ gridPage.onUser1 = function(isPressed)
 {
 	if (isPressed) {
 		if (isSetPressed) {
+			print("isSetPressed+OnUser1");
 			gridPage.previousPreset();
 
 		} else if (IS_SHIFT_PRESSED) {
-			println("shift user1");
+			println("IS_SHIFT_PRESSED+ user1");
 		
 		} else {
 			
 			gridPage.split = !gridPage.split;
-			println("split ="+gridPage.split);
+			println("TOGGLE split ="+gridPage.split);
 			if (gridPage.split) {
 				gridPage.maxrow =4; 
 
@@ -328,6 +336,8 @@ gridPage.onUser1 = function(isPressed)
 			else {
 				gridPage.maxrow = 8;
 			}
+			gridPage.updateOutputState();
+			flushLEDs();
 
 		}
 	}
@@ -536,7 +546,7 @@ function setBottomSparkle(coloura,colourb)
 {
    for (var c=0;c<8;c++) //
    for (var r=4;r<8;r++) {
-	   	if (Math.random()>0.3)
+	   	if (Math.random()>0.9)
       		setCellLED(c,r, coloura )
 		else
 			setCellLED(c,r, colourb )
@@ -547,7 +557,10 @@ function setBottomSparkle(coloura,colourb)
 // updates the grid (no more vumeter feature)
 gridPage.updateGrid = function()
 {
-	
+
+	if (trace>0) {
+	println("gridPage.updateGrid");
+	}
 	clipActive = transport.isPlaying().get();
 
    for(var col=0; col<gridPage.maxcol; col++)
@@ -810,9 +823,13 @@ gridPage.updateTrackValue = function(track)
 		 {
 			 
 
-			 // not selected track : yellow.
+			 //  selected track : flash yellow.
 			 if (selected) {
+				if (timerState==0 ) {
 				 col = Colour.YELLOW_LOW;
+				} else {
+					col = Colour.OFF;
+				}
 			 } 
 			 else if ( active ) {
 				 col = Colour.OFF;

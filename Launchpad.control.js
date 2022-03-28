@@ -580,6 +580,9 @@ function polledFunction() {
        setMasterVol(vol);
         
   }
+
+  activePage.updateOutputState();
+  
   activePage.polledFunction();
 
 
@@ -869,7 +872,7 @@ function clear()
 
 function flush()
 {
-    activePage.updateOutputState(); // // set LED state vars
+  //  activePage.updateOutputState(); // // set LED state vars
 
 
    flushLEDs();
