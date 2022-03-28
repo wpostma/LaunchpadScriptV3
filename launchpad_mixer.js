@@ -14,6 +14,14 @@ mixerPage = new Page();
 
 //var mixerPage = mixerPage; // nope.
 
+MixMode = {
+	TrackVolFader:0,
+	DeviceMode:1,
+	CCMode : 2,
+	TrackPanFader:3
+}
+
+MixerModes = [MixMode.CCMode,MixMode.DeviceMode,MixMode.TrackFader];
 
 
 mixerPage.mixerAlignedGrid = true;
@@ -35,9 +43,13 @@ mixerPage.mixerCCValues = [];
 mixerPage.mixerAnimate = [];
 mixerPage.pollingRate = 30;
 mixerPage.mixerButtonLevel = [];
-mixerPage.ccMode = true; // faders output CCs
+mixerPage.SubMode = MixMode.TrackVolFader; // faders control track volumes output CCs
+//mixerPage.MixerPageModeColor = [Colour.YELLOW,Colour.ORANGE,Colour.RED,Colour.GREEN_FULL] ;
+
+
 mixerPage.ccAnimation = true; // timed writes
 
+//println("<<<<<<>>>> "+mixerPage.SubMode);
 
 mixerPage.resetMixerVisualLevel = function()
 {
@@ -54,24 +66,48 @@ mixerPage.resetMixerVisualLevel = function()
 mixerPage.resetMixerVisualLevel();
 
 
+function scale(n) {
+	x = n/127;
+	if (x<0)
+		x = 0;
+	if (x>1)
+		x =1;
+
+	return x;
+
+}
+
 mixerPage.writeMixerValue = function(channel,index,mixValue) {
-	if (mixerPage.ccMode) {
-		
-		ccIndex = 108+index;
-			noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+	if (mixValue==undefined){
+		println("writeMixerValue:undefined mixValue");
+		return;
 	}
-	else {
+	if (ccIndex==undefined){
+		println("writeMixerValue:undefined ccIndex");
+		return;
+	}
+	if (mixerPage.SubMode == MixMode.CCMode) {
+		
+		//println("write value");
+		ccIndex = 108+index;
+		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
+	}
+	else if (mixerPage.SubMode==MixMode.DeviceMode) {
 		// write to quick controls.
 		//remoteControls or userControl.
-		scaledMixValue = mixValue/127;
-		if (scaledMixValue<0)
-			scaledMixValue = 0;
-		if (scaledMixValue>1)
-			scaledMixValue =1;
+
 		//userControls.getControl(index).value().set(scaledMixValue);
+		scaledMixValue = scale(mixValue)
 		remoteControls.getParameter(index).value().set(scaledMixValue);
 		println("CONTROL#"+index+": "+scaledMixValue);
 		
+	} 
+	else if (mixerPage.SubMode==MixMode.TrackVolFader){
+
+		var track = trackBank.getTrack(index);
+		scaledMixValue = scale(mixValue)
+		track.getVolume().set(scaledMixValue);
+		println("TRACK VOL#"+index+": "+scaledMixValue);
 	}
 	
 }
@@ -239,6 +275,7 @@ mixerPage.updateMixerLED = function ()
 
 }
 
+
 // updateLED
 mixerPage.updateOutputState = function()
 {
@@ -252,7 +289,21 @@ mixerPage.updateOutputState = function()
 	setTopLED(2,  Colour.YELLOW_FULL);
 	setTopLED(3,  Colour.YELLOW_FULL);
 	setTopLED(4,  Colour.OFF); //session
-	setTopLED(5, mixerPage.ccMode ? Colour.GREEN_FULL:Colour.ORANGE );
+	
+	//setTopLED(5, mixerPage.MixerPageModeColor[mixerPage.SubMode] );
+	if (mixerPage.SubMode == MixMode.CCMode) {
+		
+		setTopLED(5, Colour.GREEN_FULL);
+	}
+	else if (mixerPage.SubMode==MixMode.DeviceMode) {
+		setTopLED(5, Colour.ORANGE);
+	} 
+	else if (mixerPage.SubMode==MixMode.TrackVolFader){
+		setTopLED(5, Colour.YELLOW_FULL);
+	}
+
+	
+
 	setTopLED(6, Colour.OFF);
 	setTopLED(7, Colour.OFF);
 	
@@ -352,10 +403,24 @@ mixerPage.onSceneButton = function(row, isPressed)
 mixerPage.onUser1 = function(isPressed)
 {
 	if (isPressed) {
-		mixerPage.ccMode = !mixerPage.ccMode;
-		println("mixerPage.ccMode="+mixerPage.ccMode);
+		//mixerPage.ccMode = !mixerPage.ccMode;
+		//println("mixerPage.ccMode="+mixerPage.ccMode);
+		println("mixer state "+mixerPage.SubMode);
+		mixerPage.SubMode = mixerPage.SubMode+1;
+		println("mixer state "+mixerPage.SubMode);
+		if (mixerPage.SubMode >= 3) {
+			mixerPage.SubMode = 0;
+		}
+		if (mixerPage.SubMode==MixMode.CCMode){
+			showPopupNotification('Fader/Mixer:CC Mode');
+		} else if (mixerPage.SubMode==MixMode.DeviceMode){
+			showPopupNotification('Fader/Mixer:Device Quick Controls Mode');
+		} else {
+			showPopupNotification('Fader/Mixer:Track Volume')
+		}
+
 		mixerPage.resetMixerVisualLevel();
-		mixerPage.updateOutputState();
+		//mixerPage.updateOutputState();
 	}
 }
 

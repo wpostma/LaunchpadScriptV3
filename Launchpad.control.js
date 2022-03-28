@@ -71,7 +71,7 @@
 // assumption that there are 8 scenes and that the launchpad 
 // grid is always 8 by 8.
 
-var trace=0; //  type trace=1 in the controller script console to enable most debug messages
+var trace= 2; //  type trace=1 in the controller script console to enable most debug messages
 var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
 var activeNotes = null;
 var playing=0;
@@ -200,6 +200,13 @@ var offset = null;
 var quant = null;
 
 function sendMidiOut(status,data1,data2) {
+   if (data1==undefined) {
+      println("data1 undefined");
+      return;
+   }
+   if (data2==undefined) {
+      println("data2 undefined");
+   }
    println("sendMidi "+status+" "+data1+" "+data2);
    host.getMidiOutPort(0).sendMidi(status,data1,data2);
 }
@@ -873,12 +880,24 @@ function flush()
 // Sends the Top LED lights to the pendingLEDs array. LED top have a value of 72 to 80
 function setTopLED(index, colour)
 {
+   if (colour==undefined)
+   {
+      println("setTopLED invalid colour");
+      colour = Colour.OFF;
+   }
+
    pendingLEDs[LED.TOP + index] = colour;
 }
 
 // Sends the right LED lights to the pendingLEDs array. LED scene have a value of 64 to 72
 function setSceneLEDColor(index, colour)
 {
+   if (colour==undefined)
+   {
+      println("setSceneLEDColor invalid colour");
+      return;
+   }
+   
    pendingLEDs[LED.SCENE + index] = colour;
 }
 
@@ -948,6 +967,12 @@ function flushLEDs()
             activeLEDs[i] = pendingLEDs[i];
 
             var colour = activeLEDs[i];
+
+            if (colour==undefined)
+            {
+               println("undefined LED color.");
+               colour = Colour.OFF;
+            };
 
             if (i < 64) // Main Grid
             {

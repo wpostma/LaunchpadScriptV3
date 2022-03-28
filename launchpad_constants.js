@@ -48,7 +48,7 @@ var Colour = // Novation are from the UK
    YELLOW_LOW: 0x2D,
    ORANGE:39,
    LIME:0x3D,
-   HEADER:mixColour(0,1,false),
+  // HEADER:mixColour(0,1,false),
    GREEN_LOW:28,
    GREEN_FULL:60,
    RED_FLASHING:11,

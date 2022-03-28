@@ -34,6 +34,29 @@ function load(afile) {
 
 }
 
+
+// Defines the values to be sent for the colours
+global.Colour = // Novation are from the UK
+{
+   OFF:12,
+   RED_LOW:13,
+   RED_FULL:15,
+   AMBER_LOW:29,
+   AMBER_FULL:63,
+   YELLOW_FULL:62,
+   YELLOW_LOW: 0x2D,
+   ORANGE:39,
+   LIME:0x3D,
+  // HEADER:mixColour(0,1,false),
+   GREEN_LOW:28,
+   GREEN_FULL:60,
+   RED_FLASHING:11,
+   AMBER_FLASHING:59,
+   YELLOW_FLASHING:58,
+   GREEN_FLASHING:56
+};
+
+
 global.Page = function Page() {
     this.canScrollLeft = false;
     this.canScrollRight = false;
