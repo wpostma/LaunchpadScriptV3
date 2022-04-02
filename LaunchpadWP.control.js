@@ -1,4 +1,6 @@
-// FrankenLaunchpad Split MK1 WP : 2022-03-24
+// FrankenLaunchpad Split MK1 WP : 2022-04-01
+//
+// 2022-04-01 Midi Send fix in launchpad keys unit.
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
 // Heavily modified script for live guitar looping.
@@ -9,27 +11,36 @@
 //
 // Script of Theseus: This script has been through uncountable
 // hands, but is mostly based on some early bitwig 1.x era stuff
-// shipped by Bitwig.
+// shipped by Bitwig, the latest version of which ships with bitwig as 
+// launchpad.control.js, which is broken trash.
 //
 // Use the default scripts or the DrivenByMoss scripts if you want
-// more features.  Many features from the standard Bitwig script
-// are actually removed.
+// more features, and avoid the Bitwig provided script. Only use this version if you
+// want the frankenfeatures in it.
 //
-// Main GRID mode is a split of clip view plus bottom half of  the
+// THe top and side button behaviours have been changed.
+//
+// The main GRID mode is a split of clip view plus bottom half of  the
 // grid area is for playing midi notes, or midi CC notes, or for
 // various "looper pedal" type functions that might be useful for
 // live looping with keys or guitars or vocals. 
 //
+// If you hit the USER1 button while in the main default clip launcher mode,
+// you get the split mode.
 // The top four rows of the grid start out accessing scene 1-4.
 // The MIXER button plus page left and page right shift this from 
 // 2-6 and then from 4-8.  By trying to go too far left when at scene 1-4
 // you can quickly get to scene 4-8 without going through the other
 // middle state.
 //
+// If you hit the SESSION key and the left/right arrows, it changes the mode of
+// the launchpad.  MIXER key also acts as another shift key, this one we'll call meta.
+// Neither SESSION nor MIXER do much on their own, they are used to add two more shift 
+// functions to the top and side buttons. 
 //
 // TODO:
 //
-// *GUITAR LOOPER LOGIC:
+// *GUITAR AND KEYS JAMMING/LOOPER LOGIC:
 //  - Ability to set up a project that will keep the live guitar
 //    always playing through a non-looped audio track that is
 //    monitoring the guitar input, except when we want it ducked.
@@ -45,12 +56,6 @@
 //    more musical than the built in metronome. It could contain
 //    a shaker sound, or an acoustic drum "tchak".
 //
-// *MUSICAL STOP:
-//   When jamming and you hit play/stop it's very musically unsatisfying
-//   just to stop suddenly.
-//   - Programmable fade out time (shown as a launchpad button light)
-//   - 1 second fade out, 4 second fade out, 8 second fade out.
-//   
 // *LAYERED INSTRUMENTS CROSS FADE:
 //    Using a layer container to cross fade between one or both
 //    instruments inside the instrument layer.
