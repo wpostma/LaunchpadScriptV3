@@ -134,7 +134,10 @@ keysPage.scrollKey = function(offset)
 
 keysPage.onGridButton = function(row, column, pressed)
 {
-   println("keys onGridButton");
+   println("keys onGridButton row "+row+"  column "+column+" pressed "+pressed);
+   
+   
+   
    
    var key = activeNoteMap.cellToKey(column, row);
 
@@ -143,14 +146,22 @@ keysPage.onGridButton = function(row, column, pressed)
       var velocity = 90;
 
       if (pressed)
-      {
-         cursorTrack.startNote(key, velocity);
+      {  println("start note #"+key);
+
+         //cursorTrack.startNote(key, velocity);
+         //sendNoteStart(key,velocity);
+         noteInput.sendRawMidiEvent(NOTE_ON, key,velocity); 
+		
       }
       else
-      {
-         cursorTrack.stopNote(key, velocity);
+      { println("stop note #"+key)
+         //cursorTrack.stopNote(key, velocity);
+         //sendNoteStop(key,velocity);
+        noteInput.sendRawMidiEvent(NOTE_OFF, key, 0);
+			
       }
    }
+   
 };
 
 // Draws the keys

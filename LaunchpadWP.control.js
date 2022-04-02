@@ -138,14 +138,13 @@ var TempMode =
 };
 
 // loads up the other files needed
-load("launchpad_constants.js"); // contains CCs, Colour values and other variables used across the scripts
-load("launchpad_page.js"); // defines the page type which is used for the different pages on the Launchpad
-load("launchpad_notemap.js"); // works out all the notemaps, the scales and drawing of the black and white keys
-load("launchpad_grid.js"); // draws the main clip launcher and other pages such as volume, pan, sends, and user controls
-load("launchpad_keys.js"); // draws the keys as set in launchpad_notemap and places them across the pads
-load("launchpad_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
-
-load("launchpad_step_sequencer.js"); // everything to do with the step sequencer
+load("LaunchpadWP_constants.js"); // contains CCs, Colour values and other variables used across the scripts
+load("LaunchpadWP_page.js"); // defines the page type which is used for the different pages on the Launchpad
+load("LaunchpadWP_notemap.js"); // works out all the notemaps, the scales and drawing of the black and white keys
+load("LaunchpadWP_grid.js"); // draws the main clip launcher and other pages such as volume, pan, sends, and user controls
+load("LaunchpadWP_keys.js"); // draws the keys as set in launchpad_notemap and places them across the pads
+load("LaunchpadWP_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
+load("LaunchpadWP_step_sequencer.js"); // everything to do with the step sequencer
 
 //var mixerPage = {};
 
