@@ -294,7 +294,7 @@ var isQueued = initArray(0, 64);
 var isStopQueued = initArray(0, 64);
 var noteInput = null;
 
-var isSetPressed = false;
+var isSetPressed = false; // SESSION button down? META function
 
 function getPlaying(row,column) {
    return isPlaying[column + 8*row];
@@ -950,7 +950,6 @@ function setCellLED2(track, colour)
 var pendingLEDs = new Array(LED_COUNT);
 var activeLEDs = new Array(LED_COUNT);
 var previousLEDs = new Array(LED_COUNT);
-
 
 // This function compares the LEDs in pending to those in active and if there is a difference it will send them via MIDI message
 // If there is more than 30 lights changed it sends the MIDI in a single message ("optimized mode") rather than individually

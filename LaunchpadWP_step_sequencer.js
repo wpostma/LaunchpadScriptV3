@@ -63,6 +63,20 @@ seqPage.CursorLeft = function(isPressed)
 
 seqPage.CursorRight = function(isPressed)
 {
+   if (isPressed)
+   {
+      println("seqPage.CursorRight");
+      
+      // if(IS_SHIFT_PRESSED)
+      // {
+      //   activeNoteMap.scrollRight();
+      // }
+      // else
+      
+         println("duplicate content");
+         cursorClip.duplicateContent();
+      
+   }
 
 }
 
@@ -189,17 +203,13 @@ seqPage.onLeft = function(isPressed)
       }
    }
 };
+/*
 
 seqPage.onRight = function(isPressed)
 {
-   if (isPressed)
-   {
-      if(IS_SHIFT_PRESSED)
-      {
-        activeNoteMap.scrollRight();
-      }
-   }
+   
 };
+*/
 
 seqPage.onUp = function(isPressed)
 {
@@ -328,7 +338,7 @@ seqPage.hasAnyKey = function(step)
 seqPage.drawSequencer = function()
 {
  
-    if (trace>0) {
+    if (trace>2) {
        println("drawSequencer");
     }
    /*for(var y=0; y<8; y++) //attempt at a new melodic step sequencer
