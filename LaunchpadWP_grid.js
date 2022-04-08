@@ -39,6 +39,8 @@ gridPage.maxrow = 8;
 gridPage.maxcol = 8;
 gridPage.rowDown= -1;
 gridPage.columnDown= -1;
+gridPage.playingStep = -1;
+gridPage.previousPlayingStep = -1;
 
 
 
@@ -95,6 +97,17 @@ gridPage.CursorLeft = function(isPressed)
 	}
 }
 
+//cursorClip.addPlayingStepObserver(gridPage.onStepPlay); ==>
+gridPage.onStepPlay = function(step)
+{
+	if (trace>2) {
+		println("gridPage.OnStepPlay step="+step);
+	}
+	gridPage.previousPlayingStep = gridPage.playingStep; 
+	gridPage.playingStep = step;
+	gridPage.updatePlayingStep();
+	flushLEDs();
+};
 
 gridPage.CursorRight = function(isPressed)
 {
@@ -124,7 +137,7 @@ gridPage.updateOutputState = function()
 {
    clear();
 
-   if (trace>1) {
+   if (trace > 2) {
    println("updateOutputState");
    }
 
@@ -553,6 +566,17 @@ function setBottomSparkle(coloura,colourb)
    }
 }
 
+gridPage.updatePlayingStep = function()
+{
+	
+	if (gridPage.previousPlayingStep>=0) {
+		setCellLED( gridPage.previousPlayingStep % 8, Math.floor(gridPage.previousPlayingStep/8),-1 );
+	} 
+	if (gridPage.playingStep>=0) {
+		setCellLED( gridPage.playingStep % 8, Math.floor(gridPage.playingStep/8),Colour.ORANGE );
+	} 
+	
+}
 
 // updates the grid (no more vumeter feature)
 gridPage.updateGrid = function()
@@ -567,6 +591,10 @@ gridPage.updateGrid = function()
    {
       this.updateTrackValue(col); // one column of grid
    }
+	
+   gridPage.updatePlayingStep();
+
+
    if (gridPage.split) {
 			//	draw bottom area keys
 			if ((gridPage.columnDown>=0)&&(gridPage.rowDown>=0)) {

@@ -287,11 +287,13 @@ seqPage.setKey = function(key)
    //cursorClip.scrollToKey(key);
 };
 
+// cursorClip.addStepDataObserver(seqPage.onStepExists);
 seqPage.onStepExists = function(column, row, state)
 {
    seqPage.stepSet[column*128 + row] = state;
 };
 
+//cursorClip.addPlayingStepObserver(seqPage.onStepPlay); ==>
 seqPage.onStepPlay = function(step)
 {
    seqPage.playingStep = step;

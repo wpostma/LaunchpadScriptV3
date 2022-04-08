@@ -546,10 +546,14 @@ function init()
 
 
    cursorClip = host.createCursorClip(SEQ_BUFFER_STEPS, 128);
+
    cursorClip.addStepDataObserver(seqPage.onStepExists);
    cursorClip.addPlayingStepObserver(seqPage.onStepPlay);
    cursorClip.scrollToKey(0);
    
+   cursorClipGrid = host.createCursorClip(SEQ_BUFFER_STEPS, 128);
+   cursorClipGrid.addPlayingStepObserver(gridPage.onStepPlay); 
+
    // Call resetdevice which clears all the lights
    resetDevice();
    setGridMappingMode();
@@ -914,7 +918,14 @@ function setCellLED(column, row, colour)
 {
    var key = row * 8 + column;
 
-   pendingLEDs[key] = colour;
+   if (colour>=0) {
+      previousLEDs[key] = pendingLEDs[key];
+      pendingLEDs[key] = colour;
+   }
+   else {
+      pendingLEDs[key] = previousLEDs[key];
+      
+   }
    
    if (trace>=3) {
       println( " pendingLEDs @"+column+", "+row+" = "+colour);
@@ -938,6 +949,8 @@ function setCellLED2(track, colour)
 
 var pendingLEDs = new Array(LED_COUNT);
 var activeLEDs = new Array(LED_COUNT);
+var previousLEDs = new Array(LED_COUNT);
+
 
 // This function compares the LEDs in pending to those in active and if there is a difference it will send them via MIDI message
 // If there is more than 30 lights changed it sends the MIDI in a single message ("optimized mode") rather than individually
