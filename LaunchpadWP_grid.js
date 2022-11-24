@@ -100,12 +100,12 @@ gridPage.CursorLeft = function(isPressed)
 //cursorClip.addPlayingStepObserver(gridPage.onStepPlay); ==>
 gridPage.onStepPlay = function(step)
 {
-	if (trace>2) {
+	if (trace>4) {
 		println("gridPage.OnStepPlay step="+step);
 	}
 	gridPage.previousPlayingStep = gridPage.playingStep; 
 	gridPage.playingStep = step;
-	gridPage.updatePlayingStep();
+	//gridPage.updatePlayingStep();
 	flushLEDs();
 };
 
@@ -415,7 +415,7 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 	if (rowInvert<0 ) {
 		rowInvert = 0;
 	}
-	var noteIndex = baseNoteNo+ ((rowInvert)*8)+column;
+	var noteIndex = baseNoteNo+ ((rowInvert)*8)+column; // this is the physical 8 by 8 not the OBSERVER_MULT
 
 	if (noteIndex<0) {
 		noteIndex = 0;
@@ -592,7 +592,7 @@ gridPage.updateGrid = function()
       this.updateTrackValue(col); // one column of grid
    }
 	
-   gridPage.updatePlayingStep();
+  // gridPage.updatePlayingStep();
 
 
    if (gridPage.split) {
@@ -651,7 +651,7 @@ function vuLevelColor(level)
 function getClipsPlaying(scene) {
 	n = false;
 	for (track = 0; track < NUM_TRACKS;track++) {	
-		if (isPlaying[track + (scene*8)]) {
+		if (isPlaying[track + (scene* OBSERVER_MULT)]) {
 			n = true;
 			break;
 		}
@@ -777,7 +777,7 @@ gridPage.updateSideButtons  = function()
 */
 
 
-// track = column
+// track = column (REFRESH MAIN GRID)
 gridPage.updateTrackValue = function(track)
 {
 	track_offset = track;
@@ -798,7 +798,7 @@ gridPage.updateTrackValue = function(track)
 	// scenes are ROWS in the launchpad in this script. 
 	for(var scene=0; scene<gridPage.maxrow; scene++)
 	{
-		var i = track_offset + ((scene+gridPage.grid_shift) *8);
+		var i = track_offset + ((scene+gridPage.grid_shift) * OBSERVER_MULT);
 
 		var col = Colour.ORANGE;
 		var fullval = mute[track_offset] ? 1 : 3;

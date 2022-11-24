@@ -1,6 +1,7 @@
-// FrankenLaunchpad Split MK1 WP : 2022-04-01
+// FrankenLaunchpad Split MK1 WP : 2022-11-23
 //
 // 2022-04-01 Midi Send fix in launchpad keys unit.
+// 2022-11-23 More than 8 scenes.
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
 // Heavily modified script for live guitar looping.
@@ -287,17 +288,23 @@ var isDrumMachine = false;
 
 var userValue = initArray(0, 24);
 
-var hasContent = initArray(0, 64);
-var isPlaying = initArray(0, 64);
-var isRecording = initArray(0, 64); // recording states.
-var isQueued = initArray(0, 64);
-var isStopQueued = initArray(0, 64);
+var hasContent = initArray(0, 512);
+var isPlaying = initArray(0, 512);
+var isRecording = initArray(0, 512); // recording states.
+var isQueued = initArray(0, 512);
+var isStopQueued = initArray(0, 512);
 var noteInput = null;
 
 var isSetPressed = false; // SESSION button down? META function
 
+var OBSERVER_MULT=64;
+
 function getPlaying(row,column) {
-   return isPlaying[column + 8*row];
+      if ( (column>=OBSERVER_MULT) || (column<0) ) {
+         return 0;
+      }
+      else 
+         return isPlaying[column + OBSERVER_MULT*row];
 }
 
 // Observer functions to store receive information into the above arrays
@@ -313,7 +320,7 @@ function getGridObserverFunc(track, varToStore)
 {
    return function(scene, value)
    {
-      varToStore[scene*8 + track] = value;
+      varToStore[scene*OBSERVER_MULT + track] = value;
    }
 }
 function getGridObserverFunc2(track, varToStore)
@@ -323,7 +330,7 @@ function getGridObserverFunc2(track, varToStore)
       if (trace>0){
       println("scene:"+scene+" track:"+track+" play:"+value);
       }
-      varToStore[scene*8 + track] = value;
+      varToStore[scene*OBSERVER_MULT + track] = value;
    }
 }
 
@@ -916,7 +923,10 @@ function setSceneLEDColor(index, colour)
 // Sends the main pads to the pendingLEDs array. LED scene have a value of 0 to 63
 function setCellLED(column, row, colour)
 {
-   var key = row * 8 + column;
+   var key = row * 8 + column; // not OBSERVER_MULT
+   if (trace>=4) {
+   println("setCellLED " + column + " " + row );
+   }
 
    if (colour>=0) {
       previousLEDs[key] = pendingLEDs[key];
@@ -927,7 +937,7 @@ function setCellLED(column, row, colour)
       
    }
    
-   if (trace>=3) {
+   if (trace >= 5) {
       println( " pendingLEDs @"+column+", "+row+" = "+colour);
    }
 }

@@ -311,7 +311,7 @@ seqPage.onStepPlay = function(step)
 
 seqPage.onNotePlay = function(isOn, key, velocity)
 {
-   if (trace>1){
+   if (trace>3){
         if (isOn) {
          println("onNotePlay key ON "+key);
       }
@@ -345,7 +345,7 @@ seqPage.drawSequencer = function()
    {
       for(var x=0; x<8; x++)
       {
-         var index = y*8 + x
+         var index = y*8 + x . // not OBSERVER_MULT?
          
          var isSet = this.detailMode ? this.hasAnyKey(index) : this.stepSet[index * 128 + this.key];
          var isPlaying = index == this.playingStep;
@@ -365,7 +365,7 @@ seqPage.drawSequencer = function()
    {
       for(var x=0; x<8; x++)
       {
-         var index = y*8 + x + this.viewOffset();
+         var index = y*8 + x + this.viewOffset(); // not OBSERVER_MULT?
          
          var isSet = this.detailMode ? this.hasAnyKey(index) : this.stepSet[index * 128 + this.key];
          var isPlaying = index == this.playingStep;

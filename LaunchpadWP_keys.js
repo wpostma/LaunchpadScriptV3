@@ -1,13 +1,26 @@
 
 /*
  * KEYS PAGE
- *
+ *  Launchpad way of mapping white and black keys is odd but you get used to it.
+ *    x = not used.  # = black keys (red) CDEFGAB= white keys on piano
+ * 
+ *   x##x###x
+ *   CDEFGABC
+ *   x##x###x
+ *   CDEFGABC
+ *   x##x###x
+ *   CDEFGABC
+ *   x##x###x
+ *   CDEFGABC
+ * 
  * */
 
-keysPage = new Page();
+var keysPage = new Page();
 
 keysPage.title = "Keys / Drums";
 keysPage.notify = keysPage.title;
+keysPage.velocity = 90;
+
 
 keysPage.CursorLeft = function(isPressed)
 {
@@ -73,14 +86,55 @@ keysPage.onShift = function(isPressed)
 {
    
 }
+keysPage.setVelocity = function(step)
+{
+   if(step === 0)
+   {
+       keysPage.velocity = 10;
+   }
+   else if (step === 1)
+   {
+      keysPage.velocity = 45;
+   }
+   else if (step === 2)
+   {
+      keysPage.velocity = 90;
+   }
+   else if (step === 3)
+   {
+      keysPage.velocity = 127;
+   }
+   println("vel "+keysPage.velocity);
+   // else if (step === 4)
+   // {
+   //    keysPage.velocity = 90;
+   // }
+   // else if (step === 5)
+   // {
+   //    keysPage.velocity = 100;
+   // }
+   // else if (step === 6)
+   // {
+   //    keysPage.velocity = 110;
+   // }
+   // else if (step === 7)
+   // {
+   //    keysPage.velocity = 127;
+   // }
+   
+   
+   
+   
+}
 
 keysPage.onSceneButton = function(row, isPressed)
 {
-   println("Scene Pressed")
+   if (isPressed) {
+   println("keysPage Scene Pressed row "+row)
    if (row >= 4 )
    {
-      println("keyvel")
-      seqPage.setVelocity(row - 4);
+      println("keyvel "+(row-4))
+      keysPage.setVelocity(row - 4);
    }
  
    if (noteMaps[row] != null && row != 4)
@@ -93,6 +147,7 @@ keysPage.onSceneButton = function(row, isPressed)
       host.showPopupNotification("Scale: " + activeNoteMap.getName());
       updateNoteTranlationTable(activeNoteMap);
    }
+  }
 };
 
 keysPage.onLeft = function(isPressed)
@@ -132,25 +187,26 @@ keysPage.scrollKey = function(offset)
    keysPage.rootKey = Math.max(0, Math.min(70, keysPage.rootKey + offset));
 };
 
+// each time a key is pressed, we could get a mapped note or something else
 keysPage.onGridButton = function(row, column, pressed)
 {
-   println("keys onGridButton row "+row+"  column "+column+" pressed "+pressed);
-   
-   
    
    
    var key = activeNoteMap.cellToKey(column, row);
 
    if (key >= 0)
    {
-      var velocity = 90;
-
+      
+      println("keysPage.onGridButton row "+row+"  column "+column+" pressed "+pressed+" key "+key+" vel"+keysPage.velocity);
+   
+   
+   
       if (pressed)
       {  println("start note #"+key);
 
          //cursorTrack.startNote(key, velocity);
          //sendNoteStart(key,velocity);
-         noteInput.sendRawMidiEvent(NOTE_ON, key,velocity); 
+         noteInput.sendRawMidiEvent(NOTE_ON, key, keysPage.velocity); 
 		
       }
       else
@@ -160,6 +216,13 @@ keysPage.onGridButton = function(row, column, pressed)
         noteInput.sendRawMidiEvent(NOTE_OFF, key, 0);
 			
       }
+   }
+   else
+   {
+      // not mapped as key
+      println("keysPage.onGridButton row "+row+"  column "+column+" pressed "+pressed+" unlit key");
+   
+   
    }
    
 };

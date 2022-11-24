@@ -535,7 +535,7 @@ function vuLevelColor(level)
 function getClipsPlaying(scene) {
 	n = false;
 	for (track = 0; track < NUM_TRACKS;track++) {	
-		if (isPlaying[track + (scene*8)]) {
+		if (isPlaying[track + (scene * OBSERVER_MULT)]) {
 			n = true;
 			break;
 		}
@@ -631,7 +631,7 @@ mixerPage.updateTrackValue = function(track)
 	// scenes are ROWS in the launchpad in this script. 
 	for(var scene=0; scene<mixerPage.maxrow; scene++)
 	{
-		var i = track_offset + ((scene+mixerPage.mixer_shift) *8);
+		var i = track_offset + ((scene+mixerPage.mixer_shift) * OBSERVER_MULT);
 
 		var col = Colour.ORANGE;
 		var fullval = mute[track_offset] ? 1 : 3;
