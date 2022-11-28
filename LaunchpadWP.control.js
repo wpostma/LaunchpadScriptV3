@@ -295,7 +295,7 @@ var isQueued = initArray(0, 512);
 var isStopQueued = initArray(0, 512);
 var noteInput = null;
 
-var isSetPressed = false; // SESSION button down? META function
+var isSetPressed = false; // TOP BUTTON SESSION button down? META function (META and SHIFT are both combination keys)
 
 var OBSERVER_MULT=64;
 
@@ -719,6 +719,8 @@ function onMidi(status, data1, data2)
 	  // data1 is the CC, the CC values are defined within the launchpad_contants script and range from 104 to 111 for the topbuttons
       switch(data1)
       {
+            // TOP BUTTON CURSOR UP: Repurposed to play and stop
+            //  isSetPressed: scroll scene bank up
          case TopButton.CURSOR_UP:
             if (isPressed)
             {  
@@ -757,6 +759,9 @@ function onMidi(status, data1, data2)
                }
             }
             break;
+
+         // TOP BUTTON CURSOR DOWN (MODE)
+         // isSetPressed: scroll scene bank down
          case TopButton.CURSOR_DOWN:
             if (isPressed)
             {  
@@ -811,7 +816,7 @@ function onMidi(status, data1, data2)
 
          case TopButton.USER1:
            
-                println("user1 "+isPressed);
+                println("TOP BUTTON:user1 "+isPressed);
          
                 activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)
@@ -822,11 +827,13 @@ function onMidi(status, data1, data2)
             break;
 
          case TopButton.USER2:
+            println("TOP BUTTON:user2 "+isPressed);
             activePage.onUser2(isPressed);
 
             break;
 
          case TopButton.MIXER:
+            println("TOP BUTTON:mixer (SHIFT) "+isPressed);
             activePage.onShift(isPressed);
                 if (isPressed)
                 { if (trace>0) {

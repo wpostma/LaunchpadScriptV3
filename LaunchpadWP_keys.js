@@ -139,9 +139,14 @@ keysPage.onSceneButton = function(row, isPressed)
  
    if (noteMaps[row] != null && row != 4)
    {
-      if (IS_SHIFT_PRESSED && row == 3)
+
+      if (IS_SHIFT_PRESSED && row == 2)
       {
          row = 4;
+      }
+      if (IS_SHIFT_PRESSED && row == 3)
+      {
+         row = 5;
       }
       activeNoteMap = noteMaps[row];
       host.showPopupNotification("Scale: " + activeNoteMap.getName());

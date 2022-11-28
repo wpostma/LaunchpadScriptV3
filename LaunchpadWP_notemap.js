@@ -1,5 +1,5 @@
 /*
- * Note map
+ * Note map is the shape of the keys.
  *
  * */
  
@@ -392,8 +392,9 @@ smallDrumNoteMap.cellToKey = function(x, y)
    var subX = x & 3;
    var subY = y & 3;
    var page = (y < 4 ? 2 : 0) + (x >= 4 ? 1 : 0);
-
-   return this.rootKey + (3 - subY) * 4 + subX + 16 * page;
+   var k = this.rootKey + (3 - subY) * 4 + subX + 16 * page;
+   //println("x ",x," y ",y, " -> ",k);
+   return k;
 };
 
 smallDrumNoteMap.keyIsBlack = function(key)
@@ -467,6 +468,89 @@ smallDrumNoteMap.mixerButton = function()
 smallDrumNoteMap.getName = function()
 {
    return "Drums (small)";
+}
+
+//----------------------------------------------------------------------------------------------------------
+// warren added to start at top left chromatically for battery and other drum systems
+
+smallDrumNoteMap2 = new NoteMap();
+
+smallDrumNoteMap2.cellToKey = function(x, y)
+{
+   return 36 + ( x + (8*y));
+};
+
+smallDrumNoteMap2.keyIsBlack = function(key)
+{
+    
+    return (key & 1) != 0;
+};
+
+smallDrumNoteMap2.scrollUp = function()
+{
+   if (IS_SHIFT_PRESSED) {
+      this.rootKey = Math.min(this.rootKey + 16, 64);
+      updateNoteTranlationTable();
+   }
+   if (!IS_SHIFT_PRESSED) {
+   this.rootKey = Math.min(this.rootKey + 1, 64);
+   updateNoteTranlationTable();
+   }
+};
+
+smallDrumNoteMap2.scrollDown = function()
+{
+   if (IS_SHIFT_PRESSED)
+   {
+      this.rootKey = Math.max(this.rootKey - 16, 0);
+      updateNoteTranlationTable();
+   }
+   if (!IS_SHIFT_PRESSED)
+   {
+      this.rootKey = Math.max(this.rootKey - 1, 0);
+      updateNoteTranlationTable();   
+   }
+   
+};
+
+smallDrumNoteMap2.canScrollUp = function()
+{
+   return this.rootKey < 60;
+};
+
+smallDrumNoteMap2.canScrollDown = function()
+{
+   return this.rootKey  > 4;
+};
+
+smallDrumNoteMap2.canScrollLeft = function()
+{
+   return true;
+};
+
+smallDrumNoteMap2.scrollLeft = function()
+{
+   activeNoteMap = largeDrumNoteMap;
+   updateNoteTranlationTable();
+   host.showPopupNotification("Scale: " + activeNoteMap.getName());
+};
+
+smallDrumNoteMap2.canScrollRight = function()
+{
+   return false;
+};
+
+smallDrumNoteMap2.scrollRight = function()
+{
+};
+
+smallDrumNoteMap2.mixerButton = function()
+{
+};
+
+smallDrumNoteMap2.getName = function()
+{
+   return "Drums (small#2)";
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -921,6 +1005,7 @@ diatonicNoteMap.getName = function()
 
 //----------------------------------------------------------------------------------------------------------
 
-var noteMaps = [pianoNoteMap, largeDrumNoteMap, diatonicNoteMap, pushGridNoteMap, linear14Grid, null, null, null];
+var noteMaps = [pianoNoteMap, largeDrumNoteMap, diatonicNoteMap, pushGridNoteMap, linear14Grid,  smallDrumNoteMap2, smallDrumNoteMap];
 
-var activeNoteMap = pianoNoteMap;
+var activeNoteMap = smallDrumNoteMap2;
+//pianoNoteMap;
