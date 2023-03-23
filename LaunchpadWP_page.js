@@ -12,6 +12,15 @@ function Page()
 
 }
 
+Page.prototype.onScrollUp = function()
+{  println("<this page can not scroll up>");
+};
+
+Page.prototype.onScrollDown = function()
+{  println("<this page can not scroll up>");
+};
+
+
 Page.prototype.modeUp = function()
 {  println("MODE+UP: No operation");
 };

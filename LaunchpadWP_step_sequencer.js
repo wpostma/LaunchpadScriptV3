@@ -193,7 +193,7 @@ seqPage.setVelocity = function(step)
    host.showPopupNotification("Velocity: " + this.velocity);
 };
 
-seqPage.onLeft = function(isPressed)
+seqPage.onScrollUp = function(isPressed)
 {
    if (isPressed)
    {
@@ -205,7 +205,7 @@ seqPage.onLeft = function(isPressed)
 };
 /*
 
-seqPage.onRight = function(isPressed)
+seqPage.onScrollDown = function(isPressed)
 {
    
 };

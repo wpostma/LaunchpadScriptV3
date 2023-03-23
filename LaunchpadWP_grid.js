@@ -138,29 +138,36 @@ gridPage.ChangeVelocity = function()
 	showPopupNotification("Velocity "+gridPage.currentVelocity);
 }
 
+gridPage.onScrollUp = function(isPressed)
+{
+   if (isPressed)
+   {
+      //if (this.mixerAlignedGrid) trackBank.scrollTracksUp();
+      //else 
+	  println("scroll scenes up");
+
+	  trackBank.scrollScenesUp();
+	  sceneBank.scrollUp();
+   }
+};
+
+gridPage.onScrollDown = function(isPressed)
+{
+   if (isPressed)
+   {
+	println("scroll scenes down");
+	  
+      //if (this.mixerAlignedGrid) trackBank.scrollTracksDown();
+      //else 
+	  trackBank.scrollScenesDown();
+	  sceneBank.scrollDown();
+   }
+};
+
 gridPage.modeUp = function()
 { 
   println("MODE+UP: BANK SHIFT?");
-  //trackBank.scrollScenesDown();
-  
-  if (gridPage.banked == 0)  {
-    gridPage.banked = 1;
-	//trackBank.scrollScenesPageDown();	
-	//trackBank.scrollScenesPageDown();	
-	trackBank.scrollScenesDown();
-	trackBank.scrollScenesDown();
-	
-   println("BANK B");
-  } 
-  else {
-	gridPage.banked = 0;
-	//trackBank.scrollScenesPageUp();	
-	//trackBank.scrollScenesPageUp();	
-	trackBank.scrollScenesUp();
-	trackBank.scrollScenesUp();
-	
-	println("BANK A");
- }
+
 
 
 };
@@ -364,14 +371,7 @@ gridPage.onUser1 = function(isPressed)
 {
 	if (isPressed) {
 		if (IS_META_PRESSED) {
-			print("[META+USER1] ");
-			//gridPage.previousPreset();
-
-		} else if (IS_SHIFT_PRESSED) {
-			println("[SHIFT+USER1]");
-		
-		} else {
-			
+			print("[META+USER1] SPLIT ");
 			gridPage.split = !gridPage.split;
 			println("[user1] TOGGLE split ="+gridPage.split);
 			if (gridPage.split) {
@@ -383,6 +383,52 @@ gridPage.onUser1 = function(isPressed)
 			}
 			gridPage.updateOutputState();
 			flushLEDs();
+
+		} else if (IS_SHIFT_PRESSED) {
+			println("[SHIFT+USER1]");
+		
+		} else {
+			
+			//USER1 without shift/meta/mode is play and stop
+            if (isPressed)
+            {  
+               
+               if (IS_SHIFT_PRESSED && playing) {
+                  println("shift+play: musical stop");
+                  MUSICAL_STOP_STATE = 1;
+                  MasterTrackVolume = getMasterVol();
+
+                  return;
+               }
+               else
+               if (playing != 0) 
+               {	
+                  transport.stop();
+                  showPopupNotification("Stop");
+                 
+               }
+               else
+               {  
+                  
+                  if (IS_SHIFT_PRESSED) {
+                     println("Rewind.");
+                     transport.rewind();
+                  };
+                  showPopupNotification("Play");
+                  transport.play();
+                  masterTrack.mute().set(false);
+
+               }
+            }
+            else
+            {  if (MUSICAL_STOP_STATE>0) {
+                  transport.stop();
+                  RewindAndStopAllClips();
+                  host.scheduleTask(clearMusicalStopState,  2000);
+               }
+            }
+
+			
 
 		}
 	}

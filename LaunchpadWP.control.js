@@ -728,57 +728,21 @@ function onMidi(status, data1, data2)
             // TOP BUTTON CURSOR UP: Repurposed to play and stop
             //  IS_META_PRESSED: scroll scene bank up
          case TopButton.CURSOR_UP:
-            if (isPressed)
-            {  
-               if (IS_MODE_PRESSED) {
-                  //showPopupNotification("MODE+UP");
-                  activePage.modeUp();
+               activePage.onScrollUp(isPressed);
+               break;
 
-               }
-               else
-               if (IS_SHIFT_PRESSED && playing) {
-                  println("shift+play: musical stop");
-                  MUSICAL_STOP_STATE = 1;
-                  MasterTrackVolume = getMasterVol();
-
-                  return;
-               }
-               else
-               if (playing != 0) 
-               {	
-                  transport.stop();
-                  showPopupNotification("Stop");
-                 
-               }
-               else
-               {  
-                  
-                  if (IS_SHIFT_PRESSED) {
-                     println("Rewind.");
-                     transport.rewind();
-                  };
-                  showPopupNotification("Play");
-                  transport.play();
-                  masterTrack.mute().set(false);
-
-               }
-            }
-            else
-            {  if (MUSICAL_STOP_STATE>0) {
-                  transport.stop();
-                  RewindAndStopAllClips();
-                  host.scheduleTask(clearMusicalStopState,  2000);
-               }
-            }
+          
             break;
 
          // TOP BUTTON CURSOR DOWN (MODE)
          // IS_META_PRESSED: scroll scene bank down
          case TopButton.CURSOR_DOWN:
-            IS_MODE_PRESSED = isPressed;
-            if (isPressed ) {
-             showPopupNotification("MODE+");
-            }
+            activePage.onScrollDown(isPressed);
+            break;
+            // IS_MODE_PRESSED = isPressed;
+            // if (isPressed ) {
+            //  showPopupNotification("MODE+");
+            // }
            //if (isPressed)
             //{  
               // VIEW

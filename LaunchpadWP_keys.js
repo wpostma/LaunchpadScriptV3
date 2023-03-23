@@ -155,7 +155,7 @@ keysPage.onSceneButton = function(row, isPressed)
   }
 };
 
-keysPage.onLeft = function(isPressed)
+keysPage.onScrollUp = function(isPressed)
 {
    if (isPressed)
    {
@@ -163,7 +163,7 @@ keysPage.onLeft = function(isPressed)
    }
 };
 
-keysPage.onRight = function(isPressed)
+keysPage.onScrollDown = function(isPressed)
 {
    if (isPressed)
    {
