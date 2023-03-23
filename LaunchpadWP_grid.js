@@ -515,6 +515,19 @@ gridPage.doMetaGridPress = function(row,column,pressed)
 	}
 }
 
+gridPage.doShiftGridPress = function(row,column,pressed)
+{
+	
+	if (pressed) {
+ 	 println("[SHIFT]+ { ROW:"+row+" COL:"+column+" } - Duplicate clip");
+	 var track = column;
+	 var scene =  row+gridPage.grid_shift;	
+	 var t = trackBank.getChannel(track);
+	 var l = t.getClipLauncherSlots();
+	 l.duplicateClip(scene);
+	}
+}
+
 gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 {
 	var rowInvert = 3 - (row-4);
@@ -583,6 +596,11 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 // record clips and play them.
 gridPage.onGridButton = function(row, column, pressed)
 {
+	if (IS_SHIFT_PRESSED) {
+	
+		return gridPage.doShiftGridPress(row,column,pressed);
+	}
+	
 	if (IS_META_PRESSED) {
 	
 		return gridPage.doMetaGridPress(row,column,pressed);
