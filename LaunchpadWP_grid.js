@@ -16,8 +16,25 @@
 *
 *  The UP/Down arrow MOVES THE SCENE BANK (YELLOW SQUARES) UP AND DOWN
 *  THE LEFT/RIGHT ARROW MOVES THE TRACK WHICH IS ACTIVE WHICH IS PARTICULARLY USEFUL FOR LIVE PLAYING ON BITWIG 
-*  USER1 = PLAY/STOP
-* 
+
+*  USER1         = PLAY/STOP  
+*  USER1+SESSION = SPLIT MODE ON/OFF
+*  USER1+SHIFT   =
+*  USER1+MODE    =
+*  USER1+META    =
+*
+*  LAUNCH KEYS = launch scenes in the current scene bank (scene 1..8)
+*
+*  LAUNCHKEY+SHIFT=
+*    LS1 (VOL)  =
+*    LS2 (PAN)  =
+*    LS3 (sndA) =
+*    LS4 (sndB) =
+*    LS5 (stop) =
+*    LS6 (trkon)=
+*    LS6 (solo) =
+*    LS7 (arm)  =
+*
 *  SESSION = [META]  FOR KEY COMBINATIONS  
 *  USER2   = [MODE]  FOR KEY COMBINATIONS
 *  MIXER   = [SHIFT] FOR KEY COMBINATIONS
@@ -485,10 +502,24 @@ var BASE_NOTE = 36; // C2=36
 var NOTE_PAGE_SIZE = 24;
 var BASE_NOTES = [36,12,48,96];
 
+gridPage.doMetaGridPress = function(row,column,pressed)
+{
+	
+	if (pressed) {
+ 	 println("[META]+ { ROW:"+row+" COL:"+column+" } - Clear clip");
+	 var track = column;
+	 var scene =  row+gridPage.grid_shift;	
+	 var t = trackBank.getChannel(track);
+	 var l = t.getClipLauncherSlots();
+	 l.deleteClip(scene);
+	}
+}
+
 gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 {
 	var rowInvert = 3 - (row-4);
 	var baseNoteNo = BASE_NOTES[view_shift];
+
 
 	if (pressed) {
 		gridPage.rowDown=row;
@@ -552,6 +583,12 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 // record clips and play them.
 gridPage.onGridButton = function(row, column, pressed)
 {
+	if (IS_META_PRESSED) {
+	
+		return gridPage.doMetaGridPress(row,column,pressed);
+	}
+	
+
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
     // println("gridPage.onGridButton row "+row+" column "+column+" pressed "+pressed );
 	if ((row < gridPage.maxrow)||(!gridPage.split)) 
