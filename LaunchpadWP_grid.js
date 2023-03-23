@@ -2,19 +2,26 @@
 /*
 *  GRID PAGE
 *
-*  Originally this was an 8 scene x 8 track clip launcher grid.
+*  Originally this was an 8 sceneS (ROWS) x 8 track clip (COLUMNS) launcher grid.
 *
-*  Warren's version, top half is a clip launcher grid for four tracks
+*  Warren's version adds a splittable layout option.
+*  When split the top half is a clip launcher grid for four tracks, designed for the clip launcher/mixer layout 
+*  where the tracks are vertical and scenes are horizontal:
+*
+*            [TRACK1]  [TRACK2]  [TRACK3]
+*   [SCENE1]  ....      ....       ....
+*   [SCENE2]  ....      ....       ....
 *
 *  When the split feature is activated, the bottom half is a keyboard note or midi CC transmitter.
 *
-*  The Down arrow changes which bank of keys or midi CC notes are sent.
+*  The UP/Down arrow MOVES THE SCENE BANK (YELLOW SQUARES) UP AND DOWN
+*  THE LEFT/RIGHT ARROW MOVES THE TRACK WHICH IS ACTIVE WHICH IS PARTICULARLY USEFUL FOR LIVE PLAYING ON BITWIG 
+*  USER1 = PLAY/STOP
+* 
+*  SESSION = [META]  FOR KEY COMBINATIONS  
+*  USER2   = [MODE]  FOR KEY COMBINATIONS
+*  MIXER   = [SHIFT] FOR KEY COMBINATIONS
 *
-*  Since warren didn't care about scrolling the grid the play/stop function he wants most became
-*  the top left (scroll UP) button's main function.
-*  And since that's not being used for scrolling the down button has become a sub-mode toggle.
-*  Down will also be some kind of combination key probably called MODE.  Pressing MODE+a clip might
-*  clear the clip for instance.
 * */
 
 
@@ -440,18 +447,20 @@ gridPage.onUser1 = function(isPressed)
 
 gridPage.onUser2 = function(isPressed)
 {
-	if (isPressed) {
-		if (IS_META_PRESSED) {
-			print("[META+USER2]");
-			//gridPage.nextPreset();
-			cursorClip.duplicateContent();
 
-		} else if (IS_SHIFT_PRESSED) {
-			print("[SHIFT+USER2]");
-		} else {
-			// browser.startBrowsing(); no worky.
-		}
-	}
+	IS_MODE_PRESSED = isPressed;
+
+	// if (isPressed) {
+	// 	if (IS_META_PRESSED) {
+	// 		print("[META+USER2]");
+	// 		//gridPage.nextPreset();
+	// 		cursorClip.duplicateContent();
+	// 	} else if (IS_SHIFT_PRESSED) {
+	// 		print("[SHIFT+USER2]");
+	// 	} else {
+	// 		// browser.startBrowsing(); no worky.
+	// 	}
+	// }
 }
 
 // This detects when the Mixer button is pressed and changes the orientation identifier mixerAlignedGrid and displays the text popup

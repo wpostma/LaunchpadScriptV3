@@ -80,6 +80,8 @@ keysPage.onUser1 = function(isPressed)
 
 keysPage.onUser2 = function(isPressed)
 {
+       IS_MODE_PRESSED = isPressed;
+
 }
 
 keysPage.onShift = function(isPressed)

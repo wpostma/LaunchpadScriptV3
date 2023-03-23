@@ -1,81 +1,42 @@
-// FrankenLaunchpad Split MK1 WP : 2022-11-23
+// LAUNCHPADWP : 2023-03-23
 //
-// 2022-04-01 Midi Send fix in launchpad keys unit.
-// 2022-11-23 More than 8 scenes.
+// 2023-03-23 RESTORED ARROW KEYS TO SCROLLING UP AND DOWN AMONG SCENES.
 //
 // Novation Launchpad script variant by Warren.Postma@gmail.com
-// Heavily modified script for live guitar looping.
-// Intended to be used with a specially configured template
-// bitwig project.
+// Heavily modified script for live KEYS AND GUITAR PLAYING.
 //
 // API Level 10 
 //
-// Script of Theseus: This script has been through uncountable
-// hands, but is mostly based on some early bitwig 1.x era stuff
-// shipped by Bitwig, the latest version of which ships with bitwig as 
-// launchpad.control.js, which is broken trash.
 //
-// Use the default scripts or the DrivenByMoss scripts if you want
-// more features, and avoid the Bitwig provided script. Only use this version if you
-// want the frankenfeatures in it.
+//   Originally this was an 8 scenes (ROWS) x 8 track clip (COLUMNS) launcher grid.
 //
-// THe top and side button behaviours have been changed.
+//   Warren's version adds a splittable layout option.
+//   When split the top half is a clip launcher grid for four tracks, designed for the clip launcher/mixer layout 
+//   where the tracks are vertical and scenes are horizontal:
+//             [TRACK1]  [TRACK2]  [TRACK3]
+//    [SCENE1]  ....      ....       ....
+//    [SCENE2]  ....      ....       ....
 //
-// The main GRID mode is a split of clip view plus bottom half of  the
-// grid area is for playing midi notes, or midi CC notes, or for
-// various "looper pedal" type functions that might be useful for
-// live looping with keys or guitars or vocals. 
+//   When the split feature is activated, the bottom half is a keyboard note or midi CC transmitter.
 //
-// If you hit the USER1 button while in the main default clip launcher mode,
-// you get the split mode.
-// The top four rows of the grid start out accessing scene 1-4.
-// The MIXER button plus page left and page right shift this from 
-// 2-6 and then from 4-8.  By trying to go too far left when at scene 1-4
-// you can quickly get to scene 4-8 without going through the other
-// middle state.
+//   The UP/Down arrow MOVES THE SCENE BANK (YELLOW SQUARES) UP AND DOWN
+//   THE LEFT/RIGHT ARROW MOVES THE TRACK WHICH IS ACTIVE WHICH IS PARTICULARLY USEFUL FOR LIVE PLAYING ON BITWIG 
+//   USER1 = PLAY/STOP
 //
-// If you hit the SESSION key and the left/right arrows, it changes the mode of
-// the launchpad.  MIXER key also acts as another shift key, this one we'll call meta.
-// Neither SESSION nor MIXER do much on their own, they are used to add two more shift 
-// functions to the top and side buttons. 
+//   SESSION = [META]  FOR KEY COMBINATIONS  
+//   USER2   = [MODE]  FOR KEY COMBINATIONS
+//   MIXER   = [SHIFT] FOR KEY COMBINATIONS
+//
 //
 // TODO:
 //
-// *GUITAR AND KEYS JAMMING/LOOPER LOGIC:
-//  - Ability to set up a project that will keep the live guitar
-//    always playing through a non-looped audio track that is
-//    monitoring the guitar input, except when we want it ducked.
-//  - Ability to seamlessly multi track loop 1 to 8 different tracks
-//    all mapped to one audio input and manage which tracks are 
-//    monitoring, so only ONE is ever monitoring.
-//  - Clip delete and re-record. 
-//  - Undo/Redo actions from launchpad buttons.
-//   
-// MORE MUSICAL METRONOME:
-//  - Ability to trigger a track playback that is off the visible
-//    launchpad grid that exists only as a tempo reference, but is
-//    more musical than the built in metronome. It could contain
-//    a shaker sound, or an acoustic drum "tchak".
-//
-// *LAYERED INSTRUMENTS CROSS FADE:
-//    Using a layer container to cross fade between one or both
-//    instruments inside the instrument layer.
-//    (Same clip keeps playing but the levels 
-//      in the instrument change)
-//  
-// *TRACK TO TRACK CROSS FADE:
-//    Cross fade where you stop one track after the other one has
-//    started and faded in.  Fade out controls the master volume
-//    and must restore it to its original value when track play
-//    has stopped.
+//  * Delete (clear) clip content
+//  * double clip content
+//  * overdub 
 //
 // If this script is being maintained newer versions will be at
 // https://github.com/wpostma/LaunchpadScriptV3 
-
-// you can't change things currently limited to 8 without 
-// rewriting a large amount of this script due to its
-// assumption that there are 8 scenes and that the launchpad 
-// grid is always 8 by 8.
+//
 
 var trace= 0; //  type trace=1 in the controller script console to enable most debug messages
 var view_shift=0; // 0,1,2,3,4 when cursor_down is pressed.
@@ -301,7 +262,7 @@ var isStopQueued = initArray(0, 512);
 var noteInput = null;
 
 var IS_META_PRESSED = false; // TOP BUTTON SESSION button down? META function (META and SHIFT are both combination keys)
-var IS_MODE_PRESSED  = false; // TOP BUTTON DOWN-ARROW pressed down.  A command/mode combination key.
+var IS_MODE_PRESSED  = false; // TOP BUTTON user2 pressed down.  A command/mode combination key.
 
 var OBSERVER_MULT=64;
 
@@ -739,33 +700,8 @@ function onMidi(status, data1, data2)
          case TopButton.CURSOR_DOWN:
             activePage.onScrollDown(isPressed);
             break;
-            // IS_MODE_PRESSED = isPressed;
-            // if (isPressed ) {
-            //  showPopupNotification("MODE+");
-            // }
-           //if (isPressed)
-            //{  
-              // VIEW
-            //   if (activePage.split) {
-            //    view_shift = view_shift +1;
-            //    if(view_shift>3) {
-            //       view_shift=0;
-            //    }
-            //    showPopupNotification("Keyboard Playing Shift "+view_shift);
-            //    gridPage.ModePressed = false;
-            //   }
-            //   else
-            //   {
-            //      gridPage.ModePressed = true;
-            //   }
-           // }
-            //else
-            //{
-               //view_shift=0;
-               //gridPage.ModePressed = false;
-            //}
-            break;
-
+         
+  
          case TopButton.CURSOR_LEFT:
             if (IS_SHIFT_PRESSED) {
                activePage.CursorLeft(isPressed);
