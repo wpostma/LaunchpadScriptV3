@@ -240,6 +240,11 @@ function setActivePage(page)
       updateNoteTranlationTable();
       updateVelocityTranslationTable();
 
+      // if (activePage === seqPage)
+      // {
+      //    activeNoteMap = pianoNoteMap; 
+      //    updateNoteTranlationTable();  
+      // }
       // Update indications in the app
       for(var p=0; p<8; p++)
       {
@@ -295,7 +300,8 @@ var isQueued = initArray(0, 512);
 var isStopQueued = initArray(0, 512);
 var noteInput = null;
 
-var isSetPressed = false; // TOP BUTTON SESSION button down? META function (META and SHIFT are both combination keys)
+var IS_META_PRESSED = false; // TOP BUTTON SESSION button down? META function (META and SHIFT are both combination keys)
+var IS_MODE_PRESSED  = false; // TOP BUTTON DOWN-ARROW pressed down.  A command/mode combination key.
 
 var OBSERVER_MULT=64;
 
@@ -720,10 +726,16 @@ function onMidi(status, data1, data2)
       switch(data1)
       {
             // TOP BUTTON CURSOR UP: Repurposed to play and stop
-            //  isSetPressed: scroll scene bank up
+            //  IS_META_PRESSED: scroll scene bank up
          case TopButton.CURSOR_UP:
             if (isPressed)
             {  
+               if (IS_MODE_PRESSED) {
+                  //showPopupNotification("MODE+UP");
+                  activePage.modeUp();
+
+               }
+               else
                if (IS_SHIFT_PRESSED && playing) {
                   println("shift+play: musical stop");
                   MUSICAL_STOP_STATE = 1;
@@ -731,7 +743,7 @@ function onMidi(status, data1, data2)
 
                   return;
                }
-               println("play="+playing);
+               else
                if (playing != 0) 
                {	
                   transport.stop();
@@ -761,22 +773,33 @@ function onMidi(status, data1, data2)
             break;
 
          // TOP BUTTON CURSOR DOWN (MODE)
-         // isSetPressed: scroll scene bank down
+         // IS_META_PRESSED: scroll scene bank down
          case TopButton.CURSOR_DOWN:
-            if (isPressed)
-            {  
+            IS_MODE_PRESSED = isPressed;
+            if (isPressed ) {
+             showPopupNotification("MODE+");
+            }
+           //if (isPressed)
+            //{  
               // VIEW
-              
-              view_shift = view_shift +1;
-              if(view_shift>3) {
-                 view_shift=0;
-              }
-              showPopupNotification("sub mode "+view_shift);
-            }
-            else
-            {
+            //   if (activePage.split) {
+            //    view_shift = view_shift +1;
+            //    if(view_shift>3) {
+            //       view_shift=0;
+            //    }
+            //    showPopupNotification("Keyboard Playing Shift "+view_shift);
+            //    gridPage.ModePressed = false;
+            //   }
+            //   else
+            //   {
+            //      gridPage.ModePressed = true;
+            //   }
+           // }
+            //else
+            //{
                //view_shift=0;
-            }
+               //gridPage.ModePressed = false;
+            //}
             break;
 
          case TopButton.CURSOR_LEFT:
@@ -785,7 +808,7 @@ function onMidi(status, data1, data2)
             }
             else 
             if (isPressed) {
-               isSetPressed ? previousMode() : cursorTrack.selectPrevious();
+               IS_META_PRESSED ? previousMode() : cursorTrack.selectPrevious();
             }
             break;
 
@@ -796,14 +819,14 @@ function onMidi(status, data1, data2)
             }
             else 
             if (isPressed) {
-               isSetPressed ? nextMode() : cursorTrack.selectNext();
+               IS_META_PRESSED ? nextMode() : cursorTrack.selectNext();
             }
             break;
 	
          case TopButton.SESSION:
             
-            isSetPressed  = isPressed;
-            if (isSetPressed)
+            IS_META_PRESSED  = isPressed;
+            if (IS_META_PRESSED)
             { 
                println("[META] Pressed");
             } 
@@ -816,7 +839,7 @@ function onMidi(status, data1, data2)
 
          case TopButton.USER1:
            
-                println("TOP BUTTON:user1 "+isPressed);
+                println("[USER1] isPressed="+isPressed);
          
                 activePage.onUser1(isPressed);
                 if(IS_KEYS_PRESSED)
@@ -827,13 +850,13 @@ function onMidi(status, data1, data2)
             break;
 
          case TopButton.USER2:
-            println("TOP BUTTON:user2 "+isPressed);
+            println("[USER2] isPressed="+isPressed);
             activePage.onUser2(isPressed);
 
             break;
 
          case TopButton.MIXER:
-            println("TOP BUTTON:mixer (SHIFT) "+isPressed);
+            println("[MIXER] isPressed="+isPressed);
             activePage.onShift(isPressed);
                 if (isPressed)
                 { if (trace>0) {

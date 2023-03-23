@@ -12,6 +12,10 @@ function Page()
 
 }
 
+Page.prototype.modeUp = function()
+{  println("MODE+UP: No operation");
+};
+
 Page.prototype.updateOutputState = function()
 {
 };

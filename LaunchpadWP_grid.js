@@ -4,13 +4,17 @@
 *
 *  Originally this was an 8 scene x 8 track clip launcher grid.
 *
-*  Warren's version, top half is a clip launcher grid for four tracks.
-*  Bottom half is a keyboard note or midi CC transmitter.
-*  The Down arrow changes which bank of keys or midi CC notes are sent.
-*  The color of the bottom half of the page was red when Warren took over this copy of this script.
-*  Eventually Warren wants to make the bottom half very dynamically colored.
+*  Warren's version, top half is a clip launcher grid for four tracks
 *
-* 
+*  When the split feature is activated, the bottom half is a keyboard note or midi CC transmitter.
+*
+*  The Down arrow changes which bank of keys or midi CC notes are sent.
+*
+*  Since warren didn't care about scrolling the grid the play/stop function he wants most became
+*  the top left (scroll UP) button's main function.
+*  And since that's not being used for scrolling the down button has become a sub-mode toggle.
+*  Down will also be some kind of combination key probably called MODE.  Pressing MODE+a clip might
+*  clear the clip for instance.
 * */
 
 
@@ -30,7 +34,7 @@ gridPage.notify = gridPage.title + " (User1:Split Keys/Clips)";
 
 gridPage.currentVelocity = 127;
 gridPage.split = false;
-gridPage.grid_shift=0; //0,4,8,12
+gridPage.grid_shift=0; // only useful when using split mode. 
 gridPage.scene_active = -1; // no active scene
 gridPage.armed_track = -1;
 gridPage.canCycle = false; // parameter pages : cycle when reach end? 
@@ -42,6 +46,7 @@ gridPage.columnDown= -1;
 gridPage.playingStep = -1;
 gridPage.previousPlayingStep = -1;
 
+gridPage.banked = 0;
 
 
 
@@ -132,6 +137,33 @@ gridPage.ChangeVelocity = function()
 	}
 	showPopupNotification("Velocity "+gridPage.currentVelocity);
 }
+
+gridPage.modeUp = function()
+{ 
+  println("MODE+UP: BANK SHIFT?");
+  //trackBank.scrollScenesDown();
+  
+  if (gridPage.banked == 0)  {
+    gridPage.banked = 1;
+	//trackBank.scrollScenesPageDown();	
+	//trackBank.scrollScenesPageDown();	
+	trackBank.scrollScenesDown();
+	trackBank.scrollScenesDown();
+	
+   println("BANK B");
+  } 
+  else {
+	gridPage.banked = 0;
+	//trackBank.scrollScenesPageUp();	
+	//trackBank.scrollScenesPageUp();	
+	trackBank.scrollScenesUp();
+	trackBank.scrollScenesUp();
+	
+	println("BANK A");
+ }
+
+
+};
 // TVbene updates the mode buttons on the top
 gridPage.updateOutputState = function()
 {
@@ -280,7 +312,7 @@ gridPage.onSceneButton = function(row, isPressed)
             break;
 
          case MixerButton.SOLO:
-			if (isSetPressed) {
+			if (IS_META_PRESSED) {
 				isSolo =  cursorDevice.getChannel().getSolo().get(); 
 				cursorDevice.getChannel().getSolo().set( !isSolo );
 				if (!isSolo) {
@@ -308,7 +340,7 @@ gridPage.onSceneButton = function(row, isPressed)
             break;
 
          case MixerButton.ARM:
-			if (isSetPressed) {
+			if (IS_META_PRESSED) {
 				gridPage.cursorDeviceReplace();
 
 			} else if (IS_SHIFT_PRESSED) {
@@ -331,17 +363,17 @@ gridPage.onSceneButton = function(row, isPressed)
 gridPage.onUser1 = function(isPressed)
 {
 	if (isPressed) {
-		if (isSetPressed) {
-			print("isSetPressed+OnUser1");
-			gridPage.previousPreset();
+		if (IS_META_PRESSED) {
+			print("[META+USER1] ");
+			//gridPage.previousPreset();
 
 		} else if (IS_SHIFT_PRESSED) {
-			println("IS_SHIFT_PRESSED+ user1");
+			println("[SHIFT+USER1]");
 		
 		} else {
 			
 			gridPage.split = !gridPage.split;
-			println("TOGGLE split ="+gridPage.split);
+			println("[user1] TOGGLE split ="+gridPage.split);
 			if (gridPage.split) {
 				gridPage.maxrow =4; 
 
@@ -363,11 +395,13 @@ gridPage.onUser1 = function(isPressed)
 gridPage.onUser2 = function(isPressed)
 {
 	if (isPressed) {
-		if (isSetPressed) {
-			gridPage.nextPreset();
+		if (IS_META_PRESSED) {
+			print("[META+USER2]");
+			//gridPage.nextPreset();
+			cursorClip.duplicateContent();
 
 		} else if (IS_SHIFT_PRESSED) {
-		
+			print("[SHIFT+USER2]");
 		} else {
 			// browser.startBrowsing(); no worky.
 		}
@@ -499,7 +533,7 @@ gridPage.onGridButton = function(row, column, pressed)
 				//if(isPlaying[column+8*scene] > 0)
 				if(  getPlaying(scene,column) )
 				{	
-					if (isSetPressed) {
+					if (IS_META_PRESSED) {
 						l.record(scene);
 					}
 					else
@@ -514,7 +548,7 @@ gridPage.onGridButton = function(row, column, pressed)
 					masterTrack.mute().set(false);
 					if ((scene>=0)&&(scene<=7)) {
 						println("launch track "+(track+1)+" clip "+(scene+1));
-						if (isSetPressed) {
+						if (IS_META_PRESSED) {
 							l.record(scene);
 						}
 						else
@@ -602,7 +636,7 @@ gridPage.updateGrid = function()
 				setCellLED(gridPage.columnDown,gridPage.rowDown, Colour.YELLOW_FULL);
 			}
 			else
-			if ((!IS_SHIFT_PRESSED)&&(!isSetPressed)&&clipActive) {
+			if ((!IS_SHIFT_PRESSED)&&(!IS_META_PRESSED)&&clipActive) {
 				
 					setBottomSparkle(ViewShiftColour(view_shift),Colour.ORANGE);
 				

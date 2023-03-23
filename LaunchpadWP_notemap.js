@@ -471,7 +471,7 @@ smallDrumNoteMap.getName = function()
 }
 
 //----------------------------------------------------------------------------------------------------------
-// warren added to start at top left chromatically for battery and other drum systems
+// smallDrumNoteMap2: warren added to start at top left chromatically for battery and other drum systems
 
 smallDrumNoteMap2 = new NoteMap();
 
@@ -1007,5 +1007,5 @@ diatonicNoteMap.getName = function()
 
 var noteMaps = [pianoNoteMap, largeDrumNoteMap, diatonicNoteMap, pushGridNoteMap, linear14Grid,  smallDrumNoteMap2, smallDrumNoteMap];
 
-var activeNoteMap = smallDrumNoteMap2;
-//pianoNoteMap;
+var activeNoteMap = pianoNoteMap; // don't change this or you break the step sequencer.
+
