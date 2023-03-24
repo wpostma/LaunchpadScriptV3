@@ -420,6 +420,8 @@ function init()
       track.addVuMeterObserver(7, -1, true, getTrackObserverFunc(t, vuMeter));
       track.addIsSelectedObserver(getTrackObserverFunc(t, isSelected));
       track.addIsQueuedForStopObserver(getTrackObserverFunc(t, isQueuedForStop));
+      track.trackType().markInterested();
+
        
 
       var clipLauncher = track.getClipLauncherSlots();
@@ -502,6 +504,8 @@ function init()
    });
 
    masterTrack.volume().value().markInterested();
+   masterTrack.trackType().markInterested();
+
    
    
 

@@ -596,21 +596,23 @@ gridPage.doGridNoteOrCCButton = function(row,column,pressed)
 // record clips and play them.
 gridPage.onGridButton = function(row, column, pressed)
 {
-	if (IS_SHIFT_PRESSED) {
-	
-		return gridPage.doShiftGridPress(row,column,pressed);
-	}
-	
-	if (IS_META_PRESSED) {
-	
-		return gridPage.doMetaGridPress(row,column,pressed);
-	}
-	
+
 
 	// Warren adapted to split into a 4 track, 8 scene clip launcher with 4 rows of 8 midi cc and note buttons
     // println("gridPage.onGridButton row "+row+" column "+column+" pressed "+pressed );
 	if ((row < gridPage.maxrow)||(!gridPage.split)) 
 	{
+		if (IS_SHIFT_PRESSED) {
+	
+			return gridPage.doShiftGridPress(row,column,pressed);
+		}
+		
+		if (IS_META_PRESSED) {
+		
+			return gridPage.doMetaGridPress(row,column,pressed);
+		}
+	
+		
 		var track = column;
 		var scene =  row+gridPage.grid_shift;
 		//println("scene "+scene);
@@ -619,13 +621,53 @@ gridPage.onGridButton = function(row, column, pressed)
 		var t = trackBank.getChannel(track);
 		var l = t.getClipLauncherSlots();
 			
+		var tt = t.trackType().get();
+		var te = t.exists().get();
+		println("exists "+te)
+		println("track type= "+tt);
+		if (IS_MODE_PRESSED && pressed) {
+			//if (row==8) {
+		    //	 // add a device at end of chain. 
+			 // t.browseToInsertAtEndOfChain ();
+			//} else
+			 if (row==7) {
+				t.mute().toggle();
+			}  else if (row==6) {
+				t.solo().toggle();
+			}   else if (row==5) {
+				t.arm().toggle(); // record arm
+			}  else if (row==4) {
+				t.monitor().toggle();
+			}  else if (row==3) {
+				//t.
+			}  else if (row==2) {
+				//t.
+			} else if (row==1) {
+				//t.
+			}  else if (row==0) {
+				if ( tt != "") {
+				  t.selectInMixer();
+				  println("select track");
+				}
+				else {
+					application.createInstrumentTrack(-1); //-1:end of list
+					//cursorDevice.browseToInsertAtStartOfChain();
+					cursorTrack.startOfDeviceChainInsertionPoint().browse();
+					println("add instrument track");
+				}
+			}
+
+		   return;
+		   
+	   }
+
 
 		if (pressed) {
 
 				if (gridPage.armed_track>=0) {
-					//println("darm");
+					println("disarming track# "+gridPage.armed_track);
 					trackBank.getChannel(gridPage.armed_track).arm().set(false);
-					//println("darm2");
+					
 				}
 				
 				trackBank.scrollToChannel(track);
@@ -634,12 +676,8 @@ gridPage.onGridButton = function(row, column, pressed)
 				gridPage.armed_track = track;
 				//println("arm2");
 
-				if (IS_SHIFT_PRESSED) {
-					println("clear scene");
-					l.deleteClip(scene);
-					
-					showPopupNotification('Delete Clip '+(scene+1))
-				}
+				
+
 				//if(isPlaying[column+8*scene] > 0)
 				if(  getPlaying(scene,column) )
 				{	
@@ -657,6 +695,7 @@ gridPage.onGridButton = function(row, column, pressed)
 				{  
 					masterTrack.mute().set(false);
 					if ((scene>=0)&&(scene<=7)) {
+						println("tracktype:"+t.trackType());
 						println("launch track "+(track+1)+" clip "+(scene+1));
 						if (IS_META_PRESSED) {
 							l.record(scene);
