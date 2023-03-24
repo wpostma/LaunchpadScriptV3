@@ -23,7 +23,7 @@
 *  USER1+MODE    =
 *  USER1+META    =
 *
-*  LAUNCH KEYS = launch scenes in the current scene bank (scene 1..8)
+*  LAUNCH KEYS = right side vertical column of play-icon BUTTONS that launch scenes in the current scene bank (scene 1..8)
 *
 *  LAUNCHKEY+SHIFT=
 *    LS1 (VOL)  =
@@ -235,7 +235,7 @@ gridPage.updateOutputState = function()
 
 gridPage.onSession = function(isPressed)
 {   
-    
+    /*
     if(TEMPMODE == TempMode.OFF && !IS_GRID_PRESSED)
     {
         if(IS_SHIFT_PRESSED)
@@ -260,7 +260,7 @@ gridPage.onSession = function(isPressed)
               host.showPopupNotification("Orientation: " + (this.mixerAlignedGrid ? "Mix" : "Arranger"));
         }
 
-    }
+    }*/
 }
 
 function doqset(q)
@@ -308,11 +308,107 @@ gridPage.cursorDeviceReplace = function()
 	}
 }
 
-// side buttons press. (scene,  vol,pan,etc)
+
+gridPage.onSceneButtonShift = function(row, isPressed)
+{
+	if (isPressed) {
+		println("onSceneButtonShift "+row);
+
+		if (row==0) {
+			application.undo();
+		} else if (row==1) {
+			application.redo();
+		} else if (row==2) {
+			application.zoomIn();
+		} else if (row==3) {
+			application.zoomOut();
+		} else if (row==4) {
+			application.zoomToFit();
+		}  else if (row==5) {
+			application.zoomToSelectionOrAll();
+		} else if (row==6) {
+			//application.zoomToFit();
+		}		else if (row==7) {
+			//application.zoomToFit();
+		}
+
+	 }
+
+}
+
+gridPage.onSceneButtonMeta = function(row, isPressed)
+{
+	if (isPressed) {
+		println("onSceneButtonMeta "+row);
+
+		if (row==0) {
+			application.toggleBrowserVisibility();
+		} else if (row==1) {
+			application.toggleInspector();
+		}else if (row==2) {
+			//application.toggleMixer();
+			application.setPerspective('ARRANGE');
+		}else if (row==3) {
+			//application.toggleNoteEditor();
+			application.setPerspective('MIX');
+		}else if (row==4) {
+			application.setPerspective('EDIT');
+		}else if (row==5) {
+			//application.isMetronomeEnabled().toggle();
+			application.toggleDevices();
+		}else if (row==6) {
+			transport.isClipLauncherOverdubEnabled().toggle();
+		}else if (row==7) {
+			transport.isMetronomeAudibleDuringPreRoll().toggle();
+		}
+	 }
+
+}
+
+gridPage.onSceneButtonMode = function(row, isPressed)
+{
+	if (isPressed) {
+		println("onSceneButtonMeta "+row);
+
+		if (row==0) {
+			//application.undo();
+		} else if (row==1) {
+			//application.redo();
+		}else if (row==2) {
+			//application.zoomToFit();
+		}else if (row==3) {
+			//application.zoomToFit();
+		}else if (row==4) {
+			//application.zoomToFit();
+		}else if (row==5) {
+			//application.zoomToFit();
+		}else if (row==6) {
+			//application.zoomToFit();
+		}else if (row==7) {
+			//application.zoomToFit();
+		}
+	 }
+
+}
+// LAUNCH SCENE: RIGHT SIDE BUTTONS press. (scene,  vol,pan,etc)
 gridPage.onSceneButton = function(row, isPressed)
 {
+
+	if (IS_SHIFT_PRESSED) {
+		return gridPage.onSceneButtonShift(row,isPressed);
+	}
+	else if (IS_META_PRESSED) {
+		return gridPage.onSceneButtonMeta(row,isPressed);
+	}
+	else if (IS_MODE_PRESSED) {
+		return gridPage.onSceneButtonMode(row,isPressed);
+	}
+
    if (isPressed)
-   {
+   {  	println("onSceneButton "+row);
+
+	
+
 	   if (row<=gridPage.maxrow) {
 		// top half is like ableton live launchpad, launches a scene.
 		masterTrack.mute().set(false);
@@ -323,7 +419,8 @@ gridPage.onSceneButton = function(row, isPressed)
 
 		gridPage.scene_active = scene; 
 	   }
-	   else
+
+	  /* else
      switch(row)
       {   
 		  	case MixerButton.STOP:
@@ -383,6 +480,11 @@ gridPage.onSceneButton = function(row, isPressed)
 			break;
 
       }
+	  */
+   }
+   else
+   {
+
    }
 };
 
@@ -390,7 +492,7 @@ gridPage.onSceneButton = function(row, isPressed)
 
 
 
-
+// PLAY/STOP (USER1)
 gridPage.onUser1 = function(isPressed)
 {
 	if (isPressed) {
@@ -455,9 +557,10 @@ gridPage.onUser1 = function(isPressed)
 			
 
 		}
+
 	}
 	else {
-		//println("user1 button release");
+		println("USER1 button release");
 	}
    
 }
@@ -700,8 +803,10 @@ gridPage.onGridButton = function(row, column, pressed)
 						if (IS_META_PRESSED) {
 							l.record(scene);
 						}
-						else
+						else {
+							println("SCENE LAUNCH "+scene);
 							l.launch(scene);
+						}
 					} else {
 						println("launch track "+(track+1)+" clip "+(scene+1)+" ? ");
 						
