@@ -346,15 +346,15 @@ gridPage.onSceneButtonMeta = function(row, isPressed)
 		} else if (row==1) {
 			application.toggleInspector();
 		}else if (row==2) {
-			//application.toggleMixer();
+		
 			application.setPerspective('ARRANGE');
 		}else if (row==3) {
-			//application.toggleNoteEditor();
+			
 			application.setPerspective('MIX');
 		}else if (row==4) {
 			application.setPerspective('EDIT');
 		}else if (row==5) {
-			//application.isMetronomeEnabled().toggle();
+			
 			application.toggleDevices();
 		}else if (row==6) {
 			transport.isClipLauncherOverdubEnabled().toggle();
@@ -371,15 +371,15 @@ gridPage.onSceneButtonMode = function(row, isPressed)
 		println("onSceneButtonMeta "+row);
 
 		if (row==0) {
-			//application.undo();
+			transport.isClipLauncherAutomationWriteEnabled().toggle();
 		} else if (row==1) {
-			//application.redo();
+			transport.isMetronomeEnabled().toggle();
 		}else if (row==2) {
-			//application.zoomToFit();
+			transport. isArrangerLoopEnabled().toggle();
 		}else if (row==3) {
-			//application.zoomToFit();
+			application.toggleMixer();
 		}else if (row==4) {
-			//application.zoomToFit();
+			application.toggleNoteEditor();
 		}else if (row==5) {
 			//application.zoomToFit();
 		}else if (row==6) {
