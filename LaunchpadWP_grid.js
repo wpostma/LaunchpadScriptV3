@@ -35,6 +35,26 @@
 *    LS6 (solo) =
 *    LS7 (arm)  =
 *
+*  LAUNCHKEY+MODE=
+*    LS1 (VOL)  =
+*    LS2 (PAN)  =
+*    LS3 (sndA) =
+*    LS4 (sndB) =
+*    LS5 (stop) =
+*    LS6 (trkon)=
+*    LS6 (solo) =
+*    LS7 (arm)  =
+
+*  LAUNCHKEY+META=
+*    LS1 (VOL)  =
+*    LS2 (PAN)  =
+*    LS3 (sndA) =
+*    LS4 (sndB) =
+*    LS5 (stop) =
+*    LS6 (trkon)=
+*    LS6 (solo) =
+*    LS7 (arm)  =
+*
 *  SESSION = [META]  FOR KEY COMBINATIONS  
 *  USER2   = [MODE]  FOR KEY COMBINATIONS
 *  MIXER   = [SHIFT] FOR KEY COMBINATIONS
