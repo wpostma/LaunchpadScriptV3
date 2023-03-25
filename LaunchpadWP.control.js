@@ -123,17 +123,18 @@ load("LaunchpadWP_grid.js"); // draws the main clip launcher and other pages suc
 load("LaunchpadWP_keys.js"); // draws the keys as set in launchpad_notemap and places them across the pads
 load("LaunchpadWP_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
 load("LaunchpadWP_step_sequencer.js"); // everything to do with the step sequencer
-
-//var mixerPage = {};
-
+load("LaunchpadWP_switches.js");
 
 
-var pageModes = [ gridPage, keysPage,seqPage,mixerPage, false ];
+
+
+var pageModes = [ gridPage, keysPage,seqPage,mixerPage, switchesPage, false ];
 gridPage.pageIndex = 0;
 keysPage.pageIndex = 1;
 seqPage.pageIndex = 2;
 mixerPage.pageIndex = 3;
-var pageCount = 4;
+switchesPage.pageIndex = 4;
+var pageCount = 50;
 
 // cycle through modes in backward order
 function previousMode() {

@@ -108,21 +108,26 @@ keysPage.onUser1 = function(isPressed)
       }
       else
       {
-         gridPage.KeysPagePressCount = gridPage.KeysPagePressCount+1;
-         if (gridPage.KeysPagePressCount>=2) {
+         if (IS_META_PRESSED) {  
             gridPage.KeysPagePressCount = 0;
-            
-            if (gridPage.LastDeletedScene < 7) {
-               gridPage.LastDeletedScene = gridPage.LastDeletedScene + 1;
-            }
-            else {
-               gridPage.LastDeletedScene = 0;
-               if (gridPage.LastDeletedTrack<7) {
-                  gridPage.LastDeletedTrack = gridPage.LastDeletedTrack + 1; 
-               }
-               
-            }
          }
+         else {
+            gridPage.KeysPagePressCount = gridPage.KeysPagePressCount+1;
+            if (gridPage.KeysPagePressCount>=2) {
+               gridPage.KeysPagePressCount = 0;
+               
+               if (gridPage.LastDeletedScene < 7) {
+                  gridPage.LastDeletedScene = gridPage.LastDeletedScene + 1;
+               }
+               else {
+                  gridPage.LastDeletedScene = 0;
+                  if (gridPage.LastDeletedTrack<7) {
+                     gridPage.LastDeletedTrack = gridPage.LastDeletedTrack + 1; 
+                  }
+                  
+               }
+            }
+            }
          var row = gridPage.LastDeletedScene;
          var col = gridPage.LastDeletedTrack;
          println("Launch/Record/Play row "+row+" col "+col);
