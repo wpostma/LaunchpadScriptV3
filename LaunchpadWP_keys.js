@@ -13,6 +13,12 @@
  *   x##x###x
  *   CDEFGABC
  * 
+ *  USER1 key is basically a one note version of the clip launcher.
+ *  This lets you start recording or start playback on the last deleted clip from the session page.
+ *  That lets me delete a clip and then listen and play drum sample triggers and then start recording
+ *  when I am inspired to do so without switching back to the grid page. session and arrow right is how
+ *  we get from grid into keys and session and arrow left is how we get back to grid.
+ *  Pressing meta (session) and user1 lets us clear the last recorded slot and re-record it.
  * */
 
 var keysPage = new Page();
