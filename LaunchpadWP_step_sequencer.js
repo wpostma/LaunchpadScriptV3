@@ -82,6 +82,15 @@ seqPage.CursorRight = function(isPressed)
 
 seqPage.onSession = function(isPressed)
 {
+   IS_META_PRESSED  = isPressed;
+	if (IS_META_PRESSED)
+	{ 
+	   println("[META] Pressed (keys/step)");
+	} 
+	else
+	{ 
+	   println("[META] Release (keys/step)");
+	}
 }
 
 seqPage.onUser1 = function(isPressed)

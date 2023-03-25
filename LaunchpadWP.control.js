@@ -740,15 +740,7 @@ function onMidi(status, data1, data2)
 	
          case TopButton.SESSION:
             
-            IS_META_PRESSED  = isPressed;
-            if (IS_META_PRESSED)
-            { 
-               println("[META] Pressed");
-            } 
-            else
-            { 
-               println("[META] Release");
-            }
+            activePage.onSession(isPressed);
 
             break;
 

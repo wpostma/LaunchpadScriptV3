@@ -92,7 +92,9 @@ gridPage.playingStep = -1;
 gridPage.previousPlayingStep = -1;
 
 gridPage.banked = 0;
-
+gridPage.LastDeletedTrack = 0;
+gridPage.LastDeletedScene = 0;
+gridPage.KeysPagePressCount = 0;
 
 
 ARMED=false;
@@ -256,6 +258,16 @@ gridPage.updateOutputState = function()
 
 gridPage.onSession = function(isPressed)
 {   
+	IS_META_PRESSED  = isPressed;
+	if (IS_META_PRESSED)
+	{ 
+	   println("[META] Pressed (grid)");
+	} 
+	else
+	{ 
+	   println("[META] Release (grid)");
+	}
+
     /*
     if(TEMPMODE == TempMode.OFF && !IS_GRID_PRESSED)
     {
@@ -638,6 +650,8 @@ gridPage.doMetaGridPress = function(row,column,pressed)
 	 var t = trackBank.getChannel(track);
 	 var l = t.getClipLauncherSlots();
 	 l.deleteClip(scene);
+	 gridPage.LastDeletedTrack = track;
+	 gridPage.LastDeletedScene = scene;
 	}
 }
 
@@ -652,6 +666,8 @@ gridPage.doModeGridPress = function(row,column,pressed)
 	 var scene =  row+gridPage.grid_shift;	
 	 var t = trackBank.getChannel(track);
 	 var l = t.getClipLauncherSlots();
+	 //l.createEmptyClip (scene, 8 * 4); // 8 bars
+	 
 	 l.record(scene);
 
 	}

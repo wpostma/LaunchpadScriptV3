@@ -61,6 +61,18 @@ keysPage.updateOutputState = function()
 
 keysPage.onSession = function(isPressed)
 {
+   
+   IS_META_PRESSED  = isPressed;
+	if (IS_META_PRESSED)
+	{ 
+	   println("[META] Pressed (keys)");
+	} 
+	else
+	{ 
+	   println("[META] Release (keys)");
+	}
+   
+
 }
 
 keysPage.onUser1 = function(isPressed)
@@ -69,11 +81,47 @@ keysPage.onUser1 = function(isPressed)
    {
       if (IS_SHIFT_PRESSED)
       {
-        transport.toggleClick();
+         if (playing != 0) 
+         {	
+            transport.stop();
+            showPopupNotification("Stop");
+           
+         }
+         else
+         {  
+            
+            if (IS_SHIFT_PRESSED) {
+               println("Rewind.");
+               transport.rewind();
+            };
+            showPopupNotification("Play");
+            transport.play();
+            masterTrack.mute().set(false);
+
+         }
       }
       else
       {
-        transport.toggleLauncherOverdub();  
+         gridPage.KeysPagePressCount = gridPage.KeysPagePressCount+1;
+         if (gridPage.KeysPagePressCount>=2) {
+            gridPage.KeysPagePressCount = 0;
+            
+            if (gridPage.LastDeletedScene < 7) {
+               gridPage.LastDeletedScene = gridPage.LastDeletedScene + 1;
+            }
+            else {
+               gridPage.LastDeletedScene = 0;
+               if (gridPage.LastDeletedTrack<7) {
+                  gridPage.LastDeletedTrack = gridPage.LastDeletedTrack + 1; 
+               }
+               
+            }
+         }
+         var row = gridPage.LastDeletedScene;
+         var col = gridPage.LastDeletedTrack;
+         println("Launch/Record/Play row "+row+" col "+col);
+        
+         gridPage.onGridButton(row,col,isPressed );
       }
    }
 }

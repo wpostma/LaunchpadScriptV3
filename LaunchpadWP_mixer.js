@@ -317,6 +317,16 @@ mixerPage.updateOutputState = function()
 mixerPage.onSession = function(isPressed)
 {   
     
+	IS_META_PRESSED  = isPressed;
+	if (IS_META_PRESSED)
+	{ 
+	   println("[META] Pressed (keys)");
+	} 
+	else
+	{ 
+	   println("[META] Release (keys)");
+	}
+	/*
     if(TEMPMODE == TempMode.OFF && !IS_GRID_PRESSED)
     {
         if(IS_SHIFT_PRESSED)
@@ -341,7 +351,8 @@ mixerPage.onSession = function(isPressed)
               host.showPopupNotification("Orientation: " + (this.mixerAlignedGrid ? "Mix" : "Arranger"));
         }
 
-    }
+    }*/
+
 }
 
 function doqset(q)
