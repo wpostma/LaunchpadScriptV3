@@ -13,7 +13,7 @@
 //   Warren's version adds a splittable layout option.
 //   When split the top half is a clip launcher grid for four tracks, designed for the clip launcher/mixer layout 
 //   where the tracks are vertical and scenes are horizontal:
-//             [TRACK1]  [TRACK2]  [TRACK3]
+//             [TRACK1]  [TRACK2]  [TRACK3] 
 //    [SCENE1]  ....      ....       ....
 //    [SCENE2]  ....      ....       ....
 //
@@ -26,13 +26,24 @@
 //   SESSION = [META]  FOR KEY COMBINATIONS  
 //   USER2   = [MODE]  FOR KEY COMBINATIONS
 //   MIXER   = [SHIFT] FOR KEY COMBINATIONS
+//   See LaunchpadWP_grid.js for the scene launch button functions 
 //
+//   * * * * * * * *     <- top row: up,down,left,right, session,user1,user2, mixer
+//   x x x x x x x x >   <- 8 rows of clip buttons (represented as x here, but they are square and light up) 
+//   x x x x x x x x >      and one scene launcher button (round button represented here as > )
+//   x x x x x x x x >
+//   x x x x x x x x >
+//   x x x x x x x x >
+//   x x x x x x x x >
+//   x x x x x x x x >
+//   x x x x x x x x >
 //
 // TODO:
 //
-//  * Delete (clear) clip content
-//  * double clip content
-//  * overdub 
+//  * Use shift,mode,meta (three different shift keys ) combinations with the scene launch buttons to do functions
+//  * Use shift,mode,meta (three different shift keys ) combinations with the clip buttons to do functions
+//  * overdub somehow?
+//  * META+clip button=delete clip.
 //
 // If this script is being maintained newer versions will be at
 // https://github.com/wpostma/LaunchpadScriptV3 

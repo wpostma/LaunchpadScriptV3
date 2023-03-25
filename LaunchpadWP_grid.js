@@ -586,6 +586,7 @@ gridPage.onUser1 = function(isPressed)
    
 }
 
+// MODE BUTTON (USER2)
 gridPage.onUser2 = function(isPressed)
 {
 
@@ -610,8 +611,8 @@ gridPage.onShift = function(isPressed)
    
     if(ARMED > 0)
     {
-    ARMED = 0;
-    return;
+      ARMED = 0;
+      return;
     }
 
 }
@@ -626,6 +627,7 @@ var BASE_NOTE = 36; // C2=36
 var NOTE_PAGE_SIZE = 24;
 var BASE_NOTES = [36,12,48,96];
 
+// META (DEL) + CLIP LAUNCHER BUTTON : DELETE CLIP
 gridPage.doMetaGridPress = function(row,column,pressed)
 {
 	
@@ -639,6 +641,21 @@ gridPage.doMetaGridPress = function(row,column,pressed)
 	}
 }
 
+
+// MODE (OVRDB) + CLIP LAUNCHER BUTTON : OVERDUB CLIP
+gridPage.doModeGridPress = function(row,column,pressed)
+{
+	
+	if (pressed) {
+ 	 println("[MODE]+ { ROW:"+row+" COL:"+column+" } - Clear clip");
+	 var track = column;
+	 var scene =  row+gridPage.grid_shift;	
+	 var t = trackBank.getChannel(track);
+	 var l = t.getClipLauncherSlots();
+	 l.record(scene);
+
+	}
+}
 gridPage.doShiftGridPress = function(row,column,pressed)
 {
 	
@@ -735,6 +752,11 @@ gridPage.onGridButton = function(row, column, pressed)
 		
 			return gridPage.doMetaGridPress(row,column,pressed);
 		}
+		if (IS_MODE_PRESSED) {
+		
+			return gridPage.doModeGridPress(row,column,pressed);
+		}
+	
 	
 		
 		var track = column;
