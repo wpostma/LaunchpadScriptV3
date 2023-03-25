@@ -23,37 +23,38 @@
 *  USER1+MODE    =
 *  USER1+META    =
 *
-*  LAUNCH KEYS = right side vertical column of play-icon BUTTONS that launch scenes in the current scene bank (scene 1..8)
+*  LAUNCH KEYS = rigBht side vertical column of play-icon BUTTONS that launch scenes in the current scene bank (scene 1..8)
 *
 *  LAUNCHKEY+SHIFT=
-*    LS1 (VOL)  =
-*    LS2 (PAN)  =
-*    LS3 (sndA) =
-*    LS4 (sndB) =
-*    LS5 (stop) =
-*    LS6 (trkon)=
-*    LS6 (solo) =
-*    LS7 (arm)  =
+*    LS1 (VOL)  = UNDO
+*    LS2 (PAN)  = REDO
+*    LS3 (sndA) = ZOOM+
+*    LS4 (sndB) = ZOOM-
+*    LS5 (stop) = ZOOM to Fit
+*    LS6 (trkon)= ZOOM to Selection (toggle)
+*    LS6 (solo) = ?
+*    LS7 (arm)  = ?
 *
 *  LAUNCHKEY+MODE=
-*    LS1 (VOL)  =
-*    LS2 (PAN)  =
-*    LS3 (sndA) =
-*    LS4 (sndB) =
-*    LS5 (stop) =
-*    LS6 (trkon)=
-*    LS6 (solo) =
-*    LS7 (arm)  =
+*    LS1 (VOL)  = Clip Automation Write toggle
+*    LS2 (PAN)  = Metronome toggle
+*    LS3 (sndA) = Loop arranger section toggle
+*    LS4 (sndB) = Mixer Edit
+*    LS5 (stop) = Note Editor
+*    LS6 (trkon)= ?
+*    LS6 (solo) = ?
+*    LS7 (arm)  = ?
 
 *  LAUNCHKEY+META=
-*    LS1 (VOL)  =
-*    LS2 (PAN)  =
-*    LS3 (sndA) =
-*    LS4 (sndB) =
-*    LS5 (stop) =
-*    LS6 (trkon)=
-*    LS6 (solo) =
-*    LS7 (arm)  =
+*    LS1 (VOL)  = Browser toggle
+*    LS2 (PAN)  = Inspector View
+*    LS3 (sndA) = Arranger View
+*    LS4 (sndB) = Mix View
+*    LS5 (stop) = Edit View
+*    LS6 (trkon)= Device toggle
+*    LS6 (solo) = Clip Overdub Toggle
+*    LS7 (arm)  = Pre-Roll Metronome Toggle
+*
 *
 *  SESSION = [META]  FOR KEY COMBINATIONS  
 *  USER2   = [MODE]  FOR KEY COMBINATIONS
