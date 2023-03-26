@@ -134,7 +134,7 @@ keysPage.pageIndex = 1;
 seqPage.pageIndex = 2;
 mixerPage.pageIndex = 3;
 switchesPage.pageIndex = 4;
-var pageCount = 50;
+var pageCount = 5;
 
 // cycle through modes in backward order
 function previousMode() {
