@@ -95,13 +95,38 @@ gridPage.banked = 0;
 gridPage.LastDeletedTrack = 0;
 gridPage.LastDeletedScene = 0;
 gridPage.KeysPagePressCount = 0;
-
+gridPage.clipLauncherFixedBars = 0;
 
 ARMED=false;
 
+CL_NORMAL  = 0; // setClipLauncherPostRecordingAction("off") -> variable length looper
+CL_FIXED   = 1; // setClipLauncherPostRecordingAction("play_recorded") -> record exactly X bars and then start playing it.
+// other looper modes; "off", "play_recorded", "record_next_free_slot", "stop", "return_to_arrangement", "return_to_previous_clip" or "play_random".
 
 
+gridPage.setLooperMode = function(mode) // mode is CL_NORMAL,CL_FIXED,...
+{
+	if (mode == CL_NORMAL) {
+		transport.setClipLauncherPostRecordingAction( "off" );
+		showPopupNotification("Looper Flexible Length");
+		// transport.setClipLauncherPostRecordingAction( "record_next_free_slot" ); 
+		// transport.setClipLauncherPostRecordingAction("stop" );
+		// transport.setClipLauncherPostRecordingAction("return_to_arrangement");
+		// transport.setClipLauncherPostRecordingAction("return_to_previous_clip");
+		// transport.setClipLauncherPostRecordingAction("play_random");
+		//transport.setClipLauncherPostRecordingActionDelay(32);  // NO IDEA how to do this.
 
+		
+	} else if (mode == CL_FIXED) {
+		transport.setClipLauncherPostRecordingAction("play_recorded" );
+		gridPage.clipLauncherFixedBars = 8;
+		transport.setClipLauncherPostRecordingTimeOffset (gridPage.clipLauncherFixedBars*4);
+
+		showPopupNotification("Looper Fixed Length");
+		
+	}
+
+}
 gridPage.nextPreset = function()
 {  println("next preset");
 	//cursorDevice.switchToNextPreset(); // use browser instead
@@ -218,7 +243,8 @@ gridPage.modeUp = function()
 
 
 };
-// TVbene updates the mode buttons on the top
+
+//  updates the mode buttons on the top LED colors
 gridPage.updateOutputState = function()
 {
    clear();
@@ -345,7 +371,7 @@ gridPage.cursorDeviceReplace = function()
 gridPage.onSceneButtonShift = function(row, isPressed)
 {
 	if (isPressed) {
-		println("onSceneButtonShift "+row);
+		println("SHIFT PLUS SCENE BUTTON # "+row);
 
 		if (row==0) {
 			application.undo();
@@ -372,12 +398,15 @@ gridPage.onSceneButtonShift = function(row, isPressed)
 gridPage.onSceneButtonMeta = function(row, isPressed)
 {
 	if (isPressed) {
-		println("onSceneButtonMeta "+row);
+		println("META PLUS SCENE BUTTON# "+row);
 
 		if (row==0) {
 			application.toggleBrowserVisibility();
+			//gridPage.setLooperMode(CL_NORMAL);
+
 		} else if (row==1) {
 			application.toggleInspector();
+			//gridPage.setLooperMode(CL_FIXED);
 		}else if (row==2) {
 		
 			application.setPerspective('ARRANGE');

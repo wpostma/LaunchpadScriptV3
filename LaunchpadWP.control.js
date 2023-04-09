@@ -67,11 +67,11 @@ for	(index = 127; index > -1; index--)
     velocities2[velocities2.length] = index;  // javascript, genius or shit. you decide.
 }
 
-// Start the API
-loadAPI(10);
+// Start the API (API LEVEL 10 = normal)
+loadAPI(16);
 
 // This stuff is all about defining the script and getting it to autodetect and attach the script to the controller
-host.defineController("Novation", "Launchpad Split MK1 WP", "1.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
+host.defineController("Novation", "Launchpad Split MK1 WP", "2.0", "e6a21650-92f0-11ea-ab12-0800200c9a66");
 host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Launchpad"], ["Launchpad"]);
 
