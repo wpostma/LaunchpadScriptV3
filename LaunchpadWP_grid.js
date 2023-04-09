@@ -119,8 +119,8 @@ gridPage.setLooperMode = function(mode) // mode is CL_NORMAL,CL_FIXED,...
 		
 	} else if (mode == CL_FIXED) {
 		transport.setClipLauncherPostRecordingAction("play_recorded" );
-		gridPage.clipLauncherFixedBars = 8;
-		transport.setClipLauncherPostRecordingTimeOffset (gridPage.clipLauncherFixedBars*4);
+		//gridPage.clipLauncherFixedBars = 8;
+		//transport.setClipLauncherPostRecordingTimeOffset (gridPage.clipLauncherFixedBars*4);   // not sure how to do this, drivenByMoss can do this.
 
 		showPopupNotification("Looper Fixed Length");
 		
