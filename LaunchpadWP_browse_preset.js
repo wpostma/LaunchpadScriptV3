@@ -4,16 +4,22 @@
  *
  *  A page that can be auto opened when we are browsing for a preset and which could close (go back to prior)
  * 
+ * globals
+ *     NAME               Type                    Capability
+ *     browser            PopupBrowser            navigation, get 
  * */
 
 var browsePresetPage = new Page();
 
 browsePresetPage.cursorBrowingSession = undefined;
 
+
 browsePresetPage.title = "Browse Presets";
 browsePresetPage.notify = browsePresetPage.title;
 browsePresetPage.ccStart = 14;
 browsePresetPage.state = [0];
+browsePresetPage.HasSelection = false;
+
 for	(var index = 0; index < 128; index++)  {
      browsePresetPage.state[index] = 0;  // javascript, genius or shit. you decide.
  }
@@ -32,8 +38,10 @@ browsePresetPage.onActivePage = function()
    
    // navigate among clips.
    //browsePresetPage.cursorBrowingSession = cursorDeviceBrowser.createCursorSession();
+   browsePresetPage.SelectSmartCategory(0);
 
-
+   browsePresetPage.SelectCategory(0);
+   
    println("XXX browsing preset page activated");
 
 }
@@ -75,6 +83,7 @@ browsePresetPage.onSession = function(isPressed)
 
 }
 
+// marked as play/stop on my system.
 browsePresetPage.onUser1 = function(isPressed)
 {
    if (isPressed)
@@ -85,8 +94,14 @@ browsePresetPage.onUser1 = function(isPressed)
         //
       }
       else
-      {
+      { if (browsePresetPage.HasSelection) {
+         browser.commit();
+         browsePresetPage.HasSelection = false;
+         println("Changed")
+        } else {
          cursorDeviceBrowser.startBrowsing();
+        }
+
       }
    }
 }
@@ -188,20 +203,129 @@ browsePresetPage.onToggleGridButton = function(row,column,pressed,cc)
     
 }
 
+browsePresetPage.SelectSmartCategory = function(i) {
+   if (trace>0) {
+      println("select smart category# "+i)
+   }
+   var browserItem = sccBank.getItem(i);
+   browserItem.isSelected().set(true); // select a smart category
+
+}
+
+browsePresetPage.SelectCategory = function(i) {
+   if (trace>0) {
+      println("select smart category# "+i)
+   }
+   var browserItem = catBank.getItem(i);
+   browserItem.isSelected().set(true); // select a  category
+
+}
+
+browsePresetPage.SelectTag = function(i) {
+   if (trace>0) {
+      println("select tag# "+i)
+   }
+   var browserItem = tagBank.getItem(i);
+   browserItem.isSelected().set(true); // select a  category
+
+}
+
+browsePresetPage.SelectResult = function(i) {
+   if (trace>0) {
+      println("select tag# "+i)
+   }
+   var browserItem = cursorResultBank.getItem(i);
+   browserItem.isSelected().set(true); // select a result item.
+
+   showPopupNotification( "Select "+browserItem.name().get() );
+   
+   browsePresetPage.HasSelection = true;
+   browsePresetPage.LastSelectedName = browserItem.name().get() ;
+
+   // browser.selectFirstFile();
+   // for (var n=0; n< (i-1);n++) {
+   //    browser.selectNextFile();
+   // }
+   
+
+
+}
+
+ 
+
 // each time a key is pressed, we could get a mapped note or something else
 browsePresetPage.onGridButton = function(row, column, pressed)
 {
    if (pressed) {
-   if (row == 0 ) {
+   if (column < 2) 
+   { 
+      var i = row+(column*8);
+      if (i<0) {
+         i = 0;
+      } else if (i>15) 
+      {
+         i = 15;
+      }
+      browsePresetPage.SelectSmartCategory(i);
+     
+
+   }
+   else if ((column >= 2)&&(column < 4))
+   {
+      var i = row+(column-2)*8;
+      if (i<0) {
+         i = 0;
+      } else if (i>15) 
+      {
+         i = 15;
+      }
+      browsePresetPage.SelectCategory(i);
+   }
+   else if ((column >= 4)&&(column <6))
+   {
+      // TAG or AUTHOR or something else here.
+      
+      var i = row+(column-4)*8;
+      if (i<0) {
+         i = 0;
+      } else if (i>15) 
+      {
+         i = 15;
+      }
+      browsePresetPage.SelectTag(i);
+      
+   }
+   else 
+   { // col 7,8
+ // TAG or AUTHOR or something else here.
+      
+      var i = row+(column-6)*8;
+      if (i<0) {
+         i = 0;
+      } else if (i>15) 
+      {
+         i = 15;
+      }
+      browsePresetPage.SelectResult(i);
+   }
+   /*
+   else
+   if (row == 7 ) {
       if (column == 0) {
           // home/reset script, back to grid page, clear any state. mixer view
           //cursorDeviceBrowser.selectPreviousFile();
           //browsePresetPage.cursorBrowingSession.selectPrevious(); // navigates among active clip launcher clips on device.
+ 
+            // browser = PopupBrowser type in Docs.
 
-            browser.selectPreviousFile();
+            //browser.selectPreviousFile();
          
+            //sccBank is BrowserFilterItemBank 	
+            //sccBank = browser.smartCollectionColumn().createItemBank(16);
+            
+            BrowserFilterItemBank 	
+            
 
-        // cursorDeviceBrowser.smartCollectionColumn().createCursorItem(). isSelected().set(true);
 
       } else if (column == 1) {
         // cursorDeviceBrowser.selectNextFile();
@@ -225,9 +349,9 @@ browsePresetPage.onGridButton = function(row, column, pressed)
          // f
       } 
    } 
-   }
-  
    
+  */
+   }
 };
 
 browsePresetPage.drawCell = function(x, y, highlight)
@@ -236,7 +360,7 @@ browsePresetPage.drawCell = function(x, y, highlight)
 
    var colour = Colour.OFF;
 
-   if ((y%2)==0) {
+   if ((x%2)==0) {
       colour = Colour.GREEN_LOW;
    } else  {
       colour = Colour.GREEN_FULL;

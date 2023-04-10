@@ -404,6 +404,7 @@ function init()
    sceneBank = host.createSceneBank(NUM_SCENES);
    
 
+   
 
    noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);
@@ -517,7 +518,17 @@ function init()
    cursorResult = resultColumn.createCursorItem();
    cursorResult.addValueObserver(100, "", getSelectedNameObserver() );
    cursorResultBank = resultColumn.createItemBank(1000);
+   for (var n = 0;n<1000;n++) {
+      var browserItem = cursorResultBank.getItem(n);
+      browserItem.isSelected().markInterested();
+      browserItem.name().markInterested();
+   }
 
+   //sccBank is BrowserFilterItemBank 	
+   sccBank = browser.smartCollectionColumn().createItemBank(16);
+   catBank = browser.categoryColumn().createItemBank(16);
+   tagBank = browser.tagColumn().createItemBank(32);
+            
    
    for (var t = 0;t<NUM_TRACKS;t++) {
       var track = trackBank.getChannel(t);
@@ -734,7 +745,9 @@ function RewindAndStopAllClips() {
 
 function shiftGridButtonPressHandler(row, column, pressed)
 {
+   if (trace>0) {
    println("shiftGridButtonPressHandler row="+row+" col="+column+" pressed="+pressed);
+   }
    if (pressed) {
       if (row == 0 ) {
          if (column == 0) {
