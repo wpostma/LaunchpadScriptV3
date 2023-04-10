@@ -211,7 +211,7 @@ keysPage.onSceneButton = function(row, isPressed)
       }
       activeNoteMap = noteMaps[row];
       host.showPopupNotification("Scale: " + activeNoteMap.getName());
-      updateNoteTranlationTable(activeNoteMap);
+      updateNoteTranslationTable(activeNoteMap);
    }
   }
 };
@@ -257,6 +257,10 @@ keysPage.scrollKey = function(offset)
 keysPage.onGridButton = function(row, column, pressed)
 {
    
+   if (IS_SHIFT_PRESSED) {
+      println("keys grid plus shift");
+      return;
+   }
    
    var key = activeNoteMap.cellToKey(column, row);
 

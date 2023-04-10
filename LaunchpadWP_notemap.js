@@ -254,13 +254,13 @@ pianoNoteMap.cellToKey = function(x, y)
 pianoNoteMap.scrollUp = function()
 {
    this.rootKey = Math.min(this.rootKey + 12, 108);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 pianoNoteMap.scrollDown = function()
 {
    this.rootKey = Math.max(this.rootKey - 12, 0);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 //these next 2 functions were added to get rid of the error
@@ -317,13 +317,13 @@ largeDrumNoteMap.scrollUp = function()
    if (IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.min(this.rootKey + 16, 112);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    
    if (!IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.min(this.rootKey + 1, 112);
-      updateNoteTranlationTable();   
+      updateNoteTranslationTable();   
    }
    
 };
@@ -333,12 +333,12 @@ largeDrumNoteMap.scrollDown = function()
    if (IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 16, 0);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    if (!IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 1, 0);
-      updateNoteTranlationTable();   
+      updateNoteTranslationTable();   
    }
    
 };
@@ -370,7 +370,7 @@ largeDrumNoteMap.canScrollRight = function()
 largeDrumNoteMap.scrollRight = function()
 {
    activeNoteMap = smallDrumNoteMap;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: " + activeNoteMap.getName());
 };
 
@@ -407,11 +407,11 @@ smallDrumNoteMap.scrollUp = function()
 {
    if (IS_SHIFT_PRESSED) {
       this.rootKey = Math.min(this.rootKey + 16, 64);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    if (!IS_SHIFT_PRESSED) {
    this.rootKey = Math.min(this.rootKey + 1, 64);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    }
 };
 
@@ -420,12 +420,12 @@ smallDrumNoteMap.scrollDown = function()
    if (IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 16, 0);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    if (!IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 1, 0);
-      updateNoteTranlationTable();   
+      updateNoteTranslationTable();   
    }
    
 };
@@ -448,7 +448,7 @@ smallDrumNoteMap.canScrollLeft = function()
 smallDrumNoteMap.scrollLeft = function()
 {
    activeNoteMap = largeDrumNoteMap;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: " + activeNoteMap.getName());
 };
 
@@ -490,11 +490,11 @@ smallDrumNoteMap2.scrollUp = function()
 {
    if (IS_SHIFT_PRESSED) {
       this.rootKey = Math.min(this.rootKey + 16, 64);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    if (!IS_SHIFT_PRESSED) {
    this.rootKey = Math.min(this.rootKey + 1, 64);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    }
 };
 
@@ -503,12 +503,12 @@ smallDrumNoteMap2.scrollDown = function()
    if (IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 16, 0);
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
    }
    if (!IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 1, 0);
-      updateNoteTranlationTable();   
+      updateNoteTranslationTable();   
    }
    
 };
@@ -531,7 +531,7 @@ smallDrumNoteMap2.canScrollLeft = function()
 smallDrumNoteMap2.scrollLeft = function()
 {
    activeNoteMap = largeDrumNoteMap;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: " + activeNoteMap.getName());
 };
 
@@ -598,13 +598,13 @@ LinearGridNoteMap.prototype.cellToKey = function(x, y)
 LinearGridNoteMap.prototype.scrollUp = function()
 {
    this.rootKey = Math.min(this.rootKey + 12, 108);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 LinearGridNoteMap.prototype.scrollDown = function()
 {
    this.rootKey = Math.max(this.rootKey - 12, 4);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 LinearGridNoteMap.prototype.canScrollUp = function()
@@ -647,7 +647,7 @@ linear14Grid.canScrollLeft = function()
 linear14Grid.scrollRight = function()
 {
    activeNoteMap = linear34Grid;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Linear34");
 };
 
@@ -668,14 +668,14 @@ linear34Grid.canScrollRight = function()
 linear34Grid.scrollLeft = function()
 {
    activeNoteMap = linear14Grid;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Linear14");
 };
 
 linear34Grid.scrollRight = function()
 {
    activeNoteMap = linear25Grid;
-   updateNoteTranlationTable(); 
+   updateNoteTranslationTable(); 
    host.showPopupNotification("Scale: Linear25");
 };
 
@@ -692,14 +692,14 @@ linear25Grid.canScrollRight = function()
 linear25Grid.scrollLeft = function()
 {
    activeNoteMap = linear34Grid;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Linear34");
 };
 
 linear25Grid.scrollRight = function()
 {
    activeNoteMap = noteMap23_12;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Notemap23_12");
 };
 
@@ -716,14 +716,14 @@ noteMap23_12.canScrollRight = function()
 noteMap23_12.scrollLeft = function()
 {
    activeNoteMap = linear25Grid;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Linear25");
 };
 
 noteMap23_12.scrollRight = function()
 {
    activeNoteMap = noteMap13_12;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Notemap13_12");
 };
 
@@ -740,7 +740,7 @@ noteMap13_12.canScrollRight = function()
 noteMap13_12.scrollLeft = function()
 {
    activeNoteMap = noteMap23_12;
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Scale: Notemap23_12");
 };
 
@@ -776,13 +776,13 @@ pushGridNoteMap.cellToKey = function(x, y)
 pushGridNoteMap.scrollUp = function()
 {
    this.rootKey = Math.min(this.rootKey + 12, 96);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 pushGridNoteMap.scrollDown = function()
 {
    this.rootKey = Math.max(this.rootKey - 12, 0);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 pushGridNoteMap.canScrollUp = function()
@@ -813,7 +813,7 @@ pushGridNoteMap.scrollLeft = function()
         }
     }
     
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Root: " + RootNoteNames[this.root] + " | Mode: " + ModernModesNames[pushGridNoteMap.mode]);
 };
 
@@ -834,7 +834,7 @@ pushGridNoteMap.scrollRight = function()
             pushGridNoteMap.mode = pushGridNoteMap.mode + 1;
         }
     }
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Root: " + RootNoteNames[this.root] + " | Mode: " + ModernModesNames[pushGridNoteMap.mode]);
 };
 
@@ -903,13 +903,13 @@ diatonicNoteMap.cellToKey = function(x, y)
 diatonicNoteMap.scrollUp = function()
 {
    this.rootKey = Math.min(this.rootKey + 12, 72);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 diatonicNoteMap.scrollDown = function()
 {
    this.rootKey = Math.max(this.rootKey - 12, 0);
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
 };
 
 diatonicNoteMap.scrollLeft = function()
@@ -930,7 +930,7 @@ diatonicNoteMap.scrollLeft = function()
         }
     }
     
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Root: " + RootNoteNames[this.root] + " | Mode: " + ModernModesNames[diatonicNoteMap.mode]);
 };
 
@@ -951,7 +951,7 @@ diatonicNoteMap.scrollRight = function()
             diatonicNoteMap.mode = diatonicNoteMap.mode + 1;
         }
     }
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    host.showPopupNotification("Root: " + RootNoteNames[this.root] + " | Mode: " + ModernModesNames[diatonicNoteMap.mode]);
 };
 

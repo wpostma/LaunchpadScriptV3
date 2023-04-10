@@ -208,7 +208,7 @@ function setActivePage(page)
          showPopupNotification(":::"+page.title);
       }
 
-      updateNoteTranlationTable();
+      updateNoteTranslationTable();
       updateVelocityTranslationTable();
 
       page.onActivePage();
@@ -229,7 +229,7 @@ var TrackModeColumn =
 };
 
 var timerState = 0;
-
+var PendingUpdateNoteTranslation = false;
 var TEMPMODE = -1;
 
 var IS_GRID_PRESSED = false;
@@ -541,7 +541,7 @@ function init()
    setGridMappingMode();
    setActivePage(gridPage);
 
-   updateNoteTranlationTable();
+   updateNoteTranslationTable();
    updateVelocityTranslationTable();
    // Calls the function just below which displays the funky Bitwig logo, which ends the initialization stage 
 
@@ -558,6 +558,11 @@ function polledFunction() {
   if (timerState > 3 ) {
      timerState = 0;
   }
+  if (PendingUpdateNoteTranslation) {
+   PendingUpdateNoteTranslation = false;
+   updateNoteTranslationTable();
+  }
+  
   host.scheduleTask(polledFunction,  activePage.pollingRate);
 
   if (MUSICAL_STOP_STATE>0) { 
@@ -625,22 +630,36 @@ function setGridMappingMode()
    sendMidi(0xB0, 0, 1);
 }
 
-function updateNoteTranlationTable()
+function updateNoteTranslationTable()
 {
-   //println("updateNoteTranlationTable");
+   if (trace>0) {
+      println("updateNoteTranslationTable");
+   }
    var table = initArray(-1, 128);
 
-   for(var i=0; i<128; i++)
-   {
-      var y = i >> 4;
-      var x = i & 0xF;
-
-      if (x < 8 && activePage.shouldKeyBeUsedForNoteInport(x, y))
+   if (!IS_SHIFT_PRESSED) {
+      for(var i=0; i<128; i++)
       {
-         table[i] = activeNoteMap.cellToKey(x, y);
+         var y = i >> 4;
+         var x = i & 0xF;
+
+         if (x < 8 && activePage.shouldKeyBeUsedForNoteInport(x, y))
+         {
+            table[i] = activeNoteMap.cellToKey(x, y);
+         }
       }
+   } else 
+   {
+      PendingUpdateNoteTranslation = true;
+
    }
 
+   noteInput.setKeyTranslationTable(table);
+}
+
+function clearNoteTranslationTable()
+{
+   var table = initArray(-1, 128);
    noteInput.setKeyTranslationTable(table);
 }
 
@@ -669,8 +688,56 @@ function RewindAndStopAllClips() {
       }
       
    }
-
 }
+
+function shiftGridButtonPressHandler(row, column, pressed)
+{
+   println("shiftGridButtonPressHandler row="+row+" col="+column+" pressed="+pressed);
+   if (pressed) {
+      if (row == 0 ) {
+         if (column == 0) {
+             // home/reset script, back to grid page, clear any state.
+             setGridMappingMode();
+             setActivePage(gridPage);
+
+         } else if (column == 1) {
+            setActivePage(keysPage);
+         } else if (column == 2) {
+            setActivePage(seqPage);
+
+         } else if (column == 3) {
+            
+         } else if (column == 4) {
+            
+         } else if (column == 5) {
+            
+         } else if (column == 6) {
+            
+         } else if (column == 7) {
+            
+         } 
+      } else if (row == 1 ) {
+         if (column==0) {
+
+         } else if (column==1) {
+
+         } else if (column == 2) {
+
+         } else if (column == 3) {
+            
+         } else if (column == 4) {
+            
+         } else if (column == 5) {
+            
+         } else if (column == 6) {
+            
+         } else if (column == 7) {
+            
+         } 
+      }
+   }
+}
+
 // This is the main function which runs whenever a MIDI signal is sent
 // You can uncomment the printMIDI below to see the MIDI signals within Bitwigs Controller script console
 
@@ -756,7 +823,7 @@ function onMidi(status, data1, data2)
             break;
 
          case TopButton.MIXER:
-            println("[MIXER] isPressed="+isPressed);
+            println(" [MIXER] (SHIFT) isPressed="+isPressed);
             activePage.onShift(isPressed);
                 if (isPressed)
                 { if (trace>0) {
@@ -764,15 +831,16 @@ function onMidi(status, data1, data2)
                   }
 
                     IS_SHIFT_PRESSED = true;
+                    clearNoteTranslationTable();
                 }
                 else
                 {
                     if(IS_SHIFT_PRESSED)
                     {  if (trace>0) {
-                     println("shift OFF");
-                    }
-  
-                        IS_SHIFT_PRESSED=false;
+                        println("shift OFF");
+                       }
+                       updateNoteTranslationTable(); // grid buttons should send midi notes according to their function.
+                       IS_SHIFT_PRESSED=false;
                     }
                 }
             break;
@@ -788,18 +856,25 @@ function onMidi(status, data1, data2)
       if (column < 8)
       {
 
-         if (trace>0) {
-            println(  activePage.title + ":   onGridButton row = " + row + "col = " + column)
-            }
-           
-         activePage.onGridButton(row, column, data2 > 0);
+         if (IS_SHIFT_PRESSED) {
+            shiftGridButtonPressHandler(row,column, data2>0);
+            return;
+         } 
+         else {
+            if (trace>0) {
+               println(  activePage.title + ":   onGridButton row = " + row + "col = " + column)
+               }
+               
+            activePage.onGridButton(row, column, data2 > 0);
+         }
       }
       else
       {
+
          
-         if (trace>0) {
+         //if (trace>0) {
             println(" midi SCENE button #" + row )
-            }
+          //  }
          
          activePage.onSceneButton(row, data2 > 0);
       }

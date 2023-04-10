@@ -929,7 +929,7 @@ gridPage.onGridButton = function(row, column, pressed)
 
 	}
 	else if ((row >= gridPage.maxrow)&&(gridPage.split)) 
-	{
+	{  // SPLIT FEATURE
 		if (trace>2) {
 		println("note @ "+row+" "+column);
 		}
@@ -982,7 +982,7 @@ gridPage.updatePlayingStep = function()
 gridPage.updateGrid = function()
 {
 
-	if (trace>0) {
+	if (trace>2) {
 	println("gridPage.updateGrid");
 	}
 	clipActive = transport.isPlaying().get();

@@ -244,6 +244,13 @@ seqPage.onDown = function(isPressed)
 
 seqPage.onGridButton = function(row, column, pressed)
 {
+
+   if (IS_SHIFT_PRESSED) {
+      println("keys grid plus shift");
+      return;
+   }
+   println("seqPage.onGridButton");
+
    if (row < 4)
    {
       if (pressed)
