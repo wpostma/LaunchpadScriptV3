@@ -211,17 +211,9 @@ function setActivePage(page)
       updateNoteTranlationTable();
       updateVelocityTranslationTable();
 
-      // if (activePage === seqPage)
-      // {
-      //    activeNoteMap = pianoNoteMap; 
-      //    updateNoteTranlationTable();  
-      // }
-      // Update indications in the app
-      for(var p=0; p<8; p++)
-      {
-         var track = trackBank.getTrack(p);
-         track.getClipLauncher().setIndication(activePage == gridPage);
-      }
+      page.onActivePage();
+      println("after page change");
+      
    }
 }
 

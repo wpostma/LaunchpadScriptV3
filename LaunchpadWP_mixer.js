@@ -75,11 +75,12 @@ function inv_scale(n) {
 
 }
 
-gridPage.onActivePage = function()
+mixerPage.onActivePage = function()
 {
 
+	println("mixer");
 	mixerPage.resetMixerVisualLevel();
-	
+
 }
 
 
@@ -137,9 +138,9 @@ mixerPage.writeMixerValue = function(channel,index,mixValue) {
 	else if (mixerPage.SubMode==MixMode.TrackVolFader){
 
 		var track = trackBank.getTrack(index);
-		scaledMixValue = scale(mixValue)
+		scaledMixValue = scale(mixValue);
 		track.getVolume().set(scaledMixValue);
-		println("TRACK VOL#"+index+": "+scaledMixValue);
+		println("TRACK VOL#"+index+": "+mixValue+" "+scaledMixValue);
 	}
 	
 }
