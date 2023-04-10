@@ -135,6 +135,32 @@ mixerPage.pageIndex = 3;
 switchesPage.pageIndex = 4;
 var pageCount = 5;
 
+function doUpdate()
+{
+
+  
+      activePage.updateOutputState();
+   
+      if (IS_SHIFT_PRESSED) {
+         //clearGrid();
+         setCellLED(0,0,Colour.GREEN_LOW);//grid
+         setCellLED(1,0,Colour.RED_LOW);  //keys
+         setCellLED(2,0,Colour.YELLOW_LOW);//step seq
+         setCellLED(3,0,Colour.ORANGE);//mixer
+         setCellLED(4,0,Colour.GREEN_FULL);//switches
+         
+      }
+}
+
+function clearGrid() {
+   for(var column=0; column<8; column++)
+   {
+      for(var row=0; row<8; row++)
+      {  setCellLED(column, row, Colour.OFF );
+      } 
+   }
+}
+
 // cycle through active pages (major modes) in backward order via META+pageLeft, META+pageRight (top row round buttons)
 function previousMode() {
    activePageIndex = activePage.pageIndex-1;
@@ -147,7 +173,7 @@ function previousMode() {
 
    setActivePage(activePage);
    showPopupNotification(activePage.notify);
-   activePage.updateOutputState();
+   doUpdate();
   //  flushLEDs();
 }
 
@@ -164,7 +190,7 @@ println(activePage.title);
 
 setActivePage(activePage);
 showPopupNotification(activePage.notify);
-activePage.updateOutputState();
+doUpdate();
 //  flushLEDs();
 }
 
@@ -581,7 +607,7 @@ function polledFunction() {
         
   }
 
-  activePage.updateOutputState();
+  doUpdate();
   
   activePage.polledFunction();
 
@@ -650,7 +676,11 @@ function updateNoteTranslationTable()
 
          if (x < 8 && activePage.shouldKeyBeUsedForNoteInport(x, y))
          {
-            table[i] = activeNoteMap.cellToKey(x, y);
+             if (activeNoteMap==undefined) {
+               table[i] = -1;
+             }
+             else
+               table[i] = activeNoteMap.cellToKey(x, y);
          }
       }
    } else 
@@ -705,15 +735,20 @@ function shiftGridButtonPressHandler(row, column, pressed)
              setGridMappingMode();
              setActivePage(gridPage);
              application.setPerspective('MIX'); 
+             clearGrid();
          } else if (column == 1) {
             setActivePage(keysPage);
+            clearGrid();
          } else if (column == 2) {
             setActivePage(seqPage); // step sequencer
+            clearGrid();
 
          } else if (column == 3) {
             setActivePage(mixerPage);
+            clearGrid();
          } else if (column == 4) {
             setActivePage(switchesPage);
+            clearGrid();
 
          } else if (column == 5) {
             // future page A : browser control?
@@ -899,7 +934,7 @@ function clear()
 
 function flush()
 {
-  //  activePage.updateOutputState(); // // set LED state vars
+  //  doUpdate(); // // set LED state vars
 
 
    flushLEDs();

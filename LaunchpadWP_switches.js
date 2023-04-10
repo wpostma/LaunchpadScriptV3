@@ -17,6 +17,13 @@ for	(var index = 0; index < 128; index++)  {
  }
 
 
+switchesPage.onActivePage = function()
+{
+   activeNoteMap = undefined;
+   clearNoteTranslationTable();
+   println("switches page activated");
+
+}
 switchesPage.CursorLeft = function(isPressed)
 {
  println("cursor left on switches");
@@ -214,7 +221,11 @@ switchesPage.onToggleGridButton = function(row,column,pressed,cc)
        //sendNoteStart(key,velocity);
        var value = this.state[cc];
        if (value == 0 ) {
-         value = 64;
+         if (column <= 1) {
+            value = 127;
+         }
+         else
+           value = 64;
        } 
        else if (value ==64) {
          value = 127;
@@ -271,9 +282,12 @@ switchesPage.drawCell = function(x, y, highlight)
 
    var colour = Colour.OFF;
     
-   if (this.state[cc]>0)
+   if (this.state[cc]==127)
    {
       colour = Colour.GREEN_FULL;
+   } else if (this.state[cc]>60)
+   {
+      colour = Colour.GREEN_LOW;
    }
 
    setCellLED(x, y, colour);
