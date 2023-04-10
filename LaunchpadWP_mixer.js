@@ -22,7 +22,8 @@ MixMode = {
 	TrackPanFader:3
 }
 
-MixerModes = [MixMode.CCMode,MixMode.DeviceMode,MixMode.TrackFader];
+MixerModes = [MixMode.CCMode,MixMode.DeviceMode,MixMode.TrackVolFader,MixMode.TrackPanFader];
+
 mixerPage.initMix = 0;
 
 
@@ -91,13 +92,16 @@ mixerPage.resetMixerVisualLevel = function()
 
 	for(var i= 0; i<20; i++)
 	{
-		
-		var track =  trackBank.getTrack(i);
-		//println("track="+track);
-		var vollevel = track.volume().value().get(); // java api's be like FooThing.BarThing.BatThing.gettableFoobulator.getThingy.getSubSubGetter.getter.valueOfThing.get();
-		scaledMixValue = inv_scale(vollevel);
-		println( "XXX vollevel "+vollevel+" -> scaled "+scaledMixValue);
-		//track.getVolume.set(scaledMixValue);
+		var scaledMixValue = 8; // nothing lit.
+
+		if (mixerPage.SubMode==MixMode.TrackVolFader) {
+		  var track =  trackBank.getTrack(i);
+		  //println("track #"+i);
+		  var vollevel = track.volume().value().get(); // java api's be like FooThing.BarThing.BatThing.gettableFoobulator.getThingy.getSubSubGetter.getter.valueOfThing.get();
+		  scaledMixValue = inv_scale(vollevel);
+		  println( "track "+i+" vollevel "+vollevel+" -> scaled "+scaledMixValue);
+		}
+
 
 		mixerPage.mixerCCValues[i] = 0; //0-127,  row 7 means zero, row 0 means CC max value (127)
 		mixerPage.mixerButtonLevel[i] = scaledMixValue; //0-7  (7=lowest row lit)
@@ -112,8 +116,9 @@ mixerPage.resetMixerVisualLevel = function()
 
 mixerPage.syncMixerVisualLevel = function()
 {
-	println("sync mixer visual level");
-
+	if (trace>0) {
+		println("sync mixer visual level");
+	}
 	for(var i= 0; i<20; i++)
 	{
 		if (	mixerPage.mixerAnimate[i] == -1 )
@@ -142,7 +147,13 @@ mixerPage.writeMixerValue = function(channel,index,mixValue) {
 		println("writeMixerValue:undefined ccIndex");
 		return;
 	}
-	println("XXXXXXXXXX  writeMixerValue:::: mode :: "+mixerPage.SubMode);
+	if (mixerPage.SubMode==undefined) {
+		println("writeMixerValue SUB MODE undefined");
+		return;
+	}
+	if (trace<0) {
+	  println("writeMixerValue:::: mode :: "+mixerPage.SubMode);
+	}
 
 	if (mixerPage.SubMode == MixMode.CCMode) {
 		
@@ -230,7 +241,10 @@ mixerPage.polledFunction = function()
   }
 
   if (activity==0) {
-     mixerPage.syncMixerVisualLevel(); // idle behaviour.
+	if (mixerPage.SubMode==MixMode.TrackVolFader) {
+		mixerPage.syncMixerVisualLevel(); // idle behaviour.
+	}
+    
   }
 
 };
@@ -472,6 +486,10 @@ mixerPage.cursorDeviceReplace = function()
 }
 mixerPage.SubModeChange = function (amode) 
 {
+	if (amode==undefined) {
+		println("Invalid SubModeChange");
+		exit;
+	}
 	mixerPage.SubMode = amode;
 	if (mixerPage.SubMode==MixMode.CCMode){
 		showPopupNotification('Fader/Mixer:CC Mode');
@@ -499,10 +517,13 @@ mixerPage.onSceneButtonShift = function(row, isPressed)
 
 		if (row==0) {
 			
-			mixerPage.SubModeChange(MixMode.TrackFader);
+			mixerPage.SubModeChange(MixMode.TrackVolFader);
 		} else if (row==1) {
-			
+			mixerPage.SubModeChange(MixMode.CCMode);
+
 		}else if (row==2) {
+			mixerPage.SubModeChange(MixMode.DeviceMode);
+			
 			
 		}else if (row==3) {
 			

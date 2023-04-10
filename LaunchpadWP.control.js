@@ -4,6 +4,7 @@
 // 2023-04-10 Cleaning up some of the chaos in here where comments and notifications have misinformation/outdated information.
 //            Use shift,mode,meta (three different shift keys ) combinations with the scene launch buttons to do functions
 //            META+clip button=delete clip.
+//            Use shift key with the main grid buttons. (Requires some fancy footwork with the active note map).
 //
 // Novation Launchpad Mk1 script variant by Warren.Postma@gmail.com
 // Heavily modified script for live KEYS AND GUITAR looping, with fixed and flexible launching, overdub controls, step sequencer,
@@ -174,6 +175,7 @@ var activePage = null;
 var transport = null;
 var offset = null;
 var quant = null;
+var mixer = null;
 
 function sendMidiOut(status,data1,data2) {
    if (data1==undefined) {
@@ -373,6 +375,9 @@ function init()
    noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);
 
+   // create mixer controller
+   mixer = host.createMixer();
+   
    // Create a transport and application control section
    transport = host.createTransport();
    transport.isPlaying().markInterested();
@@ -562,7 +567,7 @@ function polledFunction() {
    PendingUpdateNoteTranslation = false;
    updateNoteTranslationTable();
   }
-  
+
   host.scheduleTask(polledFunction,  activePage.pollingRate);
 
   if (MUSICAL_STOP_STATE>0) { 
@@ -696,35 +701,37 @@ function shiftGridButtonPressHandler(row, column, pressed)
    if (pressed) {
       if (row == 0 ) {
          if (column == 0) {
-             // home/reset script, back to grid page, clear any state.
+             // home/reset script, back to grid page, clear any state. mixer view
              setGridMappingMode();
              setActivePage(gridPage);
-
+             application.setPerspective('MIX'); 
          } else if (column == 1) {
             setActivePage(keysPage);
          } else if (column == 2) {
-            setActivePage(seqPage);
+            setActivePage(seqPage); // step sequencer
 
          } else if (column == 3) {
-            
+            setActivePage(mixerPage);
          } else if (column == 4) {
-            
+            setActivePage(switchesPage);
+
          } else if (column == 5) {
-            
+            // future page A : browser control?
          } else if (column == 6) {
-            
+            // future page B
          } else if (column == 7) {
-            
+            // future page C
          } 
       } else if (row == 1 ) {
          if (column==0) {
-
+            application.toggleInspector();
+            application.setPerspective('MIX'); 
          } else if (column==1) {
-
+            application.setPerspective('ARRANGE');
          } else if (column == 2) {
-
+            application.setPerspective('MIX'); 
          } else if (column == 3) {
-            
+            application.setPerspective('EDIT');
          } else if (column == 4) {
             
          } else if (column == 5) {
@@ -732,7 +739,7 @@ function shiftGridButtonPressHandler(row, column, pressed)
          } else if (column == 6) {
             
          } else if (column == 7) {
-            
+            application.toggleBrowserVisibility();
          } 
       }
    }
