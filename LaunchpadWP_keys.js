@@ -28,6 +28,14 @@ keysPage.notify = keysPage.title;
 keysPage.velocity = 90;
 
 
+keysPage.onActivePage = function()
+{
+   activeNoteMap = pianoNoteMap;
+   updateNoteTranslationTable(activeNoteMap);
+ 
+
+}
+
 keysPage.CursorLeft = function(isPressed)
 {
  println("cursor left on keys");

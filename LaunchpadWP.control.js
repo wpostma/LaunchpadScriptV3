@@ -123,17 +123,18 @@ load("LaunchpadWP_keys.js"); // draws the keys as set in launchpad_notemap and p
 load("LaunchpadWP_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
 load("LaunchpadWP_step_sequencer.js"); // everything to do with the step sequencer
 load("LaunchpadWP_switches.js"); // a copy of the keys page specifically redesigned for midi CC on/off.
+load("LaunchpadWP_browse_preset.js");
 
 
 
-
-var pageModes = [ gridPage, keysPage,seqPage,mixerPage, switchesPage, false ];
+var pageModes = [ gridPage, keysPage,seqPage,mixerPage, switchesPage,browsePresetPage,false ];
 gridPage.pageIndex = 0;
 keysPage.pageIndex = 1;
 seqPage.pageIndex = 2;
 mixerPage.pageIndex = 3;
 switchesPage.pageIndex = 4;
-var pageCount = 5;
+browsePresetPage.pageIndex = 5;
+var pageCount = 6;
 
 function doUpdate()
 {
@@ -168,13 +169,15 @@ function previousMode() {
       activePageIndex = pageCount-1;
    }
 
-   activePage =  pageModes[activePageIndex];
-   println(activePage.title);
+   var nextPage =  pageModes[activePageIndex];
+   println(nextPage.title);
 
-   setActivePage(activePage);
-   showPopupNotification(activePage.notify);
+   setActivePage(nextPage);
+   if ( activePage.notify != "" ) {
+      showPopupNotification(activePage.notify);
+   }
    doUpdate();
-  //  flushLEDs();
+   flushLEDs();
 }
 
 
@@ -185,13 +188,17 @@ function nextMode()  {
    activePageIndex = 0;
 }
 
-activePage =  pageModes[activePageIndex];
-println(activePage.title);
+var nextPage =  pageModes[activePageIndex];
+println(nextPage.title);
 
-setActivePage(activePage);
-showPopupNotification(activePage.notify);
+setActivePage(nextPage);
+if ( activePage.notify != "" ) {
+   showPopupNotification(activePage.notify);
+}
+
+
 doUpdate();
-//  flushLEDs();
+flushLEDs();
 }
 
 
@@ -221,7 +228,7 @@ function sendMidiOut(status,data1,data2) {
 function setActivePage(page)
 {
    if (trace>0) {
-      println("setActivePage "+page)
+      println("setActivePage "+page.title)
    }
    var isInit = activePage == null;
     
@@ -240,7 +247,7 @@ function setActivePage(page)
       updateVelocityTranslationTable();
 
       page.onActivePage();
-      println("after page change");
+      println("after setActivePage");
       
    }
 }
@@ -632,9 +639,9 @@ function exit()
 // Reset all lights by sending MIDI and sets all values in the pendingLEDs array to 0
 function resetDevice()
 {  
-  //if (trace>0) {
+  if (trace>0) {
    println("resetDevice");
-  //} 
+  } 
    sendMidi(0xB0, 0, 0);
 
    for(var i=0; i<LED_COUNT; i++)
@@ -647,7 +654,7 @@ function resetDevice()
    {
       isPlaying[i] = 0;
    }
-  // flushLEDs();
+   flushLEDs();
 }
 
 // I'm not sure what these functions do

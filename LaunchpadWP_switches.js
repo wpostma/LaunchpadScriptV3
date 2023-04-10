@@ -17,6 +17,11 @@ for	(var index = 0; index < 128; index++)  {
  }
 
 
+ switchesPage.canScrollUp    = function() { return false; };
+ switchesPage.canScrollDown  = function() { return false; };
+ switchesPage.canScrollLeft  = function() { return false; };
+ switchesPage.canScrollRight = function() { return false; };
+
 switchesPage.onActivePage = function()
 {
    activeNoteMap = undefined;
@@ -311,7 +316,8 @@ switchesPage.drawKeys = function()
    }
 };
 
+// always return false so no Midi Note Ons are emitted
 switchesPage.shouldKeyBeUsedForNoteInport = function(x,y)
 {
-   return true;
+   return false;
 }
