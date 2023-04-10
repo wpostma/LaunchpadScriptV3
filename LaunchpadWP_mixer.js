@@ -3,8 +3,14 @@
 *  MIXER PAGE
 *
 *  This is stolen from the mixer page idea novation coded for FL Studio's launchpad controller mode.
+* Track fader submode:
 *  8 tracks where the launcher pads all set the level for the first 8 tracks
-* 
+* CCMode:  
+*  8 midi-learnable CC values for controlling vst knobs
+* DeviceMode:
+*   Device quick controls faders.
+* Pan Mode:
+*   Track panning.
 * */
 
 
@@ -177,6 +183,11 @@ mixerPage.writeMixerValue = function(channel,index,mixValue) {
 		scaledMixValue = scale(mixValue);
 		track.getVolume().set(scaledMixValue);
 		println("TRACK VOL#"+index+": "+mixValue+" "+scaledMixValue);
+	} else if (mixerPage.SubMode==MixMode.TrackPanFader) {
+		var track = trackBank.getTrack(index);
+		scaledMixValue = scale(mixValue);
+		track.getPan().set(scaledMixValue);
+		println("TRACK PAN#"+index+": "+mixValue+" "+scaledMixValue);
 	}
 	
 }
@@ -495,7 +506,14 @@ mixerPage.SubModeChange = function (amode)
 		showPopupNotification('Fader/Mixer:CC Mode');
 	} else if (mixerPage.SubMode==MixMode.DeviceMode){
 		showPopupNotification('Fader/Mixer:Device Quick Controls Mode');
-	} else {
+	}
+	else if (mixerPage.SubMode==MixMode.DeviceMode){
+		showPopupNotification('Fader/Mixer:Device Quick Controls Mode');
+	} 
+	else if (mixerPage.SubMode==MixMode.TrackPanFader){
+		showPopupNotification('Fader/Mixer:Track Pan L/R Control');
+	}  
+	else {
 		showPopupNotification('Fader/Mixer:Track Volume')
 	}
 
@@ -526,7 +544,7 @@ mixerPage.onSceneButtonShift = function(row, isPressed)
 			
 			
 		}else if (row==3) {
-			
+			mixerPage.SubModeChange(MixMode.TrackPanFader);
 		}else if (row==4) {
 			
 		}else if (row==5) {
