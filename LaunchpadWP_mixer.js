@@ -66,7 +66,7 @@ function scale(n) {
 }
 
 function inv_scale(n) {
-	x = Math.round(n*8);
+	x = Math.round(n*8)-1;
 	if (x<0)
 		x = 0;
 	if (x>7)
