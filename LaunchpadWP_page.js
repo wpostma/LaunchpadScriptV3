@@ -26,6 +26,11 @@ Page.prototype.modeUp = function()
 {  println("MODE+UP: No operation");
 };
 
+Page.prototype.onActivePage = function()
+{
+
+};
+
 Page.prototype.updateOutputState = function()
 {
 };

@@ -75,13 +75,23 @@ function inv_scale(n) {
 
 }
 
+gridPage.onActivePage = function()
+{
+
+	mixerPage.resetMixerVisualLevel();
+	
+}
+
+
 mixerPage.resetMixerVisualLevel = function()
 {
+	println("reset mixer");
+
 	for(var i= 0; i<20; i++)
 	{
 		
-		var track = trackBank.getTrack(index);
-		var vollevel = track.getVolume().get();
+		var track =  trackBank.getTrack(index);
+		var vollevel = 0;//track.getVolume().get();
 		scaledMixValue = inv_scale(vollevel);
 		println( "vol "+vollevel+" -> "+scaledMixValue);
 		//track.getVolume.set(scaledMixValue);
@@ -94,7 +104,7 @@ mixerPage.resetMixerVisualLevel = function()
 	}
 }
 
-mixerPage.resetMixerVisualLevel();
+// mixerPage.resetMixerVisualLevel(); // --> too soon at this load scope
 
 
 

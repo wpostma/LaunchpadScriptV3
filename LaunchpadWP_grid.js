@@ -105,6 +105,16 @@ CL_FIXED_4   = 1; // setClipLauncherPostRecordingAction("play_recorded") -> reco
 CL_FIXED_8   = 2;
 CL_FIXED_16  = 3;
 
+gridPage.onActivePage = function()
+{
+
+	for(var p=0; p<8; p++)
+	{
+	   var track = trackBank.getTrack(p);
+	   track.getClipLauncher().setIndication(activePage == gridPage);
+	}
+}
+
 // other looper modes;
 	// transport.setClipLauncherPostRecordingAction( "record_next_free_slot" ); 
 	// transport.setClipLauncherPostRecordingAction("stop" );
