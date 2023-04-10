@@ -110,6 +110,24 @@ mixerPage.resetMixerVisualLevel = function()
 
 }
 
+mixerPage.syncMixerVisualLevel = function()
+{
+	println("sync mixer visual level");
+
+	for(var i= 0; i<20; i++)
+	{
+		if (	mixerPage.mixerAnimate[i] == -1 )
+		{
+			var track =  trackBank.getTrack(i);
+			var vollevel = track.volume().value().get(); // java api's be like FooThing.BarThing.BatThing.gettableFoobulator.getThingy.getSubSubGetter.getter.valueOfThing.get();
+			scaledMixValue = inv_scale(vollevel);
+			mixerPage.mixerButtonLevel[i] = scaledMixValue; //0-7  (7=lowest row lit)
+		}
+	}
+
+
+}
+
 // mixerPage.resetMixerVisualLevel(); // --> too soon at this load scope
 
 
@@ -175,6 +193,7 @@ mixerPage.polledFunction = function()
 
 	
   var channel = 0; // probably don't need to set this >0
+  var activity = 0;
   for (i=0;i<8;i++) {
 	  if (mixerPage.mixerAnimate[i] >= 0) {
 		//println("anim mixer index "+i);
@@ -206,8 +225,12 @@ mixerPage.polledFunction = function()
 			//println("animation completed");
 		}
 
-
+        activity = activity + 1;
 	  }
+  }
+
+  if (activity==0) {
+     mixerPage.syncMixerVisualLevel(); // idle behaviour.
   }
 
 };
