@@ -1,22 +1,34 @@
-// LAUNCHPADWP : 2023-03-23
+// LAUNCHPADWP : 2023-04-10 ; NOVATION LAUNCHPAD Mk1 (VERY OLD ORIGINAL VERSION) SCRIPT
 //
 // 2023-03-23 RESTORED ARROW KEYS TO SCROLLING UP AND DOWN AMONG SCENES.
+// 2023-04-10 Cleaning up some of the chaos in here where comments and notifications have misinformation/outdated information.
+//            Use shift,mode,meta (three different shift keys ) combinations with the scene launch buttons to do functions
+//            META+clip button=delete clip.
 //
-// Novation Launchpad script variant by Warren.Postma@gmail.com
-// Heavily modified script for live KEYS AND GUITAR PLAYING.
+// Novation Launchpad Mk1 script variant by Warren.Postma@gmail.com
+// Heavily modified script for live KEYS AND GUITAR looping, with fixed and flexible launching, overdub controls, step sequencer,
+// keys mode, CC mode.  See readme.md.
 //
-// API Level 10 
+//   * * * * * * * *     <- top row: up,down,left,right, session,user1,user2, mixer
+//   x x x x x x x x >   <- 8 rows of clip buttons (represented as x here, but they are square and light up) 
+//   x x x x x x x x >      and one scene launcher button (round button represented here as > )
+//   x x x x x x x x >        
+//   x x x x x x x x >     * = round top buttons
+//   x x x x x x x x >     x = square clip buttons
+//   x x x x x x x x >     > = round launch buttons
+//   x x x x x x x x >
+//   x x x x x x x x >
 //
+//   The initial Page (mode) shows 8 scenes (ROWS) x 8 track clip (COLUMNS) launcher grid.  It follows the mixer layout (same as ableton live mixer)
+//   layout because the scene launch buttons only make sense if rows are for scenes, and columns are for tracks.
 //
-//   Originally this was an 8 scenes (ROWS) x 8 track clip (COLUMNS) launcher grid.
-//
-//   Warren's version adds a splittable layout option.
-//   When split the top half is a clip launcher grid for four tracks, designed for the clip launcher/mixer layout 
-//   where the tracks are vertical and scenes are horizontal:
 //             [TRACK1]  [TRACK2]  [TRACK3] 
 //    [SCENE1]  ....      ....       ....
 //    [SCENE2]  ....      ....       ....
+//   The focused track is the only one you can audition and play and should therefore be the one that is monitoring (for audio) or live playable (for instruments).
+//   A flashing vertical yellow line indicates the focused track, and the page left/right buttons are used to select the activated/focused track.
 //
+//   A split mode GRID+KEYS split is accessed via sesion plus user 1 keys (referred to as META+USER1)
 //   When the split feature is activated, the bottom half is a keyboard note or midi CC transmitter.
 //
 //   The UP/Down arrow MOVES THE SCENE BANK (YELLOW SQUARES) UP AND DOWN
@@ -24,26 +36,18 @@
 //   USER1 = PLAY/STOP
 //
 //   SESSION = [META]  FOR KEY COMBINATIONS  
+//   USER1   = Play/Stop, plus used with other combinations.
 //   USER2   = [MODE]  FOR KEY COMBINATIONS
 //   MIXER   = [SHIFT] FOR KEY COMBINATIONS
-//   See LaunchpadWP_grid.js for the scene launch button functions 
+//   See LaunchpadWP_grid.js or readme.md for the scene launch button functions 
 //
-//   * * * * * * * *     <- top row: up,down,left,right, session,user1,user2, mixer
-//   x x x x x x x x >   <- 8 rows of clip buttons (represented as x here, but they are square and light up) 
-//   x x x x x x x x >      and one scene launcher button (round button represented here as > )
-//   x x x x x x x x >
-//   x x x x x x x x >
-//   x x x x x x x x >
-//   x x x x x x x x >
-//   x x x x x x x x >
-//   x x x x x x x x >
+//
 //
 // TODO:
 //
-//  * Use shift,mode,meta (three different shift keys ) combinations with the scene launch buttons to do functions
-//  * Use shift,mode,meta (three different shift keys ) combinations with the clip buttons to do functions
-//  * overdub somehow?
-//  * META+clip button=delete clip.
+//  * improve ability to handle guitar overdub somehow.  A fixed 8 bar or 16 bar record, followed by an automatic selection of the next track and arming of the next
+//    track would be good. That would let you do a hands free loop.   Track1 16 bar, Track 2 16 bar, track 3 just a live playable track without recording. 
+//  * 
 //
 // If this script is being maintained newer versions will be at
 // https://github.com/wpostma/LaunchpadScriptV3 
@@ -94,12 +98,6 @@ function showPopupNotification( amsg) {
 }
   
 
-
-
-
-
-
-
 // TempMode is a variable used for the Temporary views used in ClipLauncher mode.
 var TempMode =
 {
@@ -123,7 +121,7 @@ load("LaunchpadWP_grid.js"); // draws the main clip launcher and other pages suc
 load("LaunchpadWP_keys.js"); // draws the keys as set in launchpad_notemap and places them across the pads
 load("LaunchpadWP_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
 load("LaunchpadWP_step_sequencer.js"); // everything to do with the step sequencer
-load("LaunchpadWP_switches.js");
+load("LaunchpadWP_switches.js"); // a copy of the keys page specifically redesigned for midi CC on/off.
 
 
 
@@ -136,7 +134,7 @@ mixerPage.pageIndex = 3;
 switchesPage.pageIndex = 4;
 var pageCount = 5;
 
-// cycle through modes in backward order
+// cycle through active pages (major modes) in backward order via META+pageLeft, META+pageRight (top row round buttons)
 function previousMode() {
    activePageIndex = activePage.pageIndex-1;
    if (activePageIndex<0) {
@@ -365,7 +363,7 @@ selectedName = [""]
 
 function getSelectedNameObserver() {
    return function( name ) {
-       println( "selected name: "+name );
+      // println( "selected name: "+name );
        selectedName[0] = name
    }
 }
@@ -386,10 +384,11 @@ function init()
    // Create a transport and application control section
    transport = host.createTransport();
    transport.isPlaying().markInterested();
+   
    application = host.createApplication();
    transport.addIsPlayingObserver (function(pPlaying) {
       playing = pPlaying;
-     // println("playing "+playing);
+     // println("isPlayingObserver "+playing);
       // if(playing) {
       //     playButton.turnOn();
       // } else {
@@ -401,7 +400,7 @@ function init()
    });
 
 
-//TVbene: variables for post record delay and default clip launch quantization
+//offset: variables for post record delay and default clip launch quantization
 	transport.getClipLauncherPostRecordingTimeOffset().markInterested();
 	transport.defaultLaunchQuantization().markInterested();
 	quant = transport.defaultLaunchQuantization();
@@ -410,7 +409,8 @@ function init()
 
    
    // a Trackbank is the tracks, sends and scenes being controlled, these arguments are set to 8,2,8 in the launchpad_constants.js file changing them will change the size of the grid displayed on the Bitwig Clip Launcher
-   trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES)
+   trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
+   
  //  var t9 = trackBank.scrollToTrack (9);
 
    // This scrolls through the controllable tracks and clips and picks up the info from Bitwig to later display/control, it stores them in the arrays declared above

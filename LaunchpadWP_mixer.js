@@ -3,6 +3,7 @@
 *  MIXER PAGE
 *
 *  This is stolen from the mixer page idea novation coded for FL Studio's launchpad controller mode.
+*  8 tracks where the launcher pads all set the level for the first 8 tracks
 * 
 * */
 
@@ -29,8 +30,9 @@ mixerPage.canScrollTracksUp = false;
 mixerPage.canScrollTracksDown = false;
 mixerPage.canScrollScenesUp = false;
 mixerPage.canScrollScenesDown = false;
-mixerPage.title = "Fader/Mix Mode"; 
-mixerPage.notify = mixerPage.title+"  (user1 toggle mixer/device knobs)";
+mixerPage.title = "Mixer Mode"; 
+mixerPage.notify = mixerPage.title;
+// +"  (user1 toggle mixer/device knobs)";
 mixerPage.currentVelocity = 127;
 mixerPage.split = false;
 mixerPage.mixer_shift=0; //0,4,8,12
@@ -51,21 +53,6 @@ mixerPage.ccAnimation = true; // timed writes
 
 //println("<<<<<<>>>> "+mixerPage.SubMode);
 
-mixerPage.resetMixerVisualLevel = function()
-{
-	for(var i= 0; i<20; i++)
-	{
-		mixerPage.mixerCCValues[i] = 0; //0-127,  row 7 means zero, row 0 means CC max value (127)
-		mixerPage.mixerButtonLevel[i] = 7; //0-7  (7=lowest row lit)
-		mixerPage.mixerAnimate[i] = -1; // animation not active when < 0, any other value is an active animation value, even 0.
-
-		//println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
-	}
-}
-
-mixerPage.resetMixerVisualLevel();
-
-
 function scale(n) {
 	x = n/127;
 	if (x<0)
@@ -76,6 +63,41 @@ function scale(n) {
 	return x;
 
 }
+
+function inv_scale(n) {
+	x = n*127;
+	if (x<0)
+		x = 0;
+	if (x>7)
+		x = 7;
+
+	return 7-x;
+
+}
+
+mixerPage.resetMixerVisualLevel = function()
+{
+	for(var i= 0; i<20; i++)
+	{
+		
+		var track = trackBank.getTrack(index);
+		var vollevel = track.getVolume().get();
+		scaledMixValue = inv_scale(vollevel);
+		println( "vol "+vollevel+" -> "+scaledMixValue);
+		//track.getVolume.set(scaledMixValue);
+
+		mixerPage.mixerCCValues[i] = 0; //0-127,  row 7 means zero, row 0 means CC max value (127)
+		mixerPage.mixerButtonLevel[i] = scaledMixValue; //0-7  (7=lowest row lit)
+		mixerPage.mixerAnimate[i] = -1; // animation not active when < 0, any other value is an active animation value, even 0.
+
+		println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
+	}
+}
+
+mixerPage.resetMixerVisualLevel();
+
+
+
 
 mixerPage.writeMixerValue = function(channel,index,mixValue) {
 	if (mixValue==undefined){
@@ -399,10 +421,66 @@ mixerPage.cursorDeviceReplace = function()
 		cursorDevice.browseToInsertAtStartOfChain();
 	}
 }
+mixerPage.SubModeChange = function (amode) 
+{
+	mixerPage.SubMode = amode;
+	if (mixerPage.SubMode==MixMode.CCMode){
+		showPopupNotification('Fader/Mixer:CC Mode');
+	} else if (mixerPage.SubMode==MixMode.DeviceMode){
+		showPopupNotification('Fader/Mixer:Device Quick Controls Mode');
+	} else {
+		showPopupNotification('Fader/Mixer:Track Volume')
+	}
+
+	mixerPage.resetMixerVisualLevel();
+	//mixerPage.updateOutputState();
+} 
+mixerPage.onSceneButtonShift = function(row, isPressed)
+{
+	
+		//mixerPage.ccMode = !mixerPage.ccMode;
+		//println("mixerPage.ccMode="+mixerPage.ccMode);
+		
+		
+
+
+	// SHIFT+SCENE BUTTON:
+	if (isPressed) {
+		println("SHIFT+SCENE BUTTON# "+row+" on mixer");
+
+		if (row==0) {
+			
+			mixerPage.SubModeChange(MixMode.TrackFader);
+		} else if (row==1) {
+			
+		}else if (row==2) {
+			
+		}else if (row==3) {
+			
+		}else if (row==4) {
+			
+		}else if (row==5) {
+			
+		}else if (row==6) {
+			
+		}else if (row==7) {
+			
+		}
+	 }
+   
+};
 
 // side buttons press. (scene,  vol,pan,etc)
 mixerPage.onSceneButton = function(row, isPressed)
 {
+	
+	if (IS_SHIFT_PRESSED) {
+	   //println("SHIFT+SCENE Button "+row+" (on mixer page)")
+		return mixerPage.onSceneButtonShift(row,isPressed);
+	}
+	
+
+	gridPage.onSceneButton(row,isPressed);
    
 };
 
@@ -413,6 +491,7 @@ mixerPage.onSceneButton = function(row, isPressed)
 
 mixerPage.onUser1 = function(isPressed)
 {
+	/*
 	if (isPressed) {
 		//mixerPage.ccMode = !mixerPage.ccMode;
 		//println("mixerPage.ccMode="+mixerPage.ccMode);
@@ -432,7 +511,8 @@ mixerPage.onUser1 = function(isPressed)
 
 		mixerPage.resetMixerVisualLevel();
 		//mixerPage.updateOutputState();
-	}
+	}*/
+	gridPage.onUser1(isPressed); // play/stop normally on grid page.
 }
 
 mixerPage.onUser2 = function(isPressed)
@@ -558,9 +638,12 @@ function getClipsPlaying(scene) {
 // first four buttons are play stop and last four are command buttons.
 mixerPage.updateSideButtons  = function()
 {
-  //println("updateSideButtons");
+  //println("mixerPage updateSideButtons");
   	var val = null;
-	var offsetFormatted = offset.getFormatted();
+	//var offsetFormatted = offset.getFormatted();
+
+	// quant : transport.defaultLaunchQuantization();
+
 	var quantValue = quant.get();
 
 	var alt = Colour.GREEN_LOW;

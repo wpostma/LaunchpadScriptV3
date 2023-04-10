@@ -37,7 +37,7 @@ function mixColour(red, green, blink)
 }
 
 // Defines the values to be sent for the colours
-var Colour = // Novation are from the UK
+var Colour = // Novation are from the UK which is nice for us Canadians.
 {
    OFF:12,
    RED_LOW:13,
@@ -57,6 +57,7 @@ var Colour = // Novation are from the UK
    GREEN_FLASHING:56
 };
 
+// MK1 launchpad doesn't support these colors:
 const RGB_COLORS =
 [
     [ 0.3294117748737335 , 0.3294117748737335 , 0.3294117748737335 , "Dark Gray"],
@@ -135,13 +136,13 @@ var undo1 = false;
 function ViewShiftColour(index) {
    switch (index) {
       case 0:
-         return Colour.GREEN_FULL;
-      case 1:
-         return Colour.YELLOW_FULL;
-      case 2:
          return Colour.YELLOW_LOW;
-      case 3:
+      case 1:
          return Colour.GREEN_LOW;
+      case 2:
+         return Colour.RED_LOW;
+      case 3:
+         return Colour.GREEN_FULL;
       case 4:
          return Colour.RED_FULL;
       default:

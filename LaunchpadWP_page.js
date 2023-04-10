@@ -1,4 +1,5 @@
-// This script defines the pages. It is called everytime a new page is created at the start of most of the script files.
+// This script defines the basic template content for pages. 
+// It is called everytime a new page is created at the start of most of the script files.
 
 function Page()
 {

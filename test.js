@@ -71,6 +71,7 @@ println("page checks begin");
 load('launchpad_mixer.js');
 load('launchpad_grid.js');
 load('launchpad_keys.js');
+load('launchpad_switches.js'); // a variant of the keys page but always on midi CC, with on/off toggles.
 
 println("page checks complete");
 println("--------------------------");
@@ -123,7 +124,7 @@ global.LED_COUNT = 0;
 
 
 
-load('Launchpad.control.js');
+load('LaunchpadWP.control.js');
 
 println("Scan complete. ");
 

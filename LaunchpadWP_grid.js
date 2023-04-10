@@ -75,7 +75,8 @@ gridPage.canScrollTracksDown = false;
 gridPage.canScrollScenesUp = false;
 gridPage.canScrollScenesDown = false;
 gridPage.title = "Clip Launcher";
-gridPage.notify = gridPage.title + " (User1:Split Keys/Clips)";
+gridPage.notify = gridPage.title;
+// + " (User1:Split Keys/Clips)";
 
 gridPage.currentVelocity = 127;
 gridPage.split = false;
@@ -99,34 +100,43 @@ gridPage.clipLauncherFixedBars = 0;
 
 ARMED=false;
 
-CL_NORMAL  = 0; // setClipLauncherPostRecordingAction("off") -> variable length looper
-CL_FIXED   = 1; // setClipLauncherPostRecordingAction("play_recorded") -> record exactly X bars and then start playing it.
-// other looper modes; "off", "play_recorded", "record_next_free_slot", "stop", "return_to_arrangement", "return_to_previous_clip" or "play_random".
+CL_NORMAL    = 0; // setClipLauncherPostRecordingAction("off") -> variable length looper
+CL_FIXED_4   = 1; // setClipLauncherPostRecordingAction("play_recorded") -> record exactly X bars and then start playing it.
+CL_FIXED_8   = 2;
+CL_FIXED_16  = 3;
 
+// other looper modes;
+	// transport.setClipLauncherPostRecordingAction( "record_next_free_slot" ); 
+	// transport.setClipLauncherPostRecordingAction("stop" );
+	// transport.setClipLauncherPostRecordingAction("return_to_arrangement");
+	// transport.setClipLauncherPostRecordingAction("return_to_previous_clip");
+	// transport.setClipLauncherPostRecordingAction("play_random");
+// looper auto stop via offset:
+	// offset = transport.getClipLauncherPostRecordingTimeOffset();  offset.setRaw(beats); // set fixed pattern record stop point.
 
 gridPage.setLooperMode = function(mode) // mode is CL_NORMAL,CL_FIXED,...
 {
 	if (mode == CL_NORMAL) {
 		transport.setClipLauncherPostRecordingAction( "off" );
 		showPopupNotification("Looper Flexible Length");
-		// transport.setClipLauncherPostRecordingAction( "record_next_free_slot" ); 
-		// transport.setClipLauncherPostRecordingAction("stop" );
-		// transport.setClipLauncherPostRecordingAction("return_to_arrangement");
-		// transport.setClipLauncherPostRecordingAction("return_to_previous_clip");
-		// transport.setClipLauncherPostRecordingAction("play_random");
-		//transport.setClipLauncherPostRecordingActionDelay(32);  // NO IDEA how to do this.
 
-		
-	} else if (mode == CL_FIXED) {
+	} else if (mode == CL_FIXED_4) {
 		transport.setClipLauncherPostRecordingAction("play_recorded" );
-		//gridPage.clipLauncherFixedBars = 8;
-		//transport.setClipLauncherPostRecordingTimeOffset (gridPage.clipLauncherFixedBars*4);   // not sure how to do this, drivenByMoss can do this.
-
-		showPopupNotification("Looper Fixed Length");
+     	offset.setRaw(4*4); 
+		showPopupNotification("Looper Fixed Length: 4 bar");
 		
+	} else if (mode == CL_FIXED_8) {
+		transport.setClipLauncherPostRecordingAction("play_recorded" );
+     	offset.setRaw(8*4); 
+		showPopupNotification("Looper Fixed Length: 8 bar");
+		
+	}else if (mode == CL_FIXED_16) {
+		transport.setClipLauncherPostRecordingAction("play_recorded" );
+     	offset.setRaw(16*4); 
+		showPopupNotification("Looper Fixed Length: 16 bar");
 	}
-
 }
+
 gridPage.nextPreset = function()
 {  println("next preset");
 	//cursorDevice.switchToNextPreset(); // use browser instead
@@ -325,6 +335,8 @@ gridPage.onSession = function(isPressed)
 function doqset(q)
 {
 	showPopupNotification("Loop Quantize: "+q);
+
+	// quant : transport.defaultLaunchQuantization();
 	quant.set(q);
 }
 
@@ -402,11 +414,11 @@ gridPage.onSceneButtonMeta = function(row, isPressed)
 
 		if (row==0) {
 			application.toggleBrowserVisibility();
-			//gridPage.setLooperMode(CL_NORMAL);
+			
 
 		} else if (row==1) {
 			application.toggleInspector();
-			//gridPage.setLooperMode(CL_FIXED);
+			
 		}else if (row==2) {
 		
 			application.setPerspective('ARRANGE');
@@ -430,7 +442,7 @@ gridPage.onSceneButtonMeta = function(row, isPressed)
 gridPage.onSceneButtonMode = function(row, isPressed)
 {
 	if (isPressed) {
-		println("onSceneButtonMeta "+row);
+		println("MODE+SCENE BUTTON# "+row);
 
 		if (row==0) {
 			transport.isClipLauncherAutomationWriteEnabled().toggle();
@@ -443,11 +455,13 @@ gridPage.onSceneButtonMode = function(row, isPressed)
 		}else if (row==4) {
 			application.toggleNoteEditor();
 		}else if (row==5) {
-			//application.zoomToFit();
+			
+			gridPage.setLooperMode(CL_NORMAL);
+
 		}else if (row==6) {
-			//application.zoomToFit();
+			gridPage.setLooperMode(CL_FIXED_8);
 		}else if (row==7) {
-			//application.zoomToFit();
+			gridPage.setLooperMode(CL_FIXED_16);
 		}
 	 }
 
@@ -1041,7 +1055,7 @@ gridPage.updateSideButtons  = function()
 {
   //println("updateSideButtons");
   	var val = null;
-	var offsetFormatted = offset.getFormatted();
+	//var offsetFormatted = offset.getFormatted();
 	var quantValue = quant.get();
 
 	var alt = Colour.GREEN_LOW;
