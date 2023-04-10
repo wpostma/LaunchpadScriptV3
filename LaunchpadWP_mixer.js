@@ -23,6 +23,7 @@ MixMode = {
 }
 
 MixerModes = [MixMode.CCMode,MixMode.DeviceMode,MixMode.TrackFader];
+mixerPage.initMix = 0;
 
 
 mixerPage.mixerAlignedGrid = true;
@@ -65,7 +66,7 @@ function scale(n) {
 }
 
 function inv_scale(n) {
-	x = n*127;
+	x = Math.round(n*8);
 	if (x<0)
 		x = 0;
 	if (x>7)
@@ -73,7 +74,7 @@ function inv_scale(n) {
 
 	return 7-x;
 
-}
+} 
 
 mixerPage.onActivePage = function()
 {
@@ -86,15 +87,16 @@ mixerPage.onActivePage = function()
 
 mixerPage.resetMixerVisualLevel = function()
 {
-	println("reset mixer");
+	println("reset mixer visual level");
 
 	for(var i= 0; i<20; i++)
 	{
 		
-		var track =  trackBank.getTrack(index);
-		var vollevel = 0;//track.getVolume().get();
+		var track =  trackBank.getTrack(i);
+		//println("track="+track);
+		var vollevel = track.volume().value().get(); // java api's be like FooThing.BarThing.BatThing.gettableFoobulator.getThingy.getSubSubGetter.getter.valueOfThing.get();
 		scaledMixValue = inv_scale(vollevel);
-		println( "vol "+vollevel+" -> "+scaledMixValue);
+		println( "XXX vollevel "+vollevel+" -> scaled "+scaledMixValue);
 		//track.getVolume.set(scaledMixValue);
 
 		mixerPage.mixerCCValues[i] = 0; //0-127,  row 7 means zero, row 0 means CC max value (127)
@@ -103,6 +105,9 @@ mixerPage.resetMixerVisualLevel = function()
 
 		println("mixerPage.mixerCCValues["+i+"] "+mixerPage.mixerCCValues[i]);
 	}
+
+	mixerPage.initMix  = 1;
+
 }
 
 // mixerPage.resetMixerVisualLevel(); // --> too soon at this load scope
@@ -119,9 +124,11 @@ mixerPage.writeMixerValue = function(channel,index,mixValue) {
 		println("writeMixerValue:undefined ccIndex");
 		return;
 	}
+	println("XXXXXXXXXX  writeMixerValue:::: mode :: "+mixerPage.SubMode);
+
 	if (mixerPage.SubMode == MixMode.CCMode) {
 		
-		//println("write value");
+		println("write value");
 		ccIndex = 108+index;
 		noteInput.sendRawMidiEvent(CC_MSG+channel, /*data1*/ccIndex, /*data2*/mixValue );
 	}
@@ -155,9 +162,17 @@ mixerPage.polledFunction = function()
     
 	}
 	*/
-
+	
+	
+  if (!mixerPage.initMix)
+  {  mixerPage.initMix = 1;
+	 mixerPage.resetMixerVisualLevel ();
+  }
   if (!mixerPage.ccAnimation) 
   	return;
+
+//println("foo");  
+
 	
   var channel = 0; // probably don't need to set this >0
   for (i=0;i<8;i++) {
@@ -544,7 +559,9 @@ mixerPage.onShift = function(isPressed)
 
 var BASE_NOTE = 36; // C2=36
 var NOTE_PAGE_SIZE = 24;
-var MIXER_VALUES= [0,16,33,63,80,96,116,127]; // as midi CC
+
+var MIXER_VALUES= [0,16,33,63,80,96,116,127]; // fader level for each row in mixer mode.
+
 
 mixerPage.doCCButton = function(row,column,pressed)
 {
@@ -553,7 +570,7 @@ mixerPage.doCCButton = function(row,column,pressed)
 	var mixerIndex =  column + mixerPage.mixer_shift;
     
 	
-    println("doCCButton "+row+" "+column+" "+pressed);
+    println("doCCButton row="+row+"  col="+column+" press:"+pressed);
 	
 	if (pressed) {
 		mixerPage.rowDown=row;
@@ -566,13 +583,14 @@ mixerPage.doCCButton = function(row,column,pressed)
 	}
     mixerPage.lastMixer = mixerIndex;
     var mixValue = MIXER_VALUES[rowInvert];
+	println("mixValue="+mixValue);
     
     mixerPage.lastMixerValue = row;
 
 
     mixerPage.mixerButtonLevel[mixerIndex] = row; // so we know which one to light up.
     
-    println("mixerIndex"+mixerIndex+": value "+mixValue);
+    println("mixer:doCCButton: mixerIndex#"+mixerIndex+" : value "+mixValue);
     
 	
 	 
