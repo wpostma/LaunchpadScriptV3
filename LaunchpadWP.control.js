@@ -123,7 +123,7 @@ load("LaunchpadWP_keys.js"); // draws the keys as set in launchpad_notemap and p
 load("LaunchpadWP_mixer.js"); // CC faders you can map to anything, or faders mapped to tracks.
 load("LaunchpadWP_step_sequencer.js"); // everything to do with the step sequencer
 load("LaunchpadWP_switches.js"); // a copy of the keys page specifically redesigned for midi CC on/off.
-load("LaunchpadWP_browse_preset.js");
+load("LaunchpadWP_browse_preset.js");// preset browsing via buttons. category, type, and up down/ previewing, and accept.
 
 
 
