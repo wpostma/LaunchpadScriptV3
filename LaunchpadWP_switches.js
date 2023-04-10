@@ -281,6 +281,12 @@ switchesPage.drawCell = function(x, y, highlight)
    var cc = this.buttonToMidiCC(x, y);
 
    var colour = Colour.OFF;
+
+   if ((y%2)==0) {
+      colour = Colour.YELLOW_LOW;
+   } else  {
+      colour = Colour.AMBER_LOW;
+   }
     
    if (this.state[cc]==127)
    {
