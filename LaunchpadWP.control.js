@@ -62,6 +62,7 @@ var userVarPans = 8; // DO NOT CHANGE
 var userVelNote = false; // false recommended, true NOT recommended.
 var MUSICAL_STOP_STATE = 0;
 var MasterTrackVolume = 1.0;
+var globalShiftEnable=false; // when false, shift key goes to each page.
  
 
 
@@ -142,7 +143,7 @@ function doUpdate()
   
       activePage.updateOutputState();
    
-      if (IS_SHIFT_PRESSED) {
+      if (IS_SHIFT_PRESSED&&globalShiftEnable) {
          //clearGrid();
          setCellLED(0,0,Colour.GREEN_LOW);//grid
          setCellLED(1,0,Colour.RED_LOW);  //keys
@@ -514,6 +515,13 @@ function init()
    remoteControls = cursorDevice.createCursorRemoteControlsPage(8);
 
    browser  = host.createPopupBrowser();
+   browser.selectedContentTypeName().markInterested();
+   typenames = browser.contentTypeNames();
+   typenames.markInterested();
+   for (var n = 0;n<typenames.count;n++) {
+      println("TN::"+typenames.get(n));
+   } 
+
    resultColumn = browser.resultsColumn();
    cursorResult = resultColumn.createCursorItem();
    cursorResult.addValueObserver(100, "", getSelectedNameObserver() );
@@ -596,9 +604,13 @@ function init()
 
    println("init complete. on grid page. type trace=1 to output trace info.")
 
-   host.scheduleTask(polledFunction,  100);
+   host.scheduleTask(polledFunction,   100);
+   host.scheduleTask(polledFunction2,  300);
 }
-
+function polledFunction2() {
+   activePage.polledFunction2();
+   host.scheduleTask(polledFunction2,  300);
+}
 function polledFunction() {
   flushLEDs();
  // println("polling");
@@ -918,7 +930,7 @@ function onMidi(status, data1, data2)
       if (column < 8)
       {
 
-         if (IS_SHIFT_PRESSED) {
+         if (IS_SHIFT_PRESSED && globalShiftEnable) {
             shiftGridButtonPressHandler(row,column, data2>0);
             return;
          } 

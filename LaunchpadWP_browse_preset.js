@@ -11,6 +11,9 @@
 
 var browsePresetPage = new Page();
 
+var CT_DEVICE = 0;
+var CT_PRESET = 1;
+
 browsePresetPage.cursorBrowingSession = undefined;
 
 
@@ -19,6 +22,7 @@ browsePresetPage.notify = browsePresetPage.title;
 browsePresetPage.ccStart = 14;
 browsePresetPage.state = [0];
 browsePresetPage.HasSelection = false;
+browsePresetPage.PendingSetContentType = -1;
 
 for	(var index = 0; index < 128; index++)  {
      browsePresetPage.state[index] = 0;  // javascript, genius or shit. you decide.
@@ -34,16 +38,21 @@ browsePresetPage.onActivePage = function()
 {
    activeNoteMap = undefined;
    clearNoteTranslationTable();
-   cursorDeviceBrowser.startBrowsing();
-   
+  
    // navigate among clips.
    //browsePresetPage.cursorBrowingSession = cursorDeviceBrowser.createCursorSession();
    browsePresetPage.SelectSmartCategory(0);
 
    browsePresetPage.SelectCategory(0);
-   
-   println("XXX browsing preset page activated");
 
+   browsePresetPage.PendingSetContentType = CT_DEVICE;
+
+   //// 1=devices content type, 2=presets content type
+   
+   println("XXX browsing preset page activated <"+browser.selectedContentTypeName().get()+">");
+   cursorDeviceBrowser.startBrowsing();
+   browser.selectedContentTypeIndex().set(0); 
+   
 }
 browsePresetPage.CursorLeft = function(isPressed)
 {
@@ -83,21 +92,26 @@ browsePresetPage.onSession = function(isPressed)
 
 }
 
-// marked as play/stop on my system.
+// marked as play/stop on my controller, and on grid mode that's what it does,
+// so for the browse preset it's the open-browser, and accept (enter) button.
 browsePresetPage.onUser1 = function(isPressed)
 {
    if (isPressed)
    {
 
-      if (IS_SHIFT_PRESSED)
+      if (IS_META_PRESSED) {
+         browser.cancel();
+         cursorDevice.isWindowOpen().set(true);
+         println("open plugin");
+      }else if (IS_SHIFT_PRESSED)
       {
-        //
+        browser.cancel();
       }
       else
       { if (browsePresetPage.HasSelection) {
          browser.commit();
          browsePresetPage.HasSelection = false;
-         println("Changed")
+         println("Browser Preset Changed")
         } else {
          cursorDeviceBrowser.startBrowsing();
         }
@@ -117,12 +131,22 @@ browsePresetPage.onShift = function(isPressed)
    
 }
 
-
+// right side scene launchers
 browsePresetPage.onSceneButton = function(row, isPressed)
 {
    if (isPressed) {
-   println("browsePresetPage Scene Pressed row "+row)
-
+         if ((row>=0) && (row<=4)) {
+             println("browsePresetPage Scene Pressed row "+row)
+             browser.selectedContentTypeIndex().set(row); 
+         }
+         else if (row==5) {
+               browser.selectPreviousFile();
+         } else if (row==6) {
+              browser.selectNextFile();
+         } else if (row==7) {
+            browser.commit();
+         }
+   
   }
 };
 
@@ -388,6 +412,16 @@ browsePresetPage.drawKeys = function()
       }
    }
 };
+
+browsePresetPage.polledFunction2 = function()
+{
+ //  println("poll2");
+   if (browsePresetPage.PendingSetContentType>=0) {
+       browser.selectedContentTypeIndex().set(browsePresetPage.PendingSetContentType);
+       browsePresetPage.PendingSetContentType = -1;
+   } // 1=devices content type, 2=presets content type
+   
+}
 
 // always return false so no Midi Note Ons are emitted
 browsePresetPage.shouldKeyBeUsedForNoteInport = function(x,y)

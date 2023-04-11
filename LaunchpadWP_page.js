@@ -37,7 +37,12 @@ Page.prototype.updateOutputState = function()
 
 Page.prototype.polledFunction = function()
 {
-  // println("page polling");
+  // println("page polling (fast)");
+
+};
+Page.prototype.polledFunction2 = function()
+{
+  // println("page polling (slow function)");
 
 };
 
