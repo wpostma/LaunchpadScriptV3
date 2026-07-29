@@ -15,11 +15,11 @@ Layout reminder:
   ...
 ```
 
-
+# Split Layout
 
 ![split layout](LaunchpadWP.png)
 
-
+(Details below)
 ## Modifier keys (top row)
 
 
