@@ -169,8 +169,8 @@ Pad UI over the device browser (smart categories, categories, tags, results). **
 ## Design notes
 
 - Quirky combo-heavy script for live keys/guitar looping, not a complete Launchpad Pro replacement.  
-- Starts in Clip Launcher every time.  
-- Leaving and re-entering **Keys / Drums** resets the note map to **Piano** — reselect 8×8 with **SHIFT + scene 4** if you need it again.
+- **Active page is persisted** via Bitwig Preferences (`Controllers` → this script → **Launchpad WP → Active Page**). Changing page with META+LEFT/RIGHT saves it; next script load / Bitwig restart restores it.  
+- Leaving and re-entering **Keys / Drums** still resets the note map to **Piano** — reselect 8×8 with **SHIFT + scene 4** if you need it again.
 
 ## Derivation
 

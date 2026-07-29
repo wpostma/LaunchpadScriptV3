@@ -335,7 +335,10 @@ seqPage.onNotePlay = function(isOn, key, velocity)
          println("onNotePlay key OFF "+key);
       }
    }
-   noteOn[key] = isOn;
+   if (key >= 0 && key < 128)
+   {
+      noteOn[key] = isOn;
+   }
 };
 
 seqPage.hasAnyKey = function(step)

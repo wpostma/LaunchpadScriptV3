@@ -157,7 +157,9 @@ NoteMap.prototype.drawCell = function(x, y, highlight)
    
    var colour = (key != -1) ? ((((((this.rootKey * key) / 12 ) / this.rootKey) % 1 ) == 0) ? Colour.AMBER_FULL: (this.keyIsBlack(key) ? black : white)) : Colour.OFF;
    
-   if (noteOn[key])
+   // Piano layout gaps return key=-1; Bitwig 6 Graal arrays throw on negative index
+   // and that kills/reloads the whole controller script.
+   if (key >= 0 && key < 128 && noteOn[key])
    {
       colour = Colour.GREEN_FULL;
    }
