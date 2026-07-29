@@ -838,6 +838,7 @@ function onMidi(status, data1, data2)
             // TOP BUTTON CURSOR UP: Repurposed to play and stop
             //  IS_META_PRESSED: scroll scene bank up
          case TopButton.CURSOR_UP:
+               println("CURSOR_UP page=" + (activePage ? activePage.title : "?") + " pressed=" + isPressed);
                activePage.onScrollUp(isPressed);
                break;
 
@@ -847,6 +848,7 @@ function onMidi(status, data1, data2)
          // TOP BUTTON CURSOR DOWN (MODE)
          // IS_META_PRESSED: scroll scene bank down
          case TopButton.CURSOR_DOWN:
+            println("CURSOR_DOWN page=" + (activePage ? activePage.title : "?") + " pressed=" + isPressed);
             activePage.onScrollDown(isPressed);
             break;
          

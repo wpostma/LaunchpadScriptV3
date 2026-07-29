@@ -475,9 +475,15 @@ smallDrumNoteMap.getName = function()
 
 smallDrumNoteMap2 = new NoteMap();
 
+// Full 8x8 chromatic grid. rootKey is the top-left pad (default 36 = C2).
 smallDrumNoteMap2.cellToKey = function(x, y)
 {
-   return 36 + ( x + (8*y));
+   var key = this.rootKey + x + (8 * y);
+   if (key >= 0 && key < 128)
+   {
+      return key;
+   }
+   return -1;
 };
 
 smallDrumNoteMap2.keyIsBlack = function(key)
@@ -488,14 +494,14 @@ smallDrumNoteMap2.keyIsBlack = function(key)
 
 smallDrumNoteMap2.scrollUp = function()
 {
+   // Octave up (SHIFT = +16 for drum-style shifts)
    if (IS_SHIFT_PRESSED) {
       this.rootKey = Math.min(this.rootKey + 16, 64);
-      updateNoteTranslationTable();
    }
-   if (!IS_SHIFT_PRESSED) {
-   this.rootKey = Math.min(this.rootKey + 1, 64);
+   else {
+      this.rootKey = Math.min(this.rootKey + 12, 64);
+   }
    updateNoteTranslationTable();
-   }
 };
 
 smallDrumNoteMap2.scrollDown = function()
@@ -503,24 +509,22 @@ smallDrumNoteMap2.scrollDown = function()
    if (IS_SHIFT_PRESSED)
    {
       this.rootKey = Math.max(this.rootKey - 16, 0);
-      updateNoteTranslationTable();
    }
-   if (!IS_SHIFT_PRESSED)
+   else
    {
-      this.rootKey = Math.max(this.rootKey - 1, 0);
-      updateNoteTranslationTable();   
+      this.rootKey = Math.max(this.rootKey - 12, 0);
    }
-   
+   updateNoteTranslationTable();
 };
 
 smallDrumNoteMap2.canScrollUp = function()
 {
-   return this.rootKey < 60;
+   return this.rootKey < 64;
 };
 
 smallDrumNoteMap2.canScrollDown = function()
 {
-   return this.rootKey  > 4;
+   return this.rootKey > 0;
 };
 
 smallDrumNoteMap2.canScrollLeft = function()
