@@ -1,5 +1,6 @@
-# Novation Launchpad Script V3   
-Custom Live Looping Setup
+# Novation Launchpad Script V3
+
+Custom Live Looping Setup - 2026-07-28
 
 Warren's Launchpad V3 Script (Launchpad Mk1 / Mini / S) — focused on clip recording, keys, and guitar looping rather than being a full DrivenByMoss-style replacement.   SESSION (aka Meta)+Left Arrow/Right Arrow and User1,User2,Mixer are the mode switching controls.
 
@@ -68,6 +69,8 @@ Bitwig shows a popup with the page title when you change pages.
 | MIXER   | Hold = SHIFT    |                                  |                       |
 
 
+
+
 ### Split Grid + Keys (`META + USER1`)
 
 Toggles a **4-row clip launcher** on top and a **4×8 note/CC pad** on the bottom. Not a full 8×8 keyboard — for that, use the Keys page (below).
@@ -78,6 +81,8 @@ Toggles a **4-row clip launcher** on top and a **4×8 note/CC pad** on the botto
 - **+SHIFT**: undo / redo / zoom in / zoom out / zoom to fit / zoom to selection  
 - **+MODE**: clip automation write, metronome, arranger loop, mixer, note editor, looper length modes  
 - **+META**: browser, inspector, arrange / mix / edit perspectives, devices, clip overdub, pre-roll metronome
+
+
 
 ### Clip pad combos (Grid)
 
@@ -166,11 +171,15 @@ Pad UI over the device browser (smart categories, categories, tags, results). **
 
 ---
 
+
+
 ## Design notes
 
 - Quirky combo-heavy script for live keys/guitar looping, not a complete Launchpad Pro replacement.  
 - **Active page is persisted** via Bitwig Preferences (`Controllers` → this script → **Launchpad WP → Active Page**). Changing page with META+LEFT/RIGHT saves it; next script load / Bitwig restart restores it.  
 - Leaving and re-entering **Keys / Drums** still resets the note map to **Piano** — reselect 8×8 with **SHIFT + scene 4** if you need it again.
+
+
 
 ## Derivation
 
