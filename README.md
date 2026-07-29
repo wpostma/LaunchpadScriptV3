@@ -17,7 +17,7 @@ Layout reminder:
 
 
 
-![split layout](./LaunchpadWP.png)
+![split layout](LaunchpadWP.png)
 
 
 ## Modifier keys (top row)
