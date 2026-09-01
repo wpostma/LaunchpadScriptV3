@@ -38,15 +38,21 @@ keysPage.onActivePage = function()
 
 keysPage.CursorLeft = function(isPressed)
 {
- println("cursor left on keys");
-
+   // SHIFT+LEFT: root / alternate layout (note-map scrollLeft)
+   if (isPressed && activeNoteMap != null)
+   {
+      activeNoteMap.scrollLeft();
+   }
 }
 
 
 keysPage.CursorRight = function(isPressed)
 {
- println("cursor right on keys");
- 
+   // SHIFT+RIGHT: root / alternate layout (note-map scrollRight)
+   if (isPressed && activeNoteMap != null)
+   {
+      activeNoteMap.scrollRight();
+   }
 }
 
 keysPage.updateOutputState = function()
@@ -224,37 +230,31 @@ keysPage.onSceneButton = function(row, isPressed)
   }
 };
 
+// Top-row UP/DOWN → octave shift (wired from control.js as onScrollUp/Down)
 keysPage.onScrollUp = function(isPressed)
 {
-   if (isPressed)
+   println("keysPage.onScrollUp isPressed=" + isPressed + " map=" + (activeNoteMap ? activeNoteMap.getName() : "null") + " root=" + (activeNoteMap ? activeNoteMap.rootKey : "?"));
+   if (isPressed && activeNoteMap != null)
    {
-      activeNoteMap.scrollLeft();
+      activeNoteMap.scrollUp();
+      println("keysPage octave UP -> rootKey=" + activeNoteMap.rootKey);
+      host.showPopupNotification("Octave + / root " + activeNoteMap.rootKey);
    }
 };
 
 keysPage.onScrollDown = function(isPressed)
 {
-   if (isPressed)
-   {
-      activeNoteMap.scrollRight();
-   }
-};
-
-keysPage.onUp = function(isPressed)
-{
-   if (isPressed)
-   {
-      activeNoteMap.scrollUp();
-   }
-};
-
-keysPage.onDown = function(isPressed)
-{
-   if (isPressed)
+   println("keysPage.onScrollDown isPressed=" + isPressed + " map=" + (activeNoteMap ? activeNoteMap.getName() : "null") + " root=" + (activeNoteMap ? activeNoteMap.rootKey : "?"));
+   if (isPressed && activeNoteMap != null)
    {
       activeNoteMap.scrollDown();
+      println("keysPage octave DOWN -> rootKey=" + activeNoteMap.rootKey);
+      host.showPopupNotification("Octave - / root " + activeNoteMap.rootKey);
    }
 };
+
+keysPage.onUp = keysPage.onScrollUp;
+keysPage.onDown = keysPage.onScrollDown;
 
 keysPage.scrollKey = function(offset)
 {

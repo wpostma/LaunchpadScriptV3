@@ -137,6 +137,100 @@ switchesPage.pageIndex = 4;
 browsePresetPage.pageIndex = 5;
 var pageCount = 6;
 
+// Must match each page.title exactly (Bitwig enum preference values).
+var PAGE_TITLE_OPTIONS = [
+   "Clip Launcher",
+   "Keys / Drums",
+   "Step Sequencer",
+   "Mixer Mode",
+   "Switches (CC)",
+   "Browse Presets"
+];
+var pagePreference = null;
+var suppressPagePersist = false;
+
+function findPageByTitle(title)
+{
+   if (title == null || title === "")
+   {
+      return null;
+   }
+   for (var i = 0; i < pageCount; i++)
+   {
+      if (pageModes[i] && pageModes[i].title === title)
+      {
+         return pageModes[i];
+      }
+   }
+   return null;
+}
+
+function persistActivePage(page)
+{
+   if (suppressPagePersist || pagePreference == null || page == null)
+   {
+      return;
+   }
+   try
+   {
+      pagePreference.set(page.title);
+   }
+   catch (e)
+   {
+      println("ERROR persistActivePage: " + e);
+   }
+}
+
+function restoreActivePageFromPreference()
+{
+   if (pagePreference == null)
+   {
+      return gridPage;
+   }
+   var saved = null;
+   try
+   {
+      saved = pagePreference.get();
+   }
+   catch (e)
+   {
+      println("ERROR reading page preference: " + e);
+   }
+   var page = findPageByTitle(saved);
+   if (page == null)
+   {
+      println("No saved page (or unknown '" + saved + "'); using Clip Launcher");
+      return gridPage;
+   }
+   println("Restoring active page from preference: " + page.title);
+   return page;
+}
+
+function setupPagePreference()
+{
+   pagePreference = host.getPreferences().getEnumSetting(
+      "Active Page",
+      "Launchpad WP",
+      PAGE_TITLE_OPTIONS,
+      "Clip Launcher"
+   );
+   pagePreference.addValueObserver(function(name)
+   {
+      if (suppressPagePersist)
+      {
+         return;
+      }
+      var page = findPageByTitle(name);
+      if (page != null && page != activePage)
+      {
+         println("Active Page preference changed -> " + name);
+         setActivePage(page);
+         doUpdate();
+         flushLEDs();
+      }
+   });
+}
+
 function doUpdate()
 {
 
@@ -228,6 +322,11 @@ function sendMidiOut(status,data1,data2) {
 // in the main script (this file).
 function setActivePage(page)
 {
+   if (page == null)
+   {
+      println("setActivePage called with null page");
+      return;
+   }
    if (trace>0) {
       println("setActivePage "+page.title)
    }
@@ -242,6 +341,7 @@ function setActivePage(page)
       if (!isInit)
       {
          showPopupNotification(":::"+page.title);
+         persistActivePage(page);
       }
 
       updateNoteTranslationTable();
@@ -596,22 +696,45 @@ function init()
    // Call resetdevice which clears all the lights
    resetDevice();
    setGridMappingMode();
-   setActivePage(gridPage);
+
+   setupPagePreference();
+   suppressPagePersist = true;
+   setActivePage(restoreActivePageFromPreference());
+   suppressPagePersist = false;
 
    updateNoteTranslationTable();
    updateVelocityTranslationTable();
    // Calls the function just below which displays the funky Bitwig logo, which ends the initialization stage 
 
-   println("init complete. on grid page. type trace=1 to output trace info.")
+   println("init complete. active page=" + activePage.title + ". type trace=1 to output trace info.")
 
    host.scheduleTask(polledFunction,   100);
    host.scheduleTask(polledFunction2,  300);
+
+   // Re-apply in case the preference value arrives slightly after init (async).
+   host.scheduleTask(function()
+   {
+      var page = restoreActivePageFromPreference();
+      if (page != activePage)
+      {
+         suppressPagePersist = true;
+         setActivePage(page);
+         suppressPagePersist = false;
+         doUpdate();
+         flushLEDs();
+      }
+   }, 250);
 }
 function polledFunction2() {
-   activePage.polledFunction2();
+   try {
+      activePage.polledFunction2();
+   } catch (e) {
+      println("ERROR polledFunction2: " + e);
+   }
    host.scheduleTask(polledFunction2,  300);
 }
 function polledFunction() {
+  try {
   flushLEDs();
  // println("polling");
  //println( "isRecording[0]="+isRecording[0] );
@@ -640,6 +763,10 @@ function polledFunction() {
   doUpdate();
   
   activePage.polledFunction();
+  } catch (e) {
+     println("ERROR polledFunction: " + e);
+     host.scheduleTask(polledFunction,  200);
+  }
 
 
 }
@@ -817,6 +944,7 @@ function shiftGridButtonPressHandler(row, column, pressed)
 
 function onMidi(status, data1, data2)
 {
+ try {
    if (trace>0){
 	printMidi(status, data1, data2);
    }
@@ -838,6 +966,7 @@ function onMidi(status, data1, data2)
             // TOP BUTTON CURSOR UP: Repurposed to play and stop
             //  IS_META_PRESSED: scroll scene bank up
          case TopButton.CURSOR_UP:
+               println("CURSOR_UP page=" + (activePage ? activePage.title : "?") + " pressed=" + isPressed);
                activePage.onScrollUp(isPressed);
                break;
 
@@ -847,6 +976,7 @@ function onMidi(status, data1, data2)
          // TOP BUTTON CURSOR DOWN (MODE)
          // IS_META_PRESSED: scroll scene bank down
          case TopButton.CURSOR_DOWN:
+            println("CURSOR_DOWN page=" + (activePage ? activePage.title : "?") + " pressed=" + isPressed);
             activePage.onScrollDown(isPressed);
             break;
          
@@ -953,6 +1083,9 @@ function onMidi(status, data1, data2)
          activePage.onSceneButton(row, data2 > 0);
       }
    }
+ } catch (e) {
+   println("ERROR onMidi: " + e);
+ }
 }
 
 // Clears all the lights
