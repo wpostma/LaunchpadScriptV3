@@ -2,7 +2,7 @@ Launchpad Script V3 for Live Looping
 ==============
 
 
-Warren's Launchpad V3 Script 2023-04-10
+Warren's Launchpad (original Mk1) V3 Script 2023-04-10
 
 1. Always starts up in a clip launcher mode.  Uses the horizontal rows as scenes so that the scene launch buttons make sense to launch all clips in one scene (all clips in that row).  This works best visually when bitwig is in Mix layout rather than in arranger. but it would be possible to have the script follow the program layout.
 
