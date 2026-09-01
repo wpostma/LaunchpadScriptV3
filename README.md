@@ -1,4 +1,4 @@
-# Novation Launchpad Script V3
+# Novation Launchpad MK1 Script V3
 
 Custom Live Looping Setup - 2026-07-28
 
